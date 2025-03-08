@@ -1,0 +1,114 @@
+.Hotnews{
+  max-width: 100%;
+  margin-left: 110px;
+  margin-right: 100px;
+}
+
+.hotnews-titlebox{
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin: 30px 0;
+}
+
+.hotnews-logo{
+  width: 60px;
+  /* display: inline-block; */
+}
+
+.hotnews-title{
+  display: inline-block;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.news-container {
+  display: flex;
+  gap: 30px;
+  max-width: 100%;
+  margin: 20px 10px 20px 30px; 
+}
+.main-news {
+  position: relative;
+  overflow: hidden;
+}
+.main-news img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.main-overlay{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 70%;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0, 31, 63, 1), transparent);
+}
+
+.main-news .news-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  
+  color: white;
+  padding: 15px;
+}
+
+.main-news .news-info h3 {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-size: 40px;
+}
+
+.main-news .news-info p {
+  font-size: 18px;
+  opacity: 0.8;
+} 
+
+.side-news {
+  display: grid;
+  gap: 20px;
+}
+.side-news .news-item {
+  display: flex;
+  gap: 10px;
+}
+.side-news img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.side-news .news-text {
+  position: relative;
+  width: 300px;
+  height: 100%;
+}
+
+.side-news .news-text p {
+  margin-top: 10px;
+  font-size: 20px; /* Tăng kích thước tiêu đề */
+  font-weight: bold;
+}
+
+.side-news .news-text small {
+  position: absolute;
+  bottom: 0;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.main-news .category {
+  color: rgba(0, 255, 242, 1);
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.side-news .category {
+  color: rgba(0, 116, 178, 1);
+  font-size: 20px;
+  font-weight: bold;
+}

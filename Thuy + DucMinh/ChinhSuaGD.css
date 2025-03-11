@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.container {
+    background: white;
+    padding: 50px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 30px;
+}
+
+label {
+    display: block;
+    text-align: left;
+    font-weight: bold;
+    margin: 10px 0 5px;
+}
+
+input, select, textarea, button {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+input, select {
+    width: calc(100% - 16px); 
+    padding: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box; 
+}
+
+textarea {
+    width: calc(100% - 16px); 
+    height: 200px;
+    padding: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box; 
+}
+
+.file-upload {
+    display: flex;
+    align-items: center; 
+    gap: 50px;
+}
+
+.file-upload input[type="file"] {
+    width: 250px; 
+    max-width: 100%;
+}
+
+.button_function {
+    display: flex;  /* Sắp xếp các button theo hàng ngang */
+    justify-content: center; /* Căn giữa các button */
+    gap: 50px; /* Khoảng cách giữa các button */
+    margin-top: 25px; /* Khoảng cách từ trên xuống */
+}
+
+button {
+    width: 150px;
+    font-size: 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 25px;
+}
+
+button.edit {
+    background-color: #ffc107; /* Màu vàng */
+    color: black;
+}
+
+button.edit:hover {
+    background-color: #e0a800;
+}
+
+/* Màu cho nút "Hủy" */
+button.cancel {
+    background-color: #dc3545; /* Màu đỏ */
+    color: white;
+}
+
+button.cancel:hover {
+    background-color: #b52b3a;
+}

@@ -1,0 +1,233 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.container {
+    display: flex;
+    margin: 20px;
+    gap: 70px;
+}
+
+/* Sidebar */
+.sidebar {
+    margin-left: 10px;
+    margin-top: 300px;
+    background: #e0e0e0;
+    display: flex;
+    padding: 10px;
+    border-radius: 10px;
+    width: 270px;
+    height: 530px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    color: black;
+}
+
+.sidebar a {
+  display: block;
+  color: black;
+  padding: 16px;
+  text-decoration: none;
+}
+
+/* Danh sách menu */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar ul li {
+    padding: 15px 20px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 5px;
+    border-radius: 10px;
+}
+
+.sidebar ul li:hover {
+    background-color: #e0c04c;
+    cursor: pointer;
+}
+
+.sidebar ul li.active{
+    background-color: #e0c04c;
+    color: black;
+}
+
+.Personal_Info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: lightgray; 
+    padding: 20px 30px;
+    border-radius: 20px;
+    margin: 30px auto;
+    width: 100%;
+}
+
+.left {
+    margin-left: 20px;
+}
+
+.left h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.left h3 {
+    font-size: 20px;
+    margin: 5px 0 0;
+}
+
+.right img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; 
+    border: 3px solid darkblue; 
+    object-fit: cover;
+}
+
+.functionBar {
+    margin-left: 30px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 100px;
+}
+
+.search-box {
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: none;
+    background-color: #d3d3d3; 
+    font-size: 25px;
+    width: 450px; 
+    max-width: 500px;
+    outline: none;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.custom-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #d3d3d3;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.custom-button:hover {
+    background-color: #c0c0c0; 
+}
+
+.dropdown_two {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown_two > .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 250px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 12px 10px; 
+    z-index: 1; 
+    list-style: none;
+    border: none;
+    top: calc(100% + 2px);
+}
+
+.dropdown_two > .dropdown-menu a {
+    display: block;
+    padding: 20px 16px;
+    text-decoration: none;
+    color: black;
+}
+
+.dropdown_two:hover > .dropdown-menu {
+    display: block;
+}
+
+.dropdown_two > .dropdown-menu li:hover a {
+    font-weight: bold;
+}
+
+.status-buttons {
+    display: flex;
+    gap: 50px;
+}
+
+.status-buttons button {
+    padding: 8px 15px;
+    border: none;
+    background-color: #d3d3d3;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.status-buttons button:hover {
+    background-color: #e0c04c;
+    color: black; 
+}
+
+.status-buttons .active_btn {
+    background-color: #e0c04c;
+    color: black;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 40px;
+}
+
+thead {
+    background-color: lightgrey;
+    font-weight: bold;
+}
+
+th, td {
+    padding: 20px 30px;
+    text-align: center;
+    border-bottom: 1px solid lightgrey;
+    vertical-align: middle;
+    word-break: break-word;
+    white-space: normal; 
+    max-width: 350px; 
+}
+
+th {
+    background-color: lightgray;
+}
+
+td {
+    min-width: 200px;
+}
+
+td img {
+    width: 150px; 
+    height: 100px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Icon hành động */
+td i {
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 18px;
+    color: gray;
+}
+
+td i:hover {
+    color: black;
+}

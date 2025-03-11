@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - QLTG</title>
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="pagination.css">
+    <link rel="stylesheet" href="ADMIN_QLTG.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+          <a href="../index.html">
+            <img src="img\LogoWeb.png" alt="Ảnh tên web">
+          </a>
+        </div>
+        <nav class="menu">
+            <ul>
+                <li><a href="../index.html">Trang chủ</a></li>
+                
+                <li class="dropdown">
+                  <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="../Quang/giaidau-epl/html/giaidau-EPL.html">Premier League</a></li>
+                    <li><a href="../Quang/giaidau-laliga/html/giaidau-LaLiga.html">La Liga</a></li>
+                    <li><a href="../Quang/giaidau-serie a/html/giaidau-seria.html">Serie A</a></li>
+                    <li><a href="../Quang/giaidau-bundesliga/html/giaidau-bundes.html">Bundesliga</a></li>
+                    <li><a href="../Quang/giaidau-Ligue 1/html/giaidau-l1.html">Ligue 1</a></li>
+                    <li><a href="../Quang/giaidau-V league/html/giaidau-vleague.html">V.League 1</a></li>
+                  </ul>
+                </li>
+
+                <li><a href="#">Bóng đá Việt Nam</a></li>
+                <li><a href="#">Bóng đá thế giới</a></li>
+            </ul>
+        </nav>
+        <div class="nav-icons">
+            <a href="#">
+                <img src="img\SearchIcon.png" alt="Search Icon">
+            </a>
+            <a href="#">
+                <img src="img\UserIcon.png" alt="User Icon">
+            </a>
+        </div>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="ADMIN_QLBB.html">Quản lý bài báo</a></li>
+                <li><a href="ADMIN_QLGD.html">Quản lý giải đấu</a></li>
+                <li><a href="ADMIN_QLGD.html">Quản lý người dùng</a></li>
+                <li class="active"><a href="ADMIN_QLTG.html">Quản lý tác giả</a></li>
+                <li><a href="ADMIN_TTCN.html">Thông tin cá nhân</a></li>
+                <li><a href="../Hi-Tech/Login.html">Đăng xuất</a></li>
+            </ul>
+        </aside>
+        <main class="content">
+            <div class="Personal_Info">
+                <div class="left">
+                    <h2>Đỗ Trung Quân</h2>
+                    <h3>ADMIN ID: AD190804</h3>
+                </div>
+                <div class="right"><img src="img\cat.jpg" alt=""></div>
+            </div>
+            <div class="functionBar">
+                <input type="text" class="search-box" placeholder="Tìm kiếm...">
+            </div>        
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên tài khoản</th>
+                        <th>Số bài viết</th>
+                        <th>Ngày đăng ký</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <tr>
+                            <td>AU285910</td>
+                            <td>nguyenhoang98</td>
+                            <td>15</td>
+                            <td>03/03/2025</td>
+                            <td><i class="fa-regular fa-eye"></i>
+                                <i class="fa-solid fa-trash-can"></i></td>
+                        </tr>
+                        <tr>
+                            <td>AU285912</td>
+                            <td>lethanh2002</td>
+                            <td>7</td>
+                            <td>01/03/2025</td>
+                            <td><i class="fa-regular fa-eye"></i>
+                                <i class="fa-solid fa-trash-can"></i></td>
+                        </tr>
+                        <tr>
+                            <td>AU285913</td>
+                            <td>football_fan</td>
+                            <td>20</td>
+                            <td>28/02/2025</td>
+                            <td><i class="fa-regular fa-eye"></i>
+                                <i class="fa-solid fa-trash-can"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>AU285915</td>
+                            <td>quangtrung123</td>
+                            <td>12</td>
+                            <td>26/02/2025</td>
+                            <td><i class="fa-regular fa-eye"></i>
+                                <i class="fa-solid fa-trash-can"></i></td>
+                        </tr>
+                        <tr>
+                            <td>AU285917</td>
+                            <td>doanvanhieu</td>
+                            <td>13</td>
+                            <td>24/02/2025</td>
+                            <td><i class="fa-regular fa-eye"></i>
+                                <i class="fa-solid fa-trash-can"></i></td>
+                        </tr>
+                        <tr>
+                            <td>AU285918</td>
+                            <td>thanhthu_nguyen</td>
+                            <td>5</td>
+                            <td>23/02/2025</td>
+                            <td><i class="fa-regular fa-eye"></i>
+                                <i class="fa-solid fa-trash-can"></i></td>
+                        </tr>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+    <div class="pagination">
+        <button class="prev" disabled>← Previous</button>
+        <button class="page active">1</button>
+        <button class="page">2</button>
+        <button class="page">3</button>
+        <span class="dots">...</span>
+        <button class="page">67</button>
+        <button class="page">68</button>
+        <button class="next">Next →</button>
+    </div>    
+    <script src="pagination.js"></script>
+</body>
+</html>

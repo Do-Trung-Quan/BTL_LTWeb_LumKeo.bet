@@ -1,0 +1,200 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  min-width: 900px;
+}
+
+
+.content {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.main-news {
+  flex: 2;
+}
+
+.sidebar {
+  flex: 1;
+}
+
+.inner-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inner-sidebar h2 {
+  color: #f1c40f;
+  /* Màu vàng */
+  font-weight: bold;
+  text-transform: uppercase;
+  /* Chữ in hoa */
+}
+
+.inner-sidebar hr {
+  /* chỉnh hr */
+  flex-grow: 1;
+  border: none;
+  height: 4px;
+  background: #f1c40f;
+  margin-left: 10px;
+  margin: 8px 0 0 10px;
+  /* Đẩy hr xuống dưới một chút */
+}
+
+.highlight-box {
+  background-color: #d3d3d3;
+  /* Màu bạc */
+  padding: 3px;
+  /* Thêm khoảng cách bên trong */
+  border-radius: 5px;
+  /* Bo góc nhẹ */
+  display: inline-block;
+  /* Giúp hộp ôm sát nội dung */
+}
+
+/* chỉnh news-item */
+.news-item {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: center;
+  /* Căn chữ theo đầu ảnh */
+  gap: 10px;
+  /* Giảm khoảng cách giữa ảnh và nội dung */
+  margin-bottom: 10px;
+  border-bottom: 10px;
+  padding-bottom: 10px;
+
+}
+
+.news-item img {
+  width: 200px;
+  /* Giữ kích thước ảnh nhỏ gọn */
+  height: auto;
+  object-fit: cover;
+  flex-shrink: 0;
+  /* Ngăn hình ảnh co lại */
+  border-radius: 5px;
+}
+
+.news-item div {
+  flex-grow: 1;
+  min-width: 150px;
+  /* Đảm bảo chữ không bị bó hẹp quá mức */
+}
+
+.news-item a {
+  text-decoration: none;
+  /* Loại bỏ gạch chân */
+  color: inherit;
+  /* Giữ nguyên màu chữ theo thẻ con */
+}
+
+.news-item .author-time {
+  font-size: 12px;
+  color: gray;
+  margin-top: 5px;
+}
+
+.news-content h4,
+.news-content p {
+  margin: 10px;
+  /* Xóa khoảng cách mặc định */
+  padding: 0;
+  /* Đảm bảo không có padding thừa */
+}
+
+/*hết chỉnh news-item*/
+
+.main-img {
+  width: auto;
+  height: auto;
+  max-width: 495.47px;
+  /* Adjust the max-width as needed */
+  max-height: 495.47px;
+  /* Adjust the max-height as needed */
+  object-fit: contain;
+  /* Maintain aspect ratio */
+  display: block;
+  /* giúp ảnh không bị ảnh hưởng bởi văn bản xung quanh*/
+  margin: auto;
+  /*căn ảnh ra giữa theo chiều ngang.*/
+}
+
+.image-container {
+  text-align: center;
+}
+
+.caption {
+  font-style: italic;
+  /* Làm chữ nghiêng giống ảnh của bạn */
+  text-align: center;
+}
+
+.news-content .author {
+  /* chỉnh author */
+  font-size: 12px;
+  color: gray;
+  margin: 0;
+}
+
+/* chỉnh breadcrumb */
+.breadcrumb {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  /* Màu đen */
+}
+
+.breadcrumb a {
+  text-decoration: none;
+  /* Bỏ gạch chân */
+  color: #000;
+  /* Giữ màu giống chữ bình thường */
+  font-weight: bold;
+}
+
+.breadcrumb h1 {
+  display: inline;
+  /* Biến thẻ h3 thành inline để không bị xuống dòng */
+  margin: 0;
+  /* Loại bỏ margin nếu cần */
+}
+
+.separator {
+  font-size: 1.2em;
+  /* Điều chỉnh kích thước theo ý muốn */
+  font-weight: bold;
+  /* Làm đậm nếu cần */
+  margin: 0 5px;
+  /* Giúp căn chỉnh khoảng cách */
+}
+
+/*hết chỉnh breadcrumb*/
+
+p {
+  margin: 20px 0;
+  /* Adjust the value to your desired spacing */
+  padding: 0;
+}
+
+br {
+  display: none;
+  /* Optionally hide the <br> tags if they are not needed */
+}
+
+.kyten {
+  text-align: right;
+  font-weight: bold;
+  /* Giữ nguyên độ đậm nếu cần */
+}

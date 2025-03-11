@@ -1,0 +1,150 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('Images/SignUpBackground.png');
+    /* background-size: cover; */
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.signup-container {
+    
+    position: relative;
+    width: 600px; /* hoặc bất kỳ chiều rộng nào bạn muốn */
+    height: 100vh; /* Chiều cao sẽ bằng với chiều cao của viewport */
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* overflow: auto; */
+}
+
+.signup-wrapper {
+    position: fixed; 
+    top: 50%; 
+    right: 0; 
+    width: 600px;
+    transform: translateY(-50%);
+    padding: 10px;
+    background: linear-gradient(to right, rgb(252, 193, 6), rgb(228, 129, 51), rgb(208, 76, 87), rgb(186, 17, 129));
+    border-radius: 10px 0 0 10px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1); /* Bóng đổ chỉ xuất hiện bên trái */
+}
+
+
+.signup-form{
+    position: relative;
+    z-index: 1; /* Đảm bảo form luôn nằm trên gradient */
+    background: rgba(255, 255, 255, 0.9); /* Đặt lại nền trong suốt cho form nếu cần */
+    border-radius: 5px; /* Slightly less than the container to give a nice border effect */
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
+
+.signup-form h2 {
+    text-align: center;
+    margin-bottom: 100px;
+    font-size: 50px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.input-group input[type="text"] {
+    background-image: url('Images/UserIcon.png');
+    background-position: 1px center;
+    background-repeat: no-repeat;
+    padding-left: 45px; /* Điều chỉnh để không ghi đè lên biểu tượng */
+    margin-bottom: 20px;
+}
+
+.input-group input[type="password"] {
+    background-image: url('Images/PasswordIcon.png');
+    background-position: 5px center;
+    background-repeat: no-repeat;
+    padding-left: 45px;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.input-group input {
+    width: 90%;
+    padding: 10px 5px;
+    border: none;
+    border-bottom: 2px solid #ccc; /* Gạch dưới chân */
+    background-color: transparent;
+    color: #333;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-bottom: 2px solid #007BFF; /* Thay đổi màu khi focus */
+}
+
+.radio-button {
+    margin: 10px 0; /* Điều chỉnh khoảng cách xung quanh khối radio-button */
+}
+
+.radio-button label {
+    display: block; /* Đảm bảo nhãn đầu tiên xuất hiện trên một dòng riêng */
+    margin-bottom: 15px; /* Thêm khoảng cách giữa nhãn và nhóm nút radio */
+}
+
+.role-options {
+    display: flex; /* Áp dụng flexbox cho nhóm nút radio */
+    align-items: center; /* Căn giữa các items theo chiều dọc */
+    gap: 5px; /* Khoảng cách giữa các items trong flexbox */
+}
+
+.role-options input[type="radio"] {
+    margin-right: 5px; /* Thêm khoảng cách giữa nút radio và nhãn */
+}
+
+.role-options label {
+    margin: 0; /* Xóa các khoảng cách mặc định nếu có */
+}
+
+
+
+.signup-btn {
+    background-image: linear-gradient(to right,  RGB(252, 193, 6),  RGB(228, 129, 51), RGB(208, 76, 87), RGB(186, 17, 129));
+    width: 85%;
+    margin: 100px auto;
+    display: block;
+    padding: 10px;
+    background-color: #cc9fc5; /* Golden-yellow gradient */
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+}
+
+
+
+

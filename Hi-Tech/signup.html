@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="SignupStyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body  style="background-image: url('Images/SignUpBackground.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <div class="signup-wrapper">
+    <div class="signup-container">
+        <form class="signup-form">
+            <h2>SIGN UP</h2>
+            <div class="input-group">
+                <label for="new-username">Username:</label>
+                <input type="text" id="new-username" name="new-username" placeholder="Username...">
+            </div>
+            <div class="input-group">
+                <label for="new-password">New password:</label>
+                <input type="password" id="new-password" name="new-password" placeholder="Password...">
+            </div>
+            <div class="input-group">
+                <label for="confirm-password">Confirm password:</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Password...">
+            </div>
+            <div class="radio-button">
+                <label>Role:</label>
+                <div class="role-options">
+                    <input type="radio" id="user" name="role" value="user" checked>
+                    <label for="user">User</label>
+                    <input type="radio" id="author" name="role" value="author">
+                    <label for="author">Author</label>
+                </div>
+            </div>
+            <a class="signup-btn" href="./Login.html">Submit<a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

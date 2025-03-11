@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm bài viết</title>
+    <link rel="stylesheet" href="AUTHOR_ThemBV.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Thêm bài viết</h2>
+        <form id="content-form">
+            <label for="content-name">Tên bài viết</label>
+            <input type="text" id="content-name" placeholder="Nhập tiêu đề" required>
+
+            <label for="category">Chọn thể loại:</label>
+            <select id="category">
+                <option>Bóng đá Việt Nam</option>
+                <option>Bóng đá Quốc tế</option>
+                <option>Premier League</option>
+                <option>V. League 1</option>
+                <option>Ligue 1</option>
+                <option>Bundesliga</option>
+                <option>Serie A</option>
+                <option>La Liga</option>
+            </select>
+            <div class="file-content">
+                <label for="content">Nội dung:</label>
+                <textarea id="content" placeholder="Nhập nội dung bài viết"></textarea>
+            </div>
+            <div class="file-upload">
+                <label for="logo"><strong>Ảnh bài báo</strong></label>
+                <input type="file" id="logo" name="logo">
+            </div>
+            <button type="submit">Đăng</button>
+        </form>
+    </div>
+</body>
+</html>

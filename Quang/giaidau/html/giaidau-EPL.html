@@ -5,33 +5,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giải đấu EPL</title>
-    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../../../css/header.css">
     <link rel="stylesheet" href="../css/hotnew.css">
     <link rel="stylesheet" href="../css/tinduoi.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/general.css">
+    <script src="../../../Js/Search-header.js"></script>
 </head>
 
 <body>
+    <!--header and search-header section-->
+    <!--header section-->
     <header class="navbar">
         <div class="logo">
-            <a href="">
-                <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
-            </a>
+          <a href="../../../index.html">
+            <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
+          </a>
         </div>
         <nav class="menu">
             <ul>
-                <li><a href="#">Trang chủ</a></li>
+                <li><a href="../../../index.html">Trang chủ</a></li>
+                
                 <li class="dropdown">
-                    <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Premier League</a></li>
-                        <li><a href="#">La Liga</a></li>
-                        <li><a href="#">Serie A</a></li>
-                        <li><a href="#">Bundesliga</a></li>
-                        <li><a href="#">Ligue 1</a></li>
-                        <li><a href="#">V.League 1</a></li>
-                    </ul>
+                  <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="../html/giaidau-EPL.html">Premier League</a></li>
+                    <li><a href="../html/giaidau-LaLiga.html">La Liga</a></li>
+                    <li><a href="../html/giaidau-seria.html">Serie A</a></li>
+                    <li><a href="../html/giaidau-bundes.html">Bundesliga</a></li>
+                    <li><a href="../html/giaidau-l1.html">Ligue 1</a></li>
+                    <li><a href="../html/giaidau-vleague.html">V.League 1</a></li>
+                  </ul>
                 </li>
 
                 <li><a href="#">Bóng đá Việt Nam</a></li>
@@ -39,19 +46,43 @@
             </ul>
         </nav>
         <div class="nav-icons">
-            <a href="#" target="_blank">
+            <a class="search-button">
                 <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
             </a>
-            <a href="#" target="_blank">
+            <a class="account-button" href="../../../Thuy + DucMinh/ADMIN_QLBB.html">
                 <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
             </a>
         </div>
     </header>
 
+     <!--search-header section-->
+    <div class="navbar search-header">
+        <div class="logo">
+          <a href="#">
+            <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
+          </a>
+        </div>
+        
+        <form class="search-bar">
+          <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
+          <button><img src="../image/header-footer-logo/logo-search.png" alt="Search Icon"></button>
+        </form>
+    
+        <div class="nav-icons">
+            <a class="search-button">
+                <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
+            </a>
+            <a class="account-button" href="./Thuy + DucMinh/ADMIN_QLBB.html">
+                <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
+            </a>
+        </div>
+    </div>
+    <div class="dark-overlay"></div>
+
     <!-- phần giải đấu -->
     <div class="container">
         <div class="header-container">
-            <div class="breadcrumb">Giải đấu &gt; Premier League</div>
+            <div class="breadcrumb">Giải đấu <i class="fa-solid fa-angle-right"></i> Premier League</div>
             <img src="../image/content-img/EPL.png" alt="EPL">
         </div>
         <!-- Tin trên -->
@@ -59,47 +90,56 @@
         <div class="Hotnews">
             <!--Hotnews-general-->
             <div class="Hotnews-general">
-              <div class="hotnews-titlebox">
-                <img class="hotnews-logo" src="../image/logo-tinnoibat.png" alt="logo-tinnoibat">
-                <p class="hotnews-title">Tin nổi bật &gt;</p>
-              </div>
-              <div class="news-container">
-                  <div class="main-news">
-                      <img src="../image/content-img/tinnoibat1.png" alt="Main News">
-                      <div class="main-overlay"></div>
-                      <div class="news-info">
-                          <span class="category">Premier League</span>
-                          <h3>Man United bất ngờ dẫn đầu Ngoại hạng Anh, Ruben Amorim tìm ra công thức chiến thắng</h3>
-                          <p>Tác giả - 9 giờ trước</p>
-                      </div>
-                  </div>
-                  <div class="side-news">
-                      <div class="news-item-top">
-                          <img src="../image/content-img/tinnoibat2.png" alt="">
-                          <div class="news-text">
-                              <span class="category">Premier League</span>
-                              <p>Tháng 3 kỳ lạ cho chặng đua 'nước rút' của Ngoại hạng Anh.</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                      <div class="news-item-top">
-                          <img src="../image/content-img/tinnoibat3.png" alt="">
-                          <div class="news-text">
-                              <span class="category">Premier League</span>
-                              <p>Pep tuyên bố về Man City, diễn biến bất ngờ tương lai De Bruyne.</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                      <div class="news-item-top">
-                          <img src="../image/content-img/tinnoibat4.png" alt="">
-                          <div class="news-text">
-                              <span class="category">Premier League</span>
-                              <p>MU đề xuất đổi Hojlund kèm tiền mặt để lấy tiền đạo của Napoli.</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+                <div class="hotnews-titlebox">
+                    <img class="hotnews-logo" src="../image/logo-tinnoibat.png" alt="logo-tinnoibat">
+                    <p class="hotnews-title">Tin nổi bật <i class="fa-solid fa-angle-right"></i></p>
+                </div>
+                <div class="news-container">
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <div class="main-news">
+                            <img src="../image/content-img/tinnoibat1.png" alt="Main News">
+                            <div class="main-overlay"></div>
+                            <div class="news-info">
+                                <span class="category">Premier League</span>
+                                <h3>Man United bất ngờ dẫn đầu Ngoại hạng Anh, Ruben Amorim tìm ra công thức chiến thắng
+                                </h3>
+                                <p>Tác giả - 9 giờ trước</p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="side-news">
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/tinnoibat2.png" alt="">
+                                <div class="news-text">
+                                    <span class="category">Premier League</span>
+                                    <p>Tháng 3 kỳ lạ cho chặng đua 'nước rút' của Ngoại hạng Anh.</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/tinnoibat3.png" alt="">
+                                <div class="news-text">
+                                    <span class="category">Premier League</span>
+                                    <p>Pep tuyên bố về Man City, diễn biến bất ngờ tương lai De Bruyne.</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/tinnoibat4.png" alt="">
+                                <div class="news-text">
+                                    <span class="category">Premier League</span>
+                                    <p>MU đề xuất đổi Hojlund kèm tiền mặt để lấy tiền đạo của Napoli.</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <hr>
         </div>
@@ -108,96 +148,116 @@
         <div class="news-bottom">
             <div class="news-list">
                 <div class="news-item">
-                    <img src="../image/content-img/item1.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>MU đề xuất đổi Hojlund kèm tiền mặt</p>
-                        <br>
-                        <p class="au">Tác giả - 9 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item1.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>MU đề xuất đổi Hojlund kèm tiền mặt</p>
+
+                            <small>Tác giả - 9 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/item2.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>Phút xuất thần của thủ môn Arsenal</p>
-                        <br>
-                        <p>Tác giả - 8 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item2.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>Phút xuất thần của thủ môn Arsenal</p>
+
+                            <small>Tác giả - 8 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="news-item">
-                    <img src="../image/content-img/item3.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>Casemiro gây bất ngờ</p>
-                        <br>
-                        <p>Tác giả - 7 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item3.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>Casemiro gây bất ngờ</p>
+
+                            <small>Tác giả - 7 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="news-item">
-                    <img src="../image/content-img/item4.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>Món hời chuyển nhượng cho MU</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item4.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>Món hời chuyển nhượng cho MU</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/item5.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>Vòng 28 EPL: Arsenal hết mơ vô địch</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item5.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>Vòng 28 EPL: Arsenal hết mơ vô địch</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/item6.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>Juventus muốn ký hợp đồng với tài năng trẻ.</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item6.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>Juventus muốn ký hợp đồng với tài năng trẻ.</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/item7.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>Liverpool thắng tranh cãi, hơn Arsenal 16 điểm</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item7.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>Liverpool thắng tranh cãi, hơn Arsenal 16 điểm</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/item8.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>HLV David Moyes tiếp tục bất bại</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item8.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>HLV David Moyes tiếp tục bất bại</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/item9.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>Thắng PSV 7-1, Arsenal tạo kỷ lục Champions League</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item9.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>Thắng PSV 7-1, Arsenal tạo kỷ lục Champions League</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/item10.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Premier League</h3>
-                        <p>Aston Villa đặt một chân vào tứ kết Champions League</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/item10.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Premier League</h3>
+                            <p>Aston Villa đặt một chân vào tứ kết Champions League</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
             </div>
             <!-- Bảng xếp hạng -->
@@ -236,7 +296,8 @@
                     </tr>
                     <tr class="boc">
                         <td>03</td>
-                        <td class="team-logo"><img src="../image/team-logo/Nottingham Forest.png" alt="">Nottingham Forest
+                        <td class="team-logo"><img src="../image/team-logo/Nottingham Forest.png" alt="">Nottingham
+                            Forest
                         </td>
                         <td>27</td>
                         <td>11</td>
@@ -272,7 +333,8 @@
                     </tr>
                     <tr class="boc">
                         <td>08</td>
-                        <td class="team-logo"><img src="../image/team-logo/Brighton & Hove Albion.png" alt="">Brighton & Hove
+                        <td class="team-logo"><img src="../image/team-logo/Brighton & Hove Albion.png" alt="">Brighton &
+                            Hove
                             Albion
                         </td>
                         <td>27</td>
@@ -302,14 +364,16 @@
                     </tr>
                     <tr class="boc">
                         <td>12</td>
-                        <td class="team-logo"><img src="../image/team-logo/Crystal Palace.png" alt="">Crystal Palace</td>
+                        <td class="team-logo"><img src="../image/team-logo/Crystal Palace.png" alt="">Crystal Palace
+                        </td>
                         <td>27</td>
                         <td>2</td>
                         <td>36</td>
                     </tr>
                     <tr class="boc">
                         <td>13</td>
-                        <td class="team-logo"><img src="../image/team-logo/Tottenham Hotspur.png" alt="">Tottenham Hotspur
+                        <td class="team-logo"><img src="../image/team-logo/Tottenham Hotspur.png" alt="">Tottenham
+                            Hotspur
                         </td>
                         <td>27</td>
                         <td>14</td>
@@ -317,14 +381,15 @@
                     </tr>
                     <tr class="boc">
                         <td>14</td>
-                        <td class="team-logo"><img src="../image/team-logo/Mân đàn.png" alt="">Mân đàn</td>
+                        <td class="team-logo"><img src="../image/team-logo/Mân đàn.png" alt="">Manchester United</td>
                         <td>27</td>
                         <td>-6</td>
                         <td>33</td>
                     </tr>
                     <tr class="boc">
                         <td>15</td>
-                        <td class="team-logo"><img src="../image/team-logo/West Ham United.png" alt="">West Ham United</td>
+                        <td class="team-logo"><img src="../image/team-logo/West Ham United.png" alt="">West Ham United
+                        </td>
                         <td>27</td>
                         <td>-15</td>
                         <td>33</td>
@@ -338,7 +403,8 @@
                     </tr>
                     <tr class="boc">
                         <td>17</td>
-                        <td class="team-logo"><img src="../image/team-logo/Wolverhampton Wanderers.png" alt="">Wolverhampton
+                        <td class="team-logo"><img src="../image/team-logo/Wolverhampton Wanderers.png"
+                                alt="">Wolverhampton
                             Wanderers</td>
                         <td>27</td>
                         <td>-19</td>
@@ -353,7 +419,8 @@
                     </tr>
                     <tr class="boc">
                         <td>19</td>
-                        <td class="team-logo"><img src="../image/team-logo/Leicester City.png" alt="">Leicester City</td>
+                        <td class="team-logo"><img src="../image/team-logo/Leicester City.png" alt="">Leicester City
+                        </td>
                         <td>27</td>
                         <td>-36</td>
                         <td>17</td>
@@ -371,15 +438,15 @@
         <br>
         <!-- số trang -->
         <div class="pagination">
-            <button id="prev">&lt;</button>
+            <button id="prev"><i class="fa-solid fa-angle-left"></i></button>
             <span id="page-number">01</span>
-            <button id="next">&gt;</button>
+            <button id="next"><i class="fa-solid fa-angle-right"></i></button>
         </div>
         <!--tăng độ dài trang xem nút thôi không cần xóa đi 2 thẻ <br>-->
         <br>
         <br>
 
-        
+
     </div>
     <!--Footer-->
     <footer>

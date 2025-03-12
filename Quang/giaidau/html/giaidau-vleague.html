@@ -4,34 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giải đấu Vietnam</title>
-    <link rel="stylesheet" href="../css/header.css">
+    <title>Giải đấu EPL</title>
+    <link rel="stylesheet" href="../../../css/header.css">
     <link rel="stylesheet" href="../css/hotnew.css">
     <link rel="stylesheet" href="../css/tinduoi.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/general.css">
+    <script src="../../../Js/Search-header.js"></script>
 </head>
 
 <body>
+    <!--header and search-header section-->
+    <!--header section-->
     <header class="navbar">
         <div class="logo">
-            <a href="">
-                <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
-            </a>
+          <a href="../../../index.html">
+            <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
+          </a>
         </div>
         <nav class="menu">
             <ul>
-                <li><a href="#">Trang chủ</a></li>
+                <li><a href="../../../index.html">Trang chủ</a></li>
+                
                 <li class="dropdown">
-                    <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Premier League</a></li>
-                        <li><a href="#">La Liga</a></li>
-                        <li><a href="#">Serie A</a></li>
-                        <li><a href="#">Bundesliga</a></li>
-                        <li><a href="#">Ligue 1</a></li>
-                        <li><a href="#">V.League 1</a></li>
-                    </ul>
+                  <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="../html/giaidau-EPL.html">Premier League</a></li>
+                    <li><a href="../html/giaidau-LaLiga.html">La Liga</a></li>
+                    <li><a href="../html/giaidau-seria.html">Serie A</a></li>
+                    <li><a href="../html/giaidau-bundes.html">Bundesliga</a></li>
+                    <li><a href="../html/giaidau-l1.html">Ligue 1</a></li>
+                    <li><a href="../html/giaidau-vleague.html">V.League 1</a></li>
+                  </ul>
                 </li>
 
                 <li><a href="#">Bóng đá Việt Nam</a></li>
@@ -39,19 +46,43 @@
             </ul>
         </nav>
         <div class="nav-icons">
-            <a href="#" target="_blank">
+            <a class="search-button">
                 <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
             </a>
-            <a href="#" target="_blank">
+            <a class="account-button" href="../../../Thuy + DucMinh/ADMIN_QLBB.html">
                 <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
             </a>
         </div>
     </header>
 
+     <!--search-header section-->
+    <div class="navbar search-header">
+        <div class="logo">
+          <a href="../../../index.html">
+            <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
+          </a>
+        </div>
+        
+        <form class="search-bar">
+          <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
+          <button><img src="../image/header-footer-logo/logo-search.png" alt="Search Icon"></button>
+        </form>
+    
+        <div class="nav-icons">
+            <a class="search-button">
+                <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
+            </a>
+            <a class="account-button" href="./Thuy + DucMinh/ADMIN_QLBB.html">
+                <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
+            </a>
+        </div>
+    </div>
+    <div class="dark-overlay"></div>
+
     <!-- phần giải đấu -->
     <div class="container">
         <div class="header-container">
-            <div class="breadcrumb">Giải đấu &gt; V League</div>
+            <div class="breadcrumb">Giải đấu <i class="fa-solid fa-angle-right"></i> V League</div>
             <img src="../image/content-img/vleague.png" alt="laliga">
         </div>
         <!-- Tin trên -->
@@ -59,47 +90,59 @@
         <div class="Hotnews">
             <!--Hotnews-general-->
             <div class="Hotnews-general">
-              <div class="hotnews-titlebox">
-                <img class="hotnews-logo" src="../image/logo-tinnoibat.png" alt="logo-tinnoibat">
-                <p class="hotnews-title">Tin nổi bật &gt;</p>
-              </div>
-              <div class="news-container">
-                  <div class="main-news">
-                      <img src="../image/content-img/Đặng Văn Lâm thiệt thòi khi xuống hạng Nhất.png" alt="Main News">
-                      <div class="main-overlay"></div>
-                      <div class="news-info">
-                          <span class="category">V League</span>
-                          <h3>Đặng Văn Lâm thiệt thòi khi xuống hạng Nhất</h3>
-                          <p>Tác giả - 9 giờ trước</p>
-                      </div>
-                  </div>
-                  <div class="side-news">
-                      <div class="news-item-top">
-                          <img src="../image/content-img/Đội của Hoàng Đức, Văn Lâm lập kỷ lục toàn thắng lượt đi hạng Nhất.png" alt="">
-                          <div class="news-text">
-                              <span class="category">V League</span>
-                              <p>Đội của Hoàng Đức, Văn Lâm lập kỷ lục toàn thắng lượt đi hạng Nhất</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                      <div class="news-item-top">
-                          <img src="../image/content-img/HLV Nguyễn Anh Đức khóc khi chia tay CLB Bình Phước.png" alt="">
-                          <div class="news-text">
-                              <span class="category">V League</span>
-                              <p>HLV Nguyễn Anh Đức khóc khi chia tay CLB Bình Phước</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                      <div class="news-item-top">
-                          <img src="../image/content-img/Hoàng Đức, Tiến Linh tranh Quả Bóng Vàng Việt Nam 2024.png" alt="">
-                          <div class="news-text">
-                              <span class="category">V League</span>
-                              <p>Hoàng Đức, Tiến Linh tranh Quả Bóng Vàng Việt Nam 2024</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+                <div class="hotnews-titlebox">
+                    <img class="hotnews-logo" src="../image/logo-tinnoibat.png" alt="logo-tinnoibat">
+                    <p class="hotnews-title">Tin nổi bật <i class="fa-solid fa-angle-right"></i></p>
+                </div>
+                <div class="news-container">
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <div class="main-news">
+                            <img src="../image/content-img/Tuyển Việt Nam lần đầu tái ngộ sau khi vô địch ASEAN Cup.png"
+                                alt="Main News">
+                            <div class="main-overlay"></div>
+                            <div class="news-info">
+                                <span class="category">V League</span>
+                                <h3>Tuyển Việt Nam lần đầu tái ngộ sau khi vô địch ASEAN Cup</h3>
+                                <p>Tác giả - 9 giờ trước</p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="side-news">
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/Đội của Hoàng Đức, Văn Lâm lập kỷ lục toàn thắng lượt đi hạng Nhất.png"
+                                    alt="">
+                                <div class="news-text">
+                                    <span class="category">V League</span>
+                                    <p>Đội của Hoàng Đức, Văn Lâm lập kỷ lục toàn thắng lượt đi hạng Nhất</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/HLV Nguyễn Anh Đức khóc khi chia tay CLB Bình Phước.png"
+                                    alt="">
+                                <div class="news-text">
+                                    <span class="category">V League</span>
+                                    <p>HLV Nguyễn Anh Đức khóc khi chia tay CLB Bình Phước</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/Hoàng Đức, Tiến Linh tranh Quả Bóng Vàng Việt Nam 2024.png"
+                                    alt="">
+                                <div class="news-text">
+                                    <span class="category">V League</span>
+                                    <p>Hoàng Đức, Tiến Linh tranh Quả Bóng Vàng Việt Nam 2024</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <hr>
         </div>
@@ -108,83 +151,104 @@
         <div class="news-bottom">
             <div class="news-list">
                 <div class="news-item">
-                    <img src="../image/content-img/Jason Quang Vinh Pendant tiếp tục lỡ hẹn đội tuyển Việt Nam.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>V League</h3>
-                        <p>Jason Quang Vinh Pendant tiếp tục lỡ hẹn đội tuyển Việt Nam</p>
-                        <br>
-                        <p class="au">Tác giả - 9 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Jason Quang Vinh Pendant tiếp tục lỡ hẹn đội tuyển Việt Nam.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>V League</h3>
+                            <p>Jason Quang Vinh Pendant tiếp tục lỡ hẹn đội tuyển Việt Nam</p>
+
+                            <small>Tác giả - 9 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Nguyễn Filip lỡ hẹn tuyển Việt Nam.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>V League</h3>
-                        <p>Nguyễn Filip lỡ hẹn tuyển Việt Nam</p>
-                        <br>
-                        <p>Tác giả - 8 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Nguyễn Filip lỡ hẹn tuyển Việt Nam.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>V League</h3>
+                            <p>Nguyễn Filip lỡ hẹn tuyển Việt Nam</p>
+
+                            <small>Tác giả - 8 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="news-item">
-                    <img src="../image/content-img/Quả Bóng Vàng nữ Thùy Trang mơ dự World Cup lần hai.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>V League</h3>
-                        <p>Quả Bóng Vàng nữ Thùy Trang mơ dự World Cup lần hai</p>
-                        <br>
-                        <p>Tác giả - 7 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Quả Bóng Vàng nữ Thùy Trang mơ dự World Cup lần hai.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>V League</h3>
+                            <p>Quả Bóng Vàng nữ Thùy Trang mơ dự World Cup lần hai</p>
+
+                            <small>Tác giả - 7 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="news-item">
-                    <img src="../image/content-img/Quả Bóng Vàng Thùy Trang 'Tôi chưa hết thời'.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>V League</h3>
-                        <p>Quả Bóng Vàng Thùy Trang: 'Tôi chưa hết thời'</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Quả Bóng Vàng Thùy Trang 'Tôi chưa hết thời'.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>V League</h3>
+                            <p>Quả Bóng Vàng Thùy Trang: 'Tôi chưa hết thời'</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Tiến Linh chưa muốn dừng lại sau Quả Bóng Vàng.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>V League</h3>
-                        <p>Tiến Linh chưa muốn dừng lại sau Quả Bóng Vàng</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Tiến Linh chưa muốn dừng lại sau Quả Bóng Vàng.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>V League</h3>
+                            <p>Tiến Linh chưa muốn dừng lại sau Quả Bóng Vàng</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Tuyển Việt Nam sắp có thêm trợ lý HLV từng dự World Cup.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>V League</h3>
-                        <p>Tuyển Việt Nam sắp có thêm trợ lý HLV từng dự World Cup</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Tuyển Việt Nam sắp có thêm trợ lý HLV từng dự World Cup.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>V League</h3>
+                            <p>Tuyển Việt Nam sắp có thêm trợ lý HLV từng dự World Cup</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/U22 Việt Nam gọi hai cầu thủ Việt kiều.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>V League</h3>
-                        <p>U22 Việt Nam gọi hai cầu thủ Việt kiều</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/U22 Việt Nam gọi hai cầu thủ Việt kiều.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>V League</h3>
+                            <p>U22 Việt Nam gọi hai cầu thủ Việt kiều</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Việt Nam bắt đầu kế hoạch tranh vé U17 World Cup.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>V League</h3>
-                        <p>Việt Nam bắt đầu kế hoạch tranh vé U17 World Cup</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Việt Nam bắt đầu kế hoạch tranh vé U17 World Cup.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>V League</h3>
+                            <p>Việt Nam bắt đầu kế hoạch tranh vé U17 World Cup</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
             </div>
             <!-- Bảng xếp hạng -->
             <div class="ranking">
-                <!-- <img src="image/image (9).png" alt=""> -->
                 <table>
                     <thead>
                         <tr>
@@ -225,7 +289,8 @@
                     </tr>
                     <tr class="boc">
                         <td>04</td>
-                        <td class="team-logo"><img src="../image/team-logo/becamex_binh_duong.png" alt="">Becamex Bình Dương</td>
+                        <td class="team-logo"><img src="../image/team-logo/becamex_binh_duong.png" alt="">Becamex Bình
+                            Dương</td>
                         <td>16</td>
                         <td>+8</td>
                         <td>27</td>
@@ -239,14 +304,16 @@
                     </tr>
                     <tr class="boc">
                         <td>06</td>
-                        <td class="team-logo"><img src="../image/team-logo/cong_an_ha_noi.png" alt="">Công An Hà Nội</td>
+                        <td class="team-logo"><img src="../image/team-logo/cong_an_ha_noi.png" alt="">Công An Hà Nội
+                        </td>
                         <td>16</td>
                         <td>+5</td>
                         <td>24</td>
                     </tr>
                     <tr class="boc">
                         <td>07</td>
-                        <td class="team-logo"><img src="../image/team-logo/hoang_anh_gia_lai.png" alt="">Hoàng Anh Gia Lai</td>
+                        <td class="team-logo"><img src="../image/team-logo/hoang_anh_gia_lai.png" alt="">Hoàng Anh Gia
+                            Lai</td>
                         <td>16</td>
                         <td>+3</td>
                         <td>22</td>
@@ -267,14 +334,16 @@
                     </tr>
                     <tr class="boc">
                         <td>10</td>
-                        <td class="team-logo"><img src="../image/team-logo/tp_ho_chi_minh.png" alt="">TP Hồ Chí Minh</td>
+                        <td class="team-logo"><img src="../image/team-logo/tp_ho_chi_minh.png" alt="">TP Hồ Chí Minh
+                        </td>
                         <td>16</td>
                         <td>-4</td>
                         <td>19</td>
                     </tr>
                     <tr class="boc">
                         <td>11</td>
-                        <td class="team-logo"><img src="../image/team-logo/song_lam_nghe_an.png" alt="">Sông Lam Nghệ An</td>
+                        <td class="team-logo"><img src="../image/team-logo/song_lam_nghe_an.png" alt="">Sông Lam Nghệ An
+                        </td>
                         <td>16</td>
                         <td>-6</td>
                         <td>17</td>
@@ -295,7 +364,8 @@
                     </tr>
                     <tr class="boc">
                         <td>14</td>
-                        <td class="team-logo"><img src="../image/team-logo/hong_linh_ha_tinh.png" alt="">Hồng Lĩnh Hà Tĩnh</td>
+                        <td class="team-logo"><img src="../image/team-logo/hong_linh_ha_tinh.png" alt="">Hồng Lĩnh Hà
+                            Tĩnh</td>
                         <td>16</td>
                         <td>-12</td>
                         <td>12</td>
@@ -306,9 +376,9 @@
         <br>
         <!-- số trang -->
         <div class="pagination">
-            <button id="prev">&lt;</button>
+            <button id="prev"><i class="fa-solid fa-angle-left"></i></button>
             <span id="page-number">01</span>
-            <button id="next">&gt;</button>
+            <button id="next"><i class="fa-solid fa-angle-right"></i></button>
         </div>
         <!--tăng độ dài trang xem nút thôi không cần xóa đi 2 thẻ <br>-->
         <br>

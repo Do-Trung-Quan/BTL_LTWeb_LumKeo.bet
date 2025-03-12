@@ -5,33 +5,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giải đấu bundesliga</title>
-    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../../../css/header.css">
     <link rel="stylesheet" href="../css/hotnew.css">
     <link rel="stylesheet" href="../css/tinduoi.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/general.css">
+    <script src="../../../Js/Search-header.js"></script>
+    
 </head>
 
 <body>
+    <!--header and search-header section-->
+    <!--header section-->
     <header class="navbar">
         <div class="logo">
-            <a href="">
-                <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
-            </a>
+          <a href="../../../index.html">
+            <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
+          </a>
         </div>
         <nav class="menu">
             <ul>
-                <li><a href="#">Trang chủ</a></li>
+                <li><a href="../../../index.html">Trang chủ</a></li>
+                
                 <li class="dropdown">
-                    <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Premier League</a></li>
-                        <li><a href="#">La Liga</a></li>
-                        <li><a href="#">Serie A</a></li>
-                        <li><a href="#">Bundesliga</a></li>
-                        <li><a href="#">Ligue 1</a></li>
-                        <li><a href="#">V.League 1</a></li>
-                    </ul>
+                  <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="../html/giaidau-EPL.html">Premier League</a></li>
+                    <li><a href="../html/giaidau-LaLiga.html">La Liga</a></li>
+                    <li><a href="../html/giaidau-seria.html">Serie A</a></li>
+                    <li><a href="../html/giaidau-bundes.html">Bundesliga</a></li>
+                    <li><a href="../html/giaidau-l1.html">Ligue 1</a></li>
+                    <li><a href="../html/giaidau-vleague.html">V.League 1</a></li>
+                  </ul>
                 </li>
 
                 <li><a href="#">Bóng đá Việt Nam</a></li>
@@ -39,19 +47,43 @@
             </ul>
         </nav>
         <div class="nav-icons">
-            <a href="#" target="_blank">
+            <a class="search-button">
                 <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
             </a>
-            <a href="#" target="_blank">
+            <a class="account-button" href="../../../Thuy + DucMinh/ADMIN_QLBB.html">
                 <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
             </a>
         </div>
     </header>
 
+     <!--search-header section-->
+    <div class="navbar search-header">
+        <div class="logo">
+          <a href="#">
+            <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
+          </a>
+        </div>
+        
+        <form class="search-bar">
+          <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
+          <button><img src="../image/header-footer-logo/logo-search.png" alt="Search Icon"></button>
+        </form>
+    
+        <div class="nav-icons">
+            <a class="search-button">
+                <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
+            </a>
+            <a class="account-button" href="./Thuy + DucMinh/ADMIN_QLBB.html">
+                <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
+            </a>
+        </div>
+    </div>
+    <div class="dark-overlay"></div>
+
     <!-- phần giải đấu -->
     <div class="container">
         <div class="header-container">
-            <div class="breadcrumb">Giải đấu &gt; Bundesliga</div>
+            <div class="breadcrumb">Giải đấu <i class="fa-solid fa-angle-right"></i> Bundesliga</div>
             <img src="../image/content-img/bundes.png" alt="laliga">
         </div>
         <!-- Tin trên -->
@@ -59,127 +91,147 @@
         <div class="Hotnews">
             <!--Hotnews-general-->
             <div class="Hotnews-general">
-              <div class="hotnews-titlebox">
-                <img class="hotnews-logo" src="../image/logo-tinnoibat.png" alt="logo-tinnoibat">
-                <p class="hotnews-title">Tin nổi bật &gt;</p>
-              </div>
-              <div class="news-container">
-                  <div class="main-news">
-                      <img src="../image/content-img/Bayern thắng hoành tráng trước kỳ nghỉ giữa mùa Bundesliga.png" alt="Main News">
-                      <div class="main-overlay"></div>
-                      <div class="news-info">
-                          <span class="category">Bundesliga</span>
-                          <h3>Bayern thắng hoành tráng trước kỳ nghỉ giữa mùa Bundesliga</h3>
-                          <p>Tác giả - 9 giờ trước</p>
-                      </div>
-                  </div>
-                  <div class="side-news">
-                      <div class="news-item-top">
-                          <img src="../image/content-img/Bayern thua trận đầu tại Bundesliga.png" alt="">
-                          <div class="news-text">
-                              <span class="category">Bundesliga</span>
-                              <p>Bayern thua trận đầu tại Bundesliga</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                      <div class="news-item-top">
-                          <img src="../image/content-img/Bayern trút giận tại Bundesliga.png" alt="">
-                          <div class="news-text">
-                              <span class="category">Bundesliga</span>
-                              <p>Bayern trút giận tại Bundesliga</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                      <div class="news-item-top">
-                          <img src="../image/content-img/Dortmund nhắm Ten Hag.png" alt="">
-                          <div class="news-text">
-                              <span class="category">Bundesliga</span>
-                              <p>Dortmund nhắm Ten Hag</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+                <div class="hotnews-titlebox">
+                    <img class="hotnews-logo" src="../image/logo-tinnoibat.png" alt="logo-tinnoibat">
+                    <p class="hotnews-title">Tin nổi bật <i class="fa-solid fa-angle-right"></i></p>
+                </div>
+                <div class="news-container">
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <div class="main-news">
+                            <img src="../image/content-img/Bayern, Leverkusen, Dortmund cùng thua tại Bundesliga.png"
+                                alt="Main News">
+                            <div class="main-overlay"></div>
+                            <div class="news-info">
+                                <span class="category">Bundesliga</span>
+                                <h3>Bayern, Leverkusen, Dortmund cùng thua tại Bundesliga</h3>
+                                <p>Tác giả - 9 giờ trước</p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="side-news">
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/Bayern thua trận đầu tại Bundesliga.png" alt="">
+                                <div class="news-text">
+                                    <span class="category">Bundesliga</span>
+                                    <p>Bayern thua trận đầu tại Bundesliga</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/Bayern trút giận tại Bundesliga.png" alt="">
+                                <div class="news-text">
+                                    <span class="category">Bundesliga</span>
+                                    <p>Bayern trút giận tại Bundesliga</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/Dortmund nhắm Ten Hag.png" alt="">
+                                <div class="news-text">
+                                    <span class="category">Bundesliga</span>
+                                    <p>Dortmund nhắm Ten Hag</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <hr>
+            <div class="line"></div>
         </div>
-        <!-- seperate line-->
         <!-- tin duoi -->
         <div class="news-bottom">
             <div class="news-list">
                 <div class="news-item">
-                    <img src="../image/content-img/Kane giúp Bayern vững đỉnh bảng Bundesliga.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Bundesliga</h3>
-                        <p>Kane giúp Bayern vững đỉnh bảng Bundesliga</p>
-                        <br>
-                        <p class="au">Tác giả - 9 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Kane giúp Bayern vững đỉnh bảng Bundesliga.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Bundesliga</h3>
+                            <p>Kane giúp Bayern vững đỉnh bảng Bundesliga</p>
+                            <small>Tác giả - 9 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Kane phá kỷ lục của Haaland tại Bundesliga.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Bundesliga</h3>
-                        <p>Kane phá kỷ lục của Haaland tại Bundesliga</p>
-                        <br>
-                        <p>Tác giả - 8 giờ trước</p>
-                    </div>
-                </div>
-
-                <div class="news-item">
-                    <img src="../image/content-img/Kompany chạm kỷ lục của Guardiola tại Bayern.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Bundesliga</h3>
-                        <p>Kompany chạm kỷ lục của Guardiola tại Bayern</p>
-                        <br>
-                        <p>Tác giả - 7 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Kane phá kỷ lục của Haaland tại Bundesliga.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Bundesliga</h3>
+                            <p>Kane phá kỷ lục của Haaland tại Bundesliga</p>
+                            <small>Tác giả - 8 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="news-item">
-                    <img src="../image/content-img/Leverkusen 'đốt nóng' cuộc đua vô địch Bundesliga.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Bundesliga</h3>
-                        <p>Leverkusen 'đốt nóng' cuộc đua vô địch Bundesliga</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Kompany chạm kỷ lục của Guardiola tại Bayern.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>Bundesliga</h3>
+                            <p>Kompany chạm kỷ lục của Guardiola tại Bayern</p>
+                            <small>Tác giả - 7 giờ trước</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="news-item">
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Leverkusen 'đốt nóng' cuộc đua vô địch Bundesliga.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>Bundesliga</h3>
+                            <p>Leverkusen 'đốt nóng' cuộc đua vô địch Bundesliga</p>
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Neuer nhận án phạt, nhưng có thể vĩnh viễn không thi hành.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Bundesliga</h3>
-                        <p>Neuer nhận án phạt, nhưng có thể vĩnh viễn không thi hành</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Neuer nhận án phạt, nhưng có thể vĩnh viễn không thi hành.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>Bundesliga</h3>
+                            <p>Neuer nhận án phạt, nhưng có thể vĩnh viễn không thi hành</p>
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Tiền vệ Nhật Bản khiến Leverkusen ôm hận.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Bundesliga</h3>
-                        <p>Tiền vệ Nhật Bản khiến Leverkusen ôm hận</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Tiền vệ Nhật Bản khiến Leverkusen ôm hận.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Bundesliga</h3>
+                            <p>Tiền vệ Nhật Bản khiến Leverkusen ôm hận</p>
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Kane phá kỷ lục ghi bàn của Haaland ở Bundesliga.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Bundesliga</h3>
-                        <p>Kane phá kỷ lục ghi bàn của Haaland ở Bundesliga</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Kane phá kỷ lục ghi bàn của Haaland ở Bundesliga.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>Bundesliga</h3>
+                            <p>Kane phá kỷ lục ghi bàn của Haaland ở Bundesliga</p>
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Kane chỉ còn cách danh hiệu 8 trận.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Bundesliga</h3>
-                        <p>Kane chỉ còn cách danh hiệu 8 trận</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Kane chỉ còn cách danh hiệu 8 trận.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Bundesliga</h3>
+                            <p>Kane chỉ còn cách danh hiệu 8 trận</p>
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
             </div>
             <!-- Bảng xếp hạng -->
@@ -189,7 +241,8 @@
                     <thead>
                         <tr>
                             <th colspan="5">
-                                <img src="../image/team-logo/bxh.png" alt="Bảng xếp hạng Bundesliga" class="ranking-img">
+                                <img src="../image/team-logo/bxh.png" alt="Bảng xếp hạng Bundesliga"
+                                    class="ranking-img">
                             </th>
                         </tr>
                     </thead>
@@ -204,56 +257,64 @@
                     </tr>
                     <tr class="boc">
                         <td>01</td>
-                        <td class="team-logo"><img src="../image/team-logo/bayern_munich.png" alt="Bayern Munich">Bayern Munich</td>
+                        <td class="team-logo"><img src="../image/team-logo/bayern_munich.png" alt="Bayern Munich">Bayern
+                            Munich</td>
                         <td>25</td>
                         <td>+45</td>
                         <td>58</td>
                     </tr>
                     <tr class="boc">
                         <td>02</td>
-                        <td class="team-logo"><img src="../image/team-logo/borussia_dortmund.png" alt="Borussia Dortmund">Borussia Dortmund</td>
+                        <td class="team-logo"><img src="../image/team-logo/borussia_dortmund.png"
+                                alt="Borussia Dortmund">Borussia Dortmund</td>
                         <td>25</td>
                         <td>+30</td>
                         <td>50</td>
                     </tr>
                     <tr class="boc">
                         <td>03</td>
-                        <td class="team-logo"><img src="../image/team-logo/rb_leipzig.png" alt="RB Leipzig">RB Leipzig</td>
+                        <td class="team-logo"><img src="../image/team-logo/rb_leipzig.png" alt="RB Leipzig">RB Leipzig
+                        </td>
                         <td>25</td>
                         <td>+25</td>
                         <td>48</td>
                     </tr>
                     <tr class="boc">
                         <td>04</td>
-                        <td class="team-logo"><img src="../image/team-logo/bayer_leverkusen.png" alt="Bayer Leverkusen">Bayer Leverkusen</td>
+                        <td class="team-logo"><img src="../image/team-logo/bayer_leverkusen.png"
+                                alt="Bayer Leverkusen">Bayer Leverkusen</td>
                         <td>25</td>
                         <td>+20</td>
                         <td>45</td>
                     </tr>
                     <tr class="boc">
                         <td>05</td>
-                        <td class="team-logo"><img src="../image/team-logo/eintracht_frankfurt.png" alt="Eintracht Frankfurt">Eintracht Frankfurt</td>
+                        <td class="team-logo"><img src="../image/team-logo/eintracht_frankfurt.png"
+                                alt="Eintracht Frankfurt">Eintracht Frankfurt</td>
                         <td>25</td>
                         <td>+15</td>
                         <td>42</td>
                     </tr>
                     <tr class="boc">
                         <td>06</td>
-                        <td class="team-logo"><img src="../image/team-logo/vfl_wolfsburg.png" alt="VfL Wolfsburg">VfL Wolfsburg</td>
+                        <td class="team-logo"><img src="../image/team-logo/vfl_wolfsburg.png" alt="VfL Wolfsburg">VfL
+                            Wolfsburg</td>
                         <td>25</td>
                         <td>+10</td>
                         <td>40</td>
                     </tr>
                     <tr class="boc">
                         <td>07</td>
-                        <td class="team-logo"><img src="../image/team-logo/borussia_monchengladbach.png" alt="Borussia Mönchengladbach">Borussia Mönchengladbach</td>
+                        <td class="team-logo"><img src="../image/team-logo/borussia_monchengladbach.png"
+                                alt="Borussia Mönchengladbach">Borussia Mönchengladbach</td>
                         <td>25</td>
                         <td>+5</td>
                         <td>38</td>
                     </tr>
                     <tr class="boc">
                         <td>08</td>
-                        <td class="team-logo"><img src="../image/team-logo/tsg_hoffenheim.png" alt="TSG Hoffenheim">TSG Hoffenheim</td>
+                        <td class="team-logo"><img src="../image/team-logo/tsg_hoffenheim.png" alt="TSG Hoffenheim">TSG
+                            Hoffenheim</td>
                         <td>25</td>
                         <td>0</td>
                         <td>35</td>
@@ -267,42 +328,48 @@
                     </tr>
                     <tr class="boc">
                         <td>10</td>
-                        <td class="team-logo"><img src="../image/team-logo/sc_freiburg.png" alt="SC Freiburg">SC Freiburg</td>
+                        <td class="team-logo"><img src="../image/team-logo/sc_freiburg.png" alt="SC Freiburg">SC
+                            Freiburg</td>
                         <td>25</td>
                         <td>-10</td>
                         <td>30</td>
                     </tr>
                     <tr class="boc">
                         <td>11</td>
-                        <td class="team-logo"><img src="../image/team-logo/hertha_berlin.png" alt="Hertha Berlin">Hertha Berlin</td>
+                        <td class="team-logo"><img src="../image/team-logo/hertha_berlin.png" alt="Hertha Berlin">Hertha
+                            Berlin</td>
                         <td>25</td>
                         <td>-15</td>
                         <td>28</td>
                     </tr>
                     <tr class="boc">
                         <td>12</td>
-                        <td class="team-logo"><img src="../image/team-logo/fc_augsburg.png" alt="FC Augsburg">FC Augsburg</td>
+                        <td class="team-logo"><img src="../image/team-logo/fc_augsburg.png" alt="FC Augsburg">FC
+                            Augsburg</td>
                         <td>25</td>
                         <td>-20</td>
                         <td>26</td>
                     </tr>
                     <tr class="boc">
                         <td>13</td>
-                        <td class="team-logo"><img src="../image/team-logo/vfb_stuttgart.png" alt="VfB Stuttgart">VfB Stuttgart</td>
+                        <td class="team-logo"><img src="../image/team-logo/vfb_stuttgart.png" alt="VfB Stuttgart">VfB
+                            Stuttgart</td>
                         <td>25</td>
                         <td>-25</td>
                         <td>24</td>
                     </tr>
                     <tr class="boc">
                         <td>14</td>
-                        <td class="team-logo"><img src="../image/team-logo/werder_bremen.png" alt="Werder Bremen">Werder Bremen</td>
+                        <td class="team-logo"><img src="../image/team-logo/werder_bremen.png" alt="Werder Bremen">Werder
+                            Bremen</td>
                         <td>25</td>
                         <td>-30</td>
                         <td>22</td>
                     </tr>
                     <tr class="boc">
                         <td>15</td>
-                        <td class="team-logo"><img src="../image/team-logo/vfl_bochum.png" alt="VfL Bochum">VfL Bochum</td>
+                        <td class="team-logo"><img src="../image/team-logo/vfl_bochum.png" alt="VfL Bochum">VfL Bochum
+                        </td>
                         <td>25</td>
                         <td>-35</td>
                         <td>20</td>
@@ -316,7 +383,8 @@
                     </tr>
                     <tr class="boc">
                         <td>17</td>
-                        <td class="team-logo"><img src="../image/team-logo/union_berlin.png" alt="Union Berlin">Union Berlin</td>
+                        <td class="team-logo"><img src="../image/team-logo/union_berlin.png" alt="Union Berlin">Union
+                            Berlin</td>
                         <td>25</td>
                         <td>-45</td>
                         <td>15</td>
@@ -334,9 +402,9 @@
         <br>
         <!-- số trang -->
         <div class="pagination">
-            <button id="prev">&lt;</button>
+            <button id="prev"><i class="fa-solid fa-angle-left"></i></button>
             <span id="page-number">01</span>
-            <button id="next">&gt;</button>
+            <button id="next"><i class="fa-solid fa-angle-right"></i></button>
         </div>
         <!--tăng độ dài trang xem nút thôi không cần xóa đi 2 thẻ <br>-->
         <br>

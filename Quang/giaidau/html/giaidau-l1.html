@@ -4,34 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giải đấu l1</title>
-    <link rel="stylesheet" href="../css/header.css">
+    <title>Giải đấu EPL</title>
+    <link rel="stylesheet" href="../../../css/header.css">
     <link rel="stylesheet" href="../css/hotnew.css">
     <link rel="stylesheet" href="../css/tinduoi.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/general.css">
+    <script src="../../../Js/Search-header.js"></script>
 </head>
 
 <body>
+    <!--header and search-header section-->
+    <!--header section-->
     <header class="navbar">
         <div class="logo">
-            <a href="">
-                <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
-            </a>
+          <a href="../../../index.html">
+            <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
+          </a>
         </div>
         <nav class="menu">
             <ul>
-                <li><a href="#">Trang chủ</a></li>
+                <li><a href="../../../index.html">Trang chủ</a></li>
+                
                 <li class="dropdown">
-                    <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Premier League</a></li>
-                        <li><a href="#">La Liga</a></li>
-                        <li><a href="#">Serie A</a></li>
-                        <li><a href="#">Bundesliga</a></li>
-                        <li><a href="#">Ligue 1</a></li>
-                        <li><a href="#">V.League 1</a></li>
-                    </ul>
+                  <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="../html/giaidau-EPL.html">Premier League</a></li>
+                    <li><a href="../html/giaidau-LaLiga.html">La Liga</a></li>
+                    <li><a href="../html/giaidau-seria.html">Serie A</a></li>
+                    <li><a href="../html/giaidau-bundes.html">Bundesliga</a></li>
+                    <li><a href="../html/giaidau-l1.html">Ligue 1</a></li>
+                    <li><a href="../html/giaidau-vleague.html">V.League 1</a></li>
+                  </ul>
                 </li>
 
                 <li><a href="#">Bóng đá Việt Nam</a></li>
@@ -39,19 +46,43 @@
             </ul>
         </nav>
         <div class="nav-icons">
-            <a href="#" target="_blank">
+            <a class="search-button">
                 <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
             </a>
-            <a href="#" target="_blank">
+            <a class="account-button" href="../../../Thuy + DucMinh/ADMIN_QLBB.html">
                 <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
             </a>
         </div>
     </header>
 
+     <!--search-header section-->
+    <div class="navbar search-header">
+        <div class="logo">
+          <a href="#">
+            <img src="../image/header-footer-logo/logo-web.png" alt="Ảnh tên web">
+          </a>
+        </div>
+        
+        <form class="search-bar">
+          <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
+          <button><img src="../image/header-footer-logo/logo-search.png" alt="Search Icon"></button>
+        </form>
+    
+        <div class="nav-icons">
+            <a class="search-button">
+                <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
+            </a>
+            <a class="account-button" href="./Thuy + DucMinh/ADMIN_QLBB.html">
+                <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
+            </a>
+        </div>
+    </div>
+    <div class="dark-overlay"></div>
+
     <!-- phần giải đấu -->
     <div class="container">
         <div class="header-container">
-            <div class="breadcrumb">Giải đấu &gt; Ligue 1</div>
+            <div class="breadcrumb">Giải đấu <i class="fa-solid fa-angle-right"></i> Ligue 1</div>
             <img src="../image/content-img/l1.png" alt="laliga">
         </div>
         <!-- Tin trên -->
@@ -59,47 +90,57 @@
         <div class="Hotnews">
             <!--Hotnews-general-->
             <div class="Hotnews-general">
-              <div class="hotnews-titlebox">
-                <img class="hotnews-logo" src="../image/logo-tinnoibat.png" alt="logo-tinnoibat">
-                <p class="hotnews-title">Tin nổi bật &gt;</p>
-              </div>
-              <div class="news-container">
-                  <div class="main-news">
-                      <img src="../image/content-img/Chủ tịch PSG gọi đối thủ là 'gã chăn bò'.png" alt="Main News">
-                      <div class="main-overlay"></div>
-                      <div class="news-info">
-                          <span class="category">Ligue 1</span>
-                          <h3>Chủ tịch PSG gọi đối thủ là 'gã chăn bò'</h3>
-                          <p>Tác giả - 9 giờ trước</p>
-                      </div>
-                  </div>
-                  <div class="side-news">
-                      <div class="news-item-top">
-                          <img src="../image/content-img/Dembele lập hai hattrick liên tiếp cho PSG.png" alt="">
-                          <div class="news-text">
-                              <span class="category">Ligue 1</span>
-                              <p>Dembele lập hai hattrick liên tiếp cho PSG</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                      <div class="news-item-top">
-                          <img src="../image/content-img/Enrique 'PSG nguy hiểm hơn vì không còn gì để mất trước Liverpool'.png" alt="">
-                          <div class="news-text">
-                              <span class="category">Ligue 1</span>
-                              <p>Enrique: 'PSG nguy hiểm hơn vì không còn gì để mất trước Liverpool'</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                      <div class="news-item-top">
-                          <img src="../image/content-img/Greenwood tiếp tục tỏa sáng tại Marseille.png" alt="">
-                          <div class="news-text">
-                              <span class="category">Ligue 1</span>
-                              <p>Greenwood tiếp tục tỏa sáng tại Marseille</p>
-                              <small>Tác giả - 9 giờ trước</small>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+                <div class="hotnews-titlebox">
+                    <img class="hotnews-logo" src="../image/logo-tinnoibat.png" alt="logo-tinnoibat">
+                    <p class="hotnews-title">Tin nổi bật <i class="fa-solid fa-angle-right"></i></p>
+                </div>
+                <div class="news-container">
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <div class="main-news">
+                            <img src="../image/content-img/Chủ tịch PSG gọi đối thủ là 'gã chăn bò'.png"
+                                alt="Main News">
+                            <div class="main-overlay"></div>
+                            <div class="news-info">
+                                <span class="category">Ligue 1</span>
+                                <h3>Chủ tịch PSG gọi đối thủ là 'gã chăn bò'</h3>
+                                <p>Tác giả - 9 giờ trước</p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="side-news">
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/Dembele lập hai hattrick liên tiếp cho PSG.png" alt="">
+                                <div class="news-text">
+                                    <span class="category">Ligue 1</span>
+                                    <p>Dembele lập hai hattrick liên tiếp cho PSG</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/Enrique 'PSG nguy hiểm hơn vì không còn gì để mất trước Liverpool'.png"
+                                    alt="">
+                                <div class="news-text">
+                                    <span class="category">Ligue 1</span>
+                                    <p>Enrique: 'PSG nguy hiểm hơn vì không còn gì để mất trước Liverpool'</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="news-item-top">
+                            <a href="../../baichitiet/html/baichitiet.html">
+                                <img src="../image/content-img/Greenwood tiếp tục tỏa sáng tại Marseille.png" alt="">
+                                <div class="news-text">
+                                    <span class="category">Ligue 1</span>
+                                    <p>Greenwood tiếp tục tỏa sáng tại Marseille</p>
+                                    <small>Tác giả - 9 giờ trước</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <hr>
         </div>
@@ -108,78 +149,99 @@
         <div class="news-bottom">
             <div class="news-list">
                 <div class="news-item">
-                    <img src="../image/content-img/HLV bị cấm 9 tháng vì gây hấn trọng tài ở Ligue 1.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Ligue 1</h3>
-                        <p>HLV bị cấm 9 tháng vì gây hấn trọng tài ở Ligue 1</p>
-                        <br>
-                        <p class="au">Tác giả - 9 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/HLV bị cấm 9 tháng vì gây hấn trọng tài ở Ligue 1.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>Ligue 1</h3>
+                            <p>HLV bị cấm 9 tháng vì gây hấn trọng tài ở Ligue 1</p>
+
+                            <small>Tác giả - 9 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/PSG chạm mốc đặc biệt của Ligue 1 sau 18 năm.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Ligue 1</h3>
-                        <p>PSG chạm mốc đặc biệt của Ligue 1 sau 18 năm</p>
-                        <br>
-                        <p>Tác giả - 8 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/PSG chạm mốc đặc biệt của Ligue 1 sau 18 năm.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>Ligue 1</h3>
+                            <p>PSG chạm mốc đặc biệt của Ligue 1 sau 18 năm</p>
+
+                            <small>Tác giả - 8 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="news-item">
-                    <img src="../image/content-img/PSG chạy đà hoàn hảo trước đại chiến Liverpool.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Ligue 1</h3>
-                        <p>PSG chạy đà hoàn hảo trước đại chiến Liverpool</p>
-                        <br>
-                        <p>Tác giả - 7 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/PSG chạy đà hoàn hảo trước đại chiến Liverpool.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>Ligue 1</h3>
+                            <p>PSG chạy đà hoàn hảo trước đại chiến Liverpool</p>
+
+                            <small>Tác giả - 7 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="news-item">
-                    <img src="../image/content-img/PSG hòa đội chót bảng.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Ligue 1</h3>
-                        <p>PSG hòa đội chót bảng</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/PSG hòa đội chót bảng.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Ligue 1</h3>
+                            <p>PSG hòa đội chót bảng</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/PSG mất đỉnh bảng Ligue 1.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Ligue 1</h3>
-                        <p>PSG mất đỉnh bảng Ligue 1</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/PSG mất đỉnh bảng Ligue 1.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Ligue 1</h3>
+                            <p>PSG mất đỉnh bảng Ligue 1</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/PSG mở đầu kỷ nguyên hậu Mbappe bằng chiến thắng đậm.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Ligue 1</h3>
-                        <p>PSG mở đầu kỷ nguyên hậu Mbappe bằng chiến thắng đậm</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/PSG mở đầu kỷ nguyên hậu Mbappe bằng chiến thắng đậm.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>Ligue 1</h3>
+                            <p>PSG mở đầu kỷ nguyên hậu Mbappe bằng chiến thắng đậm</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/PSG đứt mạch toàn thắng ở Ligue 1.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Ligue 1</h3>
-                        <p>PSG đứt mạch toàn thắng ở Ligue 1</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/PSG đứt mạch toàn thắng ở Ligue 1.png" alt="News Image">
+                        <div class="news-content">
+                            <h3>Ligue 1</h3>
+                            <p>PSG đứt mạch toàn thắng ở Ligue 1</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
                 <div class="news-item">
-                    <img src="../image/content-img/Sao Hàn Quốc chói sáng trong chiến thắng của PSG.png" alt="News Image">
-                    <div class="news-content">
-                        <h3>Ligue 1</h3>
-                        <p>Sao Hàn Quốc chói sáng trong chiến thắng của PSG</p>
-                        <br>
-                        <p>Tác giả - 6 giờ trước</p>
-                    </div>
+                    <a href="../../baichitiet/html/baichitiet.html">
+                        <img src="../image/content-img/Sao Hàn Quốc chói sáng trong chiến thắng của PSG.png"
+                            alt="News Image">
+                        <div class="news-content">
+                            <h3>Ligue 1</h3>
+                            <p>Sao Hàn Quốc chói sáng trong chiến thắng của PSG</p>
+
+                            <small>Tác giả - 6 giờ trước</small>
+                        </div>
+                    </a>
                 </div>
             </div>
             <!-- Bảng xếp hạng -->
@@ -239,7 +301,8 @@
                     </tr>
                     <tr class="boc">
                         <td>06</td>
-                        <td class="team-logo"><img src="../image/team-logo/marseille.png" alt="">Olympique de Marseille</td>
+                        <td class="team-logo"><img src="../image/team-logo/marseille.png" alt="">Olympique de Marseille
+                        </td>
                         <td>26</td>
                         <td>+8</td>
                         <td>42</td>
@@ -309,7 +372,8 @@
                     </tr>
                     <tr class="boc">
                         <td>16</td>
-                        <td class="team-logo"><img src="../image/team-logo/saint_etienne.png" alt="">AS Saint-Étienne</td>
+                        <td class="team-logo"><img src="../image/team-logo/saint_etienne.png" alt="">AS Saint-Étienne
+                        </td>
                         <td>26</td>
                         <td>-12</td>
                         <td>22</td>
@@ -331,12 +395,12 @@
                 </table>
             </div>
         </div>
-        <br>
+
         <!-- số trang -->
         <div class="pagination">
-            <button id="prev">&lt;</button>
+            <button id="prev"><i class="fa-solid fa-angle-left"></i></button>
             <span id="page-number">01</span>
-            <button id="next">&gt;</button>
+            <button id="next"><i class="fa-solid fa-angle-right"></i></button>
         </div>
         <!--tăng độ dài trang xem nút thôi không cần xóa đi 2 thẻ <br>-->
         <br>

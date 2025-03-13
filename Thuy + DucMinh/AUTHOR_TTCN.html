@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUTHOR - TTCN</title>
-    <link rel="stylesheet" href="header.css">
-    <link rel="stylesheet" href="AUTHOR_TTCN.css">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="./css/AUTHOR_TTCN.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../Js/Search-header.js" defer></script>
 </head>
 <body>
     <header class="navbar">
         <div class="logo">
           <a href="../index.html">
-            <img src="img\LogoWeb.png" alt="Ảnh tên web">
+            <img src="../pics/header/Logo.png" alt="Ảnh tên web">
           </a>
         </div>
         <nav class="menu">
@@ -22,12 +24,12 @@
                 <li class="dropdown">
                   <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
                   <ul class="dropdown-menu">
-                    <li><a href="../Quang/giaidau-epl/html/giaidau-EPL.html">Premier League</a></li>
-                    <li><a href="../Quang/giaidau-laliga/html/giaidau-LaLiga.html">La Liga</a></li>
-                    <li><a href="../Quang/giaidau-serie a/html/giaidau-seria.html">Serie A</a></li>
-                    <li><a href="../Quang/giaidau-bundesliga/html/giaidau-bundes.html">Bundesliga</a></li>
-                    <li><a href="../Quang/giaidau-Ligue 1/html/giaidau-l1.html">Ligue 1</a></li>
-                    <li><a href="../Quang/giaidau-V league/html/giaidau-vleague.html">V.League 1</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-EPL.html">Premier League</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-LaLiga.html">La Liga</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-seria.html">Serie A</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-bundes.html">Bundesliga</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-l1.html">Ligue 1</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-vleague.html">V.League 1</a></li>
                   </ul>
                 </li>
 
@@ -36,14 +38,40 @@
             </ul>
         </nav>
         <div class="nav-icons">
-            <a href="#">
-                <img src="img\SearchIcon.png" alt="Search Icon">
+            <a class="search-button">
+                <img src="../pics/header/Search.png" alt="Search Icon">
             </a>
-            <a href="#">
-                <img src="img\UserIcon.png" alt="User Icon">
+            <a class="account-button" href="./AUTHOR_QLBV.html">
+                <img src="../pics/header/User.png" alt="User Icon">
             </a>
         </div>
     </header>
+
+     <!--search-header section-->
+    <div class="navbar search-header">
+        <div class="logo">
+          <a href="../index.html">
+            <img src="../pics/header/Logo.png" alt="Ảnh tên web">
+          </a>
+        </div>
+        
+        <form class="search-bar">
+          <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
+          <button><img src="../pics/header/Search.png" alt="Search Icon"></button>
+        </form>
+    
+        <div class="nav-icons">
+            <a class="search-button">
+                <img src="../pics/header/Search.png" alt="Search Icon">
+            </a>
+            <a class="account-button" href="./AUTHOR_QLBV.html">
+                <img src="../pics/header/User.png" alt="User Icon">
+            </a>
+        </div>
+    </div>
+    <div class="dark-overlay"></div>
+
+
     <div class="container">
         <aside class="sidebar">
             <ul>
@@ -60,7 +88,10 @@
                     <h2>Nguyễn Đức Minh</h2>
                     <h3>AUTHOR ID: AU221104</h3>
                 </div>
-                <div class="right"><img src="img\amongUs.jpg" alt=""></div>
+                <div class="right">
+                    <img id="profile-pic-upper" src="img\amongUs.jpg" alt="Avatar" class="avatar">
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
+                </div>
             </div>
             <div class="formContainer">
                 <div class="above">
@@ -83,10 +114,13 @@
                     </div>
                     <div class="right">
                         <div class="avatar-section">
-                            <img src="img\amongUs.jpg" alt="Avatar" class="avatar">
-                            <br>
-                            <button class="btn">Thay ảnh đại diện</button>
-                            <input type="file" id="avaPic" name="avaPic" accept="image/*">
+                            <div class="avatar-section">
+                                <img id="profile-pic-lower" src="img\amongUs.jpg" alt="Avatar" class="avatar"> 
+                                <br>
+                                <button  class="btn" id="profile-pic-button">Thay ảnh đại diện</button>
+                            </div>                       
+                            <!-- Hidden File Input -->
+                            <input type="file" id="profile-pic-input" accept="image/*" style="display: none">   
                         </div>
                     </div>
                 </div>
@@ -96,6 +130,6 @@
             </div>
         </main>
     </div>
-    <script src="changeAva.js"></script>
+    <script src="./js_author/AUTHOR_TTCN.js"></script>
 </body>
 </html>

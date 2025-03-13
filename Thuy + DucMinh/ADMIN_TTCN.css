@@ -12,11 +12,21 @@
 }
 
 
-.sidebar {
+body {
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+    min-height: 1600px;
+    position: relative;
+}
+
+
+.sidebar2 {
     position: absolute;
     left: 20px;
     margin-left: 10px;
-    margin-top: 110px;
+    margin-top: 300px;
     background: #e0e0e0;
     display: flex;
     padding: 10px;
@@ -27,7 +37,7 @@
     color: black;
 }
 
-.sidebar a {
+.sidebar2 a {
   display: block;
   color: black;
   padding: 16px;
@@ -35,13 +45,13 @@
 }
 
 /* Danh sách menu */
-.sidebar ul {
+.sidebar2 ul {
     list-style: none;
     padding: 0;
     width: 100%;
 }
 
-.sidebar ul li {
+.sidebar2 ul li {
     padding: 15px 20px;
     text-align: center;
     font-weight: bold;
@@ -49,18 +59,20 @@
     border-radius: 10px;
 }
 
-.sidebar ul li:hover {
+.sidebar2 ul li:hover {
     background-color: #e0c04c;
     cursor: pointer;
 }
 
-.sidebar ul li.active{
+.sidebar2 ul li.active{
     background-color: #e0c04c;
     color: black;
 }
 
 .content {
-    
+    position: relative;
+    top: -60px;
+    left: 50px;
     margin-left: 290px;
     padding: 40px;
 }
@@ -134,8 +146,8 @@
 }
 
 .formContainer .above .right .avatar {
-    width: 100px;
-    height: 100px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%; 
     border: 3px solid darkblue; 
     object-fit: cover;

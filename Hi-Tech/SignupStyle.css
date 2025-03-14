@@ -143,13 +143,19 @@ button {
     margin: 100px auto;
     display: block;
     padding: 15px;
-    background-color: #cc9fc5; /* Golden-yellow gradient */
     border: none;
     border-radius: 50px;
     font-size: 18px;
+    font-weight: 600;
     color: #ffffff;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 

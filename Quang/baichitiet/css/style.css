@@ -68,9 +68,10 @@
 }
 
 .news-item img {
+  flex-shrink: 0;
   width: 220px;
-  
-  object-fit: cover;
+  height: 132px;
+  object-fit: cover; 
 }
 
 /* Nội dung tin tức */

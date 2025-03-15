@@ -36,14 +36,15 @@ body, html {
     right: 0; 
     width: 600px;
     transform: translateY(-50%);
-    padding: 10px;
-    background: linear-gradient(to right, rgb(58, 130, 243), rgb(242, 8, 202), rgb(228, 129, 51), rgb(255, 255, 255) );
-    border-radius: 10px 0 0 10px; 
+    padding: 10px 0 10px 10px;
+    background: linear-gradient(to bottom, rgb(58, 130, 243), rgb(242, 8, 202));
+    border-radius: 25px 0 0 25px; 
     display: flex;
     justify-content: center;
     align-items: center;
     box-shadow: -4px 0 8px rgba(255, 255, 255, 0.1); /* Bóng đổ chỉ xuất hiện bên trái */
     corner-radius: 10px;
+    
 }
 
 
@@ -55,6 +56,7 @@ body, html {
     width: 100%;
     height: 100%;
     padding: 20px;
+    /* padding-right: 40px; */
 }
 
 

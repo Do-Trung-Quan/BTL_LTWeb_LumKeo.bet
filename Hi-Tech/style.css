@@ -2,8 +2,7 @@ body, html {
     height: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
-    background-image: url('./Images/LoginBackground.png');
-    /* background-size: cover; */
+    background-image: url('Images/LoginBackground.png');
     background-position: center;
     background-repeat: no-repeat;
     display: flex;
@@ -24,24 +23,49 @@ body, html {
 }
 
 .login-container {
-    width: 440px; /* Giảm chiều rộng để phù hợp với padding của wrapper */
-    height: 550px;
+    position: relative;
+    width: 100%;
+    height: 100%;
     padding: 20px;
     background-color: rgba(255, 255, 255, 0.9); /* Màu nền trắng trong suốt */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    box-sizing: border-box;
 }
 
-
-.login-form .password-reset-form  {
-    position: relative;
-    z-index: 1; /* Đảm bảo form luôn nằm trên gradient */
-    background: rgba(255, 255, 255, 0.9); /* Đặt lại nền trong suốt cho form nếu cần */
-    border-radius: 5px; /* Slightly less than the container to give a nice border effect */
-    width: 100%;
-    height: 100%;
+.login-form, .password-reset-form {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     padding: 20px;
+    transition: all 0.5s ease;
+    opacity: 1;
+    transform: translateX(0);
+    box-sizing: border-box;
+}
+
+.login-form.hide {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.password-reset-form {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.password-reset-form.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.password-reset-form h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    font-weight: 600;
 }
 
 .login-form h2 {
@@ -49,9 +73,11 @@ body, html {
     margin-bottom: 20px;
 }
 
-.password-reset-form h2 {
+.login-form h2 {
     text-align: center;
-    margin-bottom: 20px;    
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    font-weight: 600;
 }
 
 .input-group {
@@ -63,7 +89,9 @@ body, html {
     background-image: url('Images/UserIcon.png');
     background-position: 1px center;
     background-repeat: no-repeat;
-    padding-left: 45px; /* Điều chỉnh để không ghi đè lên biểu tượng */
+    padding-left: 45px;
+    font-size: 16px;
+    height: 45px;
 }
 
 .input-group input[type="password"] {
@@ -71,8 +99,9 @@ body, html {
     background-position: 5px center;
     background-repeat: no-repeat;
     padding-left: 45px;
+    font-size: 16px;
+    height: 45px;
 }
-
 
 .input-group label {
     display: block;
@@ -114,26 +143,41 @@ body, html {
     text-decoration: none;
 }
 
-.login-btn{
+.back-to-login {
+    text-align: center;
+    margin-top: -20px;  /* Di chuyển lên trên */
+}
+
+.back-to-login a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+button {
     background-image: linear-gradient(to right,  RGB(252, 193, 6),  RGB(228, 129, 51), RGB(208, 76, 87), RGB(186, 17, 129));
     width: 85%;
     margin: 50px auto;
     display: block;
-    padding: 10px;
-    background-color: #cc9fc5; /* Golden-yellow gradient */
+    padding: 15px 20px;  /* Increased padding */
+    background-color: #cc9fc5;
     border: none;
     border-radius: 50px;
-    font-size: 16px;
+    font-size: 18px;    /* Increased font size */
+    font-weight: 600;   /* Made text bolder */
     color: #ffffff;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: center;
-    text-decoration: none;
+    transition: all 0.3s ease;  /* Smooth transition for hover effects */
 }
 
-.login-btn:hover {
-    background-color: #f0b000; /* A darker golden-yellow */
+button:hover {
+    background-color: #f0b000;
+    transform: scale(1.02);  /* Slight scale up on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Enhanced shadow on hover */
+}
+
+.password-reset-form button {
+    margin: 30px auto;  /* Giảm margin của button trong form reset password */
 }
 
 

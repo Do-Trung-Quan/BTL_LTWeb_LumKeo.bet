@@ -1,14 +1,16 @@
 body, html {
-    height: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
     background-image: url('Images/SignUpBackground.png');
-    /* background-size: cover; */
     background-position: center;
     background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    left: 0px;
+    top: 365px;
+    background-size: 200% auto;
 }
 
 .signup-container {
@@ -21,7 +23,7 @@ body, html {
     background-color: rgba(255, 255, 255, 0.9);
     padding: 2px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,13 +36,15 @@ body, html {
     right: 0; 
     width: 600px;
     transform: translateY(-50%);
-    padding: 10px;
-    background: linear-gradient(to right, rgb(252, 193, 6), rgb(228, 129, 51), rgb(208, 76, 87), rgb(186, 17, 129));
-    border-radius: 10px 0 0 10px; 
+    padding: 10px 0 10px 10px;
+    background: linear-gradient(to bottom, rgb(58, 130, 243), rgb(242, 8, 202));
+    border-radius: 25px 0 0 25px; 
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1); /* Bóng đổ chỉ xuất hiện bên trái */
+    box-shadow: -4px 0 8px rgba(255, 255, 255, 0.1); /* Bóng đổ chỉ xuất hiện bên trái */
+    corner-radius: 10px;
+    
 }
 
 
@@ -52,12 +56,12 @@ body, html {
     width: 100%;
     height: 100%;
     padding: 20px;
+    /* padding-right: 40px; */
 }
 
 
 .signup-form h2 {
     text-align: center;
-    margin-bottom: 100px;
     font-size: 50px;
 }
 
@@ -86,6 +90,8 @@ body, html {
     display: block;
     margin-bottom: 5px;
     color: #333;
+    font-size: 18px;
+    font-weight: 500;
 }
 
 .input-group input {
@@ -95,6 +101,7 @@ body, html {
     border-bottom: 2px solid #ccc; /* Gạch dưới chân */
     background-color: transparent;
     color: #333;
+    font-size: 16px;
 }
 
 .input-group input:focus {
@@ -109,6 +116,8 @@ body, html {
 .radio-button label {
     display: block; /* Đảm bảo nhãn đầu tiên xuất hiện trên một dòng riêng */
     margin-bottom: 15px; /* Thêm khoảng cách giữa nhãn và nhóm nút radio */
+    font-size: 18px;
+    font-weight: 500;
 }
 
 .role-options {
@@ -118,31 +127,37 @@ body, html {
 }
 
 .role-options input[type="radio"] {
-    margin-right: 5px; /* Thêm khoảng cách giữa nút radio và nhãn */
+    margin-right: 8px; /* Thêm khoảng cách giữa nút radio và nhãn */
+    transform: scale(1.2);
 }
 
 .role-options label {
     margin: 0; /* Xóa các khoảng cách mặc định nếu có */
+    font-size: 16px;
+    font-weight: 500;
 }
 
 
 
-.signup-btn {
+button {
     background-image: linear-gradient(to right,  RGB(252, 193, 6),  RGB(228, 129, 51), RGB(208, 76, 87), RGB(186, 17, 129));
-    width: 85%;
+    width: 90%;
     margin: 100px auto;
     display: block;
-    padding: 10px;
-    background-color: #cc9fc5; /* Golden-yellow gradient */
+    padding: 15px;
     border: none;
     border-radius: 50px;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
     color: #ffffff;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: center;
-    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 

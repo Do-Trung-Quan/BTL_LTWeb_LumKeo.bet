@@ -10,8 +10,8 @@
 <body>
     <div class="login-wrapper">
         <div class="login-container">
-            <form class="login-form" id="login-form">
-                <h2>LOGIN</h2>
+            <form class="login-form" id="login-form" action="../Thuy + DucMinh/ADMIN_QLBB.html" method="GET">
+                <h2>Login</h2>
                 <div class="input-group">
                     <label for="username">Username:</label>
                     <input type="text" id="username" name="username" placeholder="Username...">
@@ -21,9 +21,9 @@
                     <input type="password" id="password" name="password" placeholder="Password...">
                 </div>
                 <div class="forgot-password">
-                    <p><a href="#" onclick="showResetForm()">Forgot password?</a></p>
+                    <p><a href="#" onclick="showResetForm()">Forgot your password?</a></p>
                 </div>
-                <a href="../index.html" class="login-btn">Sign in</a>
+                <button type="submit">Login</button>
                 <div class="register">
                     <p>Don't have account? <a href="signup.html">Sign up now!</a></p>
                 </div>            
@@ -43,8 +43,10 @@
                     <label for="confirm-password">Confirm password:</label>
                     <input type="password" id="confirm-password" name="confirm-password" placeholder="Password...">
                 </div>
-                <a class="login-btn" href="Login.html">Change password</a>
-                
+                <button type="submit">Change password</button>
+                <div class="back-to-login">
+                    <p><a href="#" onclick="showLoginForm()">Back to login</a></p>
+                </div>
             </form>
         </div>
     </div>

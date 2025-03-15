@@ -10,14 +10,14 @@
 <body  style="background-image: url('Images/SignUpBackground.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
     <div class="signup-wrapper">
     <div class="signup-container">
-        <form class="signup-form">
+        <form class="signup-form" onsubmit="handleSignup(event)">
             <h2>SIGN UP</h2>
             <div class="input-group">
                 <label for="new-username">Username:</label>
                 <input type="text" id="new-username" name="new-username" placeholder="Username...">
             </div>
             <div class="input-group">
-                <label for="new-password">New password:</label>
+                <label for="new-password">Password:</label>
                 <input type="password" id="new-password" name="new-password" placeholder="Password...">
             </div>
             <div class="input-group">
@@ -33,9 +33,16 @@
                     <label for="author">Author</label>
                 </div>
             </div>
-            <a class="signup-btn" href="./Login.html">Submit<a>
+            <button type="submit">Submit</button>
         </form>
     </div>
 </div>
+<script>
+    function handleSignup(event) {
+        event.preventDefault();
+        // Add any signup logic here
+        window.location.href = 'Login.html';
+    }
+</script>
 </body>
 </html>

@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUTHOR - QLBV</title>
-    <link rel="stylesheet" href="AUTHOR_QLBV.css">
-    <link rel="stylesheet" href="header.css">
-    <link rel="stylesheet" href="pagination.css">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/header.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../Js/Search-header.js" defer></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- Sidebar -->
+    
     <header class="navbar">
         <div class="logo">
           <a href="../index.html">
-            <img src="img\LogoWeb.png" alt="Ảnh tên web">
+            <img src="../pics/header/Logo.png" alt="Ảnh tên web">
           </a>
         </div>
         <nav class="menu">
@@ -23,12 +27,12 @@
                 <li class="dropdown">
                   <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
                   <ul class="dropdown-menu">
-                    <li><a href="../Quang/giaidau-epl/html/giaidau-EPL.html">Premier League</a></li>
-                    <li><a href="../Quang/giaidau-laliga/html/giaidau-LaLiga.html">La Liga</a></li>
-                    <li><a href="../Quang/giaidau-serie a/html/giaidau-seria.html">Serie A</a></li>
-                    <li><a href="../Quang/giaidau-bundesliga/html/giaidau-bundes.html">Bundesliga</a></li>
-                    <li><a href="../Quang/giaidau-Ligue 1/html/giaidau-l1.html">Ligue 1</a></li>
-                    <li><a href="../Quang/giaidau-V league/html/giaidau-vleague.html">V.League 1</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-EPL.html">Premier League</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-LaLiga.html">La Liga</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-seria.html">Serie A</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-bundes.html">Bundesliga</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-l1.html">Ligue 1</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-vleague.html">V.League 1</a></li>
                   </ul>
                 </li>
 
@@ -37,132 +41,285 @@
             </ul>
         </nav>
         <div class="nav-icons">
-            <a href="#">
-                <img src="img\SearchIcon.png" alt="Search Icon">
+            <a class="search-button">
+                <img src="../pics/header/Search.png" alt="Search Icon">
             </a>
-            <a href="#">
-                <img src="img\UserIcon.png" alt="User Icon">
+            <a class="account-button" href="./AUTHOR_QLBV.html">
+                <img src="../pics/header/User.png" alt="User Icon">
             </a>
         </div>
     </header>
+
+     <!--search-header section-->
+    <div class="navbar search-header">
+        <div class="logo">
+          <a href="../index.html">
+            <img src="../pics/header/Logo.png" alt="Ảnh tên web">
+          </a>
+        </div>
+        
+        <form class="search-bar">
+          <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
+          <button><img src="../pics/header/Search.png" alt="Search Icon"></button>
+        </form>
+    
+        <div class="nav-icons">
+            <a class="search-button">
+                <img src="../pics/header/Search.png" alt="Search Icon">
+            </a>
+            <a class="account-button" href="./AUTHOR_QLBV.html">
+                <img src="../pics/header/User.png" alt="User Icon">
+            </a>
+        </div>
+    </div>
+    <div class="dark-overlay"></div>
+    
+    
     <div class="container">
-        <aside class="sidebar">
+
+        
+        <div class="sidebar">
             <ul>
-                <li class="active"><a href="AUTHOR_QLBV.html">Quản lý bài viết</a></li>
+                <li class="active" ><a href="AUTHOR_QLBV.html">Quản lý bài viết</a></li>
                 <li><a href="AUTHOR_BBDL.html">Bài báo đã lưu</a></li>
                 <li><a href="AUTHOR_BDGD.html">Bài đọc gần đây</a></li>
                 <li><a href="AUTHOR_TTCN.html">Thông tin cá nhân</a></li>
                 <li><a href="../Hi-Tech/Login.html">Đăng xuất</a></li>
             </ul>
-        </aside>
+        </div>
         <main class="content">
-            <div class="Personal_Info">
-                <div class="left">
-                    <h2>Nguyễn Đức Minh</h2>
-                    <h3>AUTHOR ID: AU221104</h3>
+            <div class="admin-info">
+                <div class="admin-text">
+                    <h3>Nguyễn Đức Minh</h3>
+                    <p>AUTHOR ID: AU221104</p>
                 </div>
-                <div class="right"><img src="img\amongUs.jpg" alt=""></div>
+                <div class="admin-avatar">
+                    <img src="img\amongUs.jpg" alt="Admin Avatar">
+                </div>
             </div>
-            <div class="functionBar">
-                <div class="dropdown_two">
-                    <button class="custom-button">THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i> </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Bóng đá Việt Nam</a></li>
-                        <li><a href="#">Bóng đá thế giới</a></li>
-                        <li><a href="#">Premier League</a></li>
-                        <li><a href="#">V. League 1</a></li>
-                        <li><a href="#">Ligue 1</a></li>
-                        <li><a href="#">Bundesliga</a></li>
-                        <li><a href="#">Serie A</a></li>
-                        <li><a href="#">La Liga</a></li>
-                    </ul>
-                </div>
-                <input type="text" class="search-box" placeholder="Tìm kiếm...">
-                <button class="add-post-btn" onclick="window.open('AUTHOR_ThemBV.html', '_blank')">THÊM BÀI VIẾT</button>
-            </div>       
+
+            <td class="category-dropdown">
+                <button id="theloai-btn" class="category-btn">Thể loại <i class="fas fa-chevron-down dropdown-icon"></i>
+                    <div id="theloai-menu" class="category-menu"></div>
+                </button>          
+            </td>
+
+            <input type="text" class="search-bar_author" placeholder="Tìm kiếm...">
+            <button class="add-post-btn" onclick="openModal2()">THÊM BÀI VIẾT</button>
             <table>
                 <thead>
                     <tr>
                         <th>Tiêu đề</th>
                         <th>Ảnh</th>
-                        <th>Thể loại</th>
+                        <th class="category-column">Thể loại</th>
                         <th>Ngày đăng</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="table-body">
                     <tr>
-                        <tr>
-                            <td>Lịch thể thao mới nhất hôm nay ngày 11/3 và rạng sáng 12/3</td>
-                            <td><img src="img\AnhBaiBao1.png" alt="Ảnh bài báo"></td>
-                            <td>Bóng đá quốc tế</td>
-                            <td>01/03/2025</td>
-                            <td><i class="fa-regular fa-eye"></i>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>HLV Amorim bảo vệ lối chơi thực dụng của MU: 'Chúng tôi cần điểm số'</td>
-                            <td><img src="img\AnhBaiBao2.png" alt="Ảnh bài báo"></td>
-                            <td>Premier League</td>
-                            <td>01/03/2025</td>
-                            <td><i class="fa-regular fa-eye"></i>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Cục Cảnh sát hình sự đề nghị VFF xem xét công tác tổ trọng tài bị 'treo còi'</td>
-                            <td><img src="img\AnhBaiBao3.png" alt="Ảnh bài báo"></td>
-                            <td>V League</td>
-                            <td>03/03/2025</td>
-                            <td><i class="fa-regular fa-eye"></i>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
-                                <i class="fa-solid fa-trash-can"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Cảnh ngược đời của trung vệ Duy Mạnh</td>
-                            <td><img src="img\AnhBaiBao4.png" alt="Ảnh bài báo"></td>
-                            <td>Bóng đá Việt Nam</td>
-                            <td>04/03/2025</td>
-                            <td><i class="fa-regular fa-eye"></i>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Di Maria bền bỉ đáng kinh ngạc</td>
-                            <td><img src="img\AnhBaiBao5.png" alt="Ảnh bài báo"></td>
-                            <td>Premier League</td>
-                            <td>03/03/2025</td>
-                            <td><i class="fa-regular fa-eye"></i>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>MU đề xuất đổi Hojlund kèm tiền mặt để lấy tiền đạo của Napoli.</td>
-                            <td><img src="img\AnhBaiBao6.png" alt="Ảnh bài báo"></td>
-                            <td>Bóng đá Việt Nam</td>
-                            <td>10/03/2025</td>
-                            <td><i class="fa-regular fa-eye"></i>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
+                        <td>Đề xuất tăng ngoại binh cho V.League</td>
+                        <td><img src="img\AnhBaiBao7.png" alt="Ảnh bài báo"></td>
+                        <td>V.League 1</td>
+                        <td>10/03/2025</td>
+                        <td>
+                        <a href= "../Quang/baichitiet/html/baichitiet.html">
+                                <i class="fa-regular fa-eye"></i></a>
+                     <button onclick="openModal()"><i class="fa-solid fa-pen"></i></button>
+                    
+                     <i class="fa-solid fa-trash-can"></i>
+                 </td>
                     </tr>
+                    <tr>
+                        <td>VFF kết luận gì về tổ trọng tài bị treo còi khiến Cục cảnh sát hình sự vào cuộc?</td>
+                        <td><img src="img\AnhBaiBao8.png" alt="Ảnh bài báo"></td>
+                        <td>Bóng đá Việt Nam</td>
+                        <td>02/03/2025</td>
+                        <td>
+                     <a href= "../Quang/baichitiet/html/baichitiet.html">
+                                <i class="fa-regular fa-eye"></i></a>
+                     <button onclick="openModal()"><i class="fa-solid fa-pen"></i></button>
+                    
+                     <i class="fa-solid fa-trash-can"></i>
+                 </td>
+                    </tr>
+                    <tr>
+                        <td>Messi gửi lời chia buồn đến các nạn nhân lũ lụt tại Bahia Blanca</td>
+                        <td><img src="img\AnhBaiBao9.png" alt="Ảnh bài báo"></td>
+                        <td>Bóng đá quốc tế</td>
+                        <td>09/03/2025</td>
+                        <td>
+                     <a href= "../Quang/baichitiet/html/baichitiet.html">
+                                <i class="fa-regular fa-eye"></i></a>
+                     <button onclick="openModal()"><i class="fa-solid fa-pen"></i></button>
+                    
+                     <i class="fa-solid fa-trash-can"></i>
+                 </td>
+                    </tr>
+                    <tr>
+                        <td>Trận hòa 1-1 phơi bày vấn đề chung của MU và Arsenal</td>
+                        <td><img src="img\AnhBaiBao10.png" alt="Ảnh bài báo"></td>
+                        <td>Premier League</td>
+                        <td>07/03/2025</td>
+                        <td>
+                     <a href= "../Quang/baichitiet/html/baichitiet.html">
+                                <i class="fa-regular fa-eye"></i></a>
+                     <button onclick="openModal()"><i class="fa-solid fa-pen"></i></button>
+                    
+                     <i class="fa-solid fa-trash-can"></i>
+                 </td>
+                    </tr>
+                    <tr>
+                        <td>Neymar lại chấn thương</td>
+                        <td><img src="img\AnhBaiBao11.png" alt="Ảnh bài báo"></td>
+                        <td>Bóng đá quốc tế</td>
+                        <td>08/03/2025</td>
+                        <td>
+                     <a href= "../Quang/baichitiet/html/baichitiet.html">
+                                <i class="fa-regular fa-eye"></i></a>
+                     <button onclick="openModal()"><i class="fa-solid fa-pen"></i></button>
+                    
+                     <i class="fa-solid fa-trash-can"></i>
+                 </td>
+                    </tr>
+                    <tr>
+                        <td>Không có bằng chứng Arsenal vô địch Premier League</td>
+                        <td><img src="img\AnhBaiBao12.png" alt="Premier League"></td>
+                        <td>Premier League</td>
+                        <td>10/03/2025</td>
+                        <td>
+                     <a href= "../Quang/baichitiet/html/baichitiet.html">
+                                <i class="fa-regular fa-eye"></i></a>
+                     <button onclick="openModal()"><i class="fa-solid fa-pen"></i></button>
+                    
+                     <i class="fa-solid fa-trash-can"></i>
+                 </td>
+                    </tr>
+                    
                 </tbody>
             </table>
+            
+
+            <!-- Pagination -->
+            
         </main>
     </div>
+   
+    
     <div class="pagination">
-        <button class="prev" disabled>← Previous</button>
-        <button class="page active">1</button>
-        <button class="page">2</button>
-        <button class="page">3</button>
-        <span class="dots">...</span>
-        <button class="page">67</button>
-        <button class="page">68</button>
-        <button class="next">Next →</button>
-    </div>   
-    <script src="pagination.js"></script> 
-    <script src="editButton.js"></script>
+        <button id="prev-btn" class="pagination-btn">← Previous</button>
+        <div id="page-numbers"></div>
+        <button id="next-btn" class="pagination-btn">Next →</button>
+    </div>
+    
+    
+        
+    <script src="./js_author/AUTHOR_QLBV.js"></script>
+    
 </body>
 </html>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Chỉnh sửa bài viết</h2>
+        
+        <label>Tiêu đề bài viết:</label>
+        <input type="text" placeholder="Nhập tiêu đề bài viết">
+        
+        <label>Tác giả:</label>
+        <input type="text" placeholder="Nhập tên tác giả">
+        
+        <label>Chọn danh mục:</label>
+        <select>
+            <option>Sự kiện</option>
+            <option>Tin tức</option>
+        </select>
+        
+        <label>Nội dung bài viết:</label>
+        <textarea placeholder="Nhập nội dung bài viết"></textarea>
+        
+        <label>Ảnh minh họa:</label>
+        <input type="file">
+        
+        <!-- Button Group -->
+        <div class="modal-buttons">
+            <button class="submit-btn">Lưu thay đổi</button>
+            <button class="cancel-btn" onclick="closeModal()">Hủy</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Post Modal -->
+<!-- <div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal2('addModal')">&times;</span>
+        <h2>Thêm Bài Viết Mới</h2>
+        
+        <label for="add-title">Tiêu đề bài viết:</label>
+        <input type="text" id="add-title" placeholder="Nhập tiêu đề bài viết">
+        
+        <label for="add-author">Tác giả:</label>
+        <input type="text" id="add-author" placeholder="Nhập tên tác giả">
+        
+        <label for="add-category">Chọn danh mục:</label>
+        <select id="add-category">
+            <option>Sự kiện</option>
+            <option>Tin tức</option>
+        </select>
+        
+        <label for="add-content">Nội dung bài viết:</label>
+        <textarea id="add-content" placeholder="Nhập nội dung bài viết"></textarea>
+        
+        <label for="add-image">Ảnh minh họa:</label>
+        <input type="file" id="add-image">
+        
+        <-- Button Group -->
+        <!-- <div class="modal-buttons">
+            <button class="submit-btn" onclick="saveNewPost2()">Đăng bài</button>
+            <button class="cancel-btn" onclick="closeModal2('addModal')">Hủy</button>
+        </div>
+    </div>
+</div>  -->
+
+
+    <!-- Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Thêm bài viết</h2>
+            <form id="content-form">
+                <label for="content-name">Tên bài viết</label>
+                <input type="text" id="content-name" placeholder="Nhập tiêu đề" required>
+
+                <label for="category">Chọn thể loại:</label>
+                <select id="category">
+                    <option>Bóng đá Việt Nam</option>
+                    <option>Bóng đá Quốc tế</option>
+                    <option>Premier League</option>
+                    <option>V. League 1</option>
+                    <option>Ligue 1</option>
+                    <option>Bundesliga</option>
+                    <option>Serie A</option>
+                    <option>La Liga</option>
+                </select>
+                
+                <div class="file-content">
+                    <label for="content">Nội dung:</label>
+                    <textarea id="content" placeholder="Nhập nội dung bài viết"></textarea>
+                </div>
+                
+                <div class="file-upload">
+                    <label for="logo"><strong>Ảnh bài báo</strong></label>
+                    <input type="file" id="logo" name="logo">
+                </div>
+                
+                <button type="submit">Đăng</button>
+            </form>
+        </div>
+    </div>
+
+
+
+<!-- <script src="editButton.js"></script> -->

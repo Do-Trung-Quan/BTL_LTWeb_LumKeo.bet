@@ -1,200 +1,207 @@
-body {
-  font-family: Arial, sans-serif;
+* {
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
 }
 
+/* Container chính */
 .container {
-  width: 80%;
-  margin: auto;
-  background: white;
-  padding: 20px;
-  min-width: 900px;
-}
-
-
-.content {
   display: flex;
-  flex-direction: row;
+  width: 100%;
+  margin: 30px 0 50px 0;
   gap: 20px;
 }
 
-.main-news {
-  flex: 2;
+/* Cột trái: Nội dung bài viết */
+.content-left {
+  width: 730px;
+  margin-right: 50px;
+  margin-left: 120px;
 }
 
-.sidebar {
-  flex: 1;
+.content-left img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.inner-sidebar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.content-right {
+  width: 500px; /* Giảm chiều rộng sidebar */
+  background: #fff;
 }
 
-.inner-sidebar h2 {
-  color: #f1c40f;
-  /* Màu vàng */
+/* Tiêu đề "TIN LIÊN QUAN" và "TIN KHÁC" */
+.relatednews-titlebox, .othernews-titlebox {
+  font-size: 25px;
   font-weight: bold;
-  text-transform: uppercase;
-  /* Chữ in hoa */
-}
-
-.inner-sidebar hr {
-  /* chỉnh hr */
-  flex-grow: 1;
-  border: none;
-  height: 4px;
-  background: #f1c40f;
-  margin-left: 10px;
-  margin: 8px 0 0 10px;
-  /* Đẩy hr xuống dưới một chút */
-}
-
-.highlight-box {
-  background-color: #d3d3d3;
-  /* Màu bạc */
-  padding: 3px;
-  /* Thêm khoảng cách bên trong */
-  border-radius: 5px;
-  /* Bo góc nhẹ */
-  display: inline-block;
-  /* Giúp hộp ôm sát nội dung */
-}
-
-/* chỉnh news-item */
-.news-item {
+  color: gold;
+  margin-top: 28px;
+  margin-bottom: 28px;
   display: flex;
-  margin-bottom: 20px;
   align-items: center;
-  /* Căn chữ theo đầu ảnh */
-  gap: 10px;
-  /* Giảm khoảng cách giữa ảnh và nội dung */
-  margin-bottom: 10px;
-  border-bottom: 10px;
-  padding-bottom: 10px;
+  gap: 8px;
+}
 
+/* Gạch ngang dưới tiêu đề */
+.relatednews-titlebox::after, 
+.othernews-titlebox::after {
+  content: "";
+  flex-grow: 1;
+  height: 3px;
+  background: gold;
+  margin-top: 10px;
+}
+
+/* Danh sách tin tức */
+.inner-sidebar {
+  display: grid;
+  gap: 20px;
+}
+
+.news-item:hover {
+  opacity: 0.85;
+}
+
+.inner-sidebar .news-item {
+  display: flex;
+  gap: 20px;
 }
 
 .news-item img {
-  width: 200px;
-  /* Giữ kích thước ảnh nhỏ gọn */
-  height: auto;
-  object-fit: cover;
   flex-shrink: 0;
-  /* Ngăn hình ảnh co lại */
-  border-radius: 5px;
+  width: 220px;
+  height: 132px;
+  object-fit: cover; 
 }
 
-.news-item div {
-  flex-grow: 1;
-  min-width: 150px;
-  /* Đảm bảo chữ không bị bó hẹp quá mức */
+/* Nội dung tin tức */
+.news-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
 }
 
-.news-item a {
-  text-decoration: none;
-  /* Loại bỏ gạch chân */
-  color: inherit;
-  /* Giữ nguyên màu chữ theo thẻ con */
-}
-
-.news-item .author-time {
-  font-size: 12px;
-  color: gray;
-  margin-top: 5px;
-}
-
-.news-content h4,
-.news-content p {
-  margin: 10px;
-  /* Xóa khoảng cách mặc định */
-  padding: 0;
-  /* Đảm bảo không có padding thừa */
-}
-
-/*hết chỉnh news-item*/
-
-.main-img {
-  width: auto;
-  height: auto;
-  max-width: 495.47px;
-  /* Adjust the max-width as needed */
-  max-height: 495.47px;
-  /* Adjust the max-height as needed */
-  object-fit: contain;
-  /* Maintain aspect ratio */
-  display: block;
-  /* giúp ảnh không bị ảnh hưởng bởi văn bản xung quanh*/
-  margin: auto;
-  /*căn ảnh ra giữa theo chiều ngang.*/
-}
-
-.image-container {
-  text-align: center;
-}
-
-.caption {
-  font-style: italic;
-  /* Làm chữ nghiêng giống ảnh của bạn */
-  text-align: center;
-}
-
-.news-content .author {
-  /* chỉnh author */
-  font-size: 12px;
-  color: gray;
-  margin: 0;
-}
-
-/* chỉnh breadcrumb */
-.breadcrumb {
-  font-size: 16px;
+/* Thể loại tin */
+.news-text .category {
+  color: #0074B2;
   font-weight: bold;
-  color: #000;
-  /* Màu đen */
+  font-size: 25px; /* Giảm kích thước font */
+}
+
+/* Tiêu đề tin */
+.news-text p {
+  font-size: 20px; /* Giảm kích thước chữ */
+  color: #333;
+  font-weight: bold;
+}
+
+/* Thông tin tác giả */
+.news-text small {
+  position: absolute;
+  bottom: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #666;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Định dạng tiêu đề */
+h1 {
+  font-size: 28px;
+  color: #1a3d7c;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 22px;
+  color: #1a3d7c;
+  /* margin-bottom: 20px; */
+}
+
+h3 {
+  font-size: 20px;
+  color: #1a3d7c;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Định dạng đoạn văn */
+.content-left > p {
+  font-size: 16px;
+  text-align: justify;
+  margin-bottom: 20px;
+}
+
+/* Hộp nội dung nổi bật */
+.highlight-box {
+  background-color: #eef5ff;
+  padding: 15px;
+  border-left: 5px solid #1a3d7c;
+  margin: 20px 0;
+}
+
+.highlight-box h2 {
+  gap: 10px;
+}
+
+/* Breadcrumb */
+.breadcrumb ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  gap: 10px;
+  margin: 20px auto;
+}
+
+.breadcrumb li {
+  display: flex;
+  align-items: center;
 }
 
 .breadcrumb a {
   text-decoration: none;
-  /* Bỏ gạch chân */
-  color: #000;
-  /* Giữ màu giống chữ bình thường */
+  font-size: 30px;
   font-weight: bold;
 }
 
-.breadcrumb h1 {
-  display: inline;
-  /* Biến thẻ h3 thành inline để không bị xuống dòng */
-  margin: 0;
-  /* Loại bỏ margin nếu cần */
+.breadcrumb .separator {
+  font-size: 16px;
 }
 
-.separator {
-  font-size: 1.2em;
-  /* Điều chỉnh kích thước theo ý muốn */
-  font-weight: bold;
-  /* Làm đậm nếu cần */
-  margin: 0 5px;
-  /* Giúp căn chỉnh khoảng cách */
+.breadcrumb i {
+  font-size: 25px;
+  margin-left: 10px;
 }
 
-/*hết chỉnh breadcrumb*/
-
-p {
+/* Ảnh bài viết */
+.img-container {
+  text-align: center;
   margin: 20px 0;
-  /* Adjust the value to your desired spacing */
-  padding: 0;
 }
 
-br {
-  display: none;
-  /* Optionally hide the <br> tags if they are not needed */
+.main-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.caption {
+  font-size: 14px;
+  color: #777;
+  margin-top: 5px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Chữ ký tác giả */
 .kyten {
-  text-align: right;
   font-weight: bold;
-  /* Giữ nguyên độ đậm nếu cần */
+  font-size: 18px;
+  color: #1a3d7c;
+  margin-top: 30px;
+  text-align: right;
 }

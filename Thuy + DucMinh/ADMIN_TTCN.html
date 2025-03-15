@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - TTCN</title>
-    <link rel="stylesheet" href="header.css">
+    <title>Admin - QLBB</title>
     <link rel="stylesheet" href="ADMIN_TTCN.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="pagination.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../Js/Search-header.js" defer></script>
+    
 </head>
 <body>
     <header class="navbar">
         <div class="logo">
           <a href="../index.html">
-            <img src="img\LogoWeb.png" alt="Ảnh tên web">
+            <img src="../pics/header/Logo.png" alt="Ảnh tên web">
           </a>
         </div>
         <nav class="menu">
@@ -22,12 +26,12 @@
                 <li class="dropdown">
                   <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
                   <ul class="dropdown-menu">
-                    <li><a href="../Quang/giaidau-epl/html/giaidau-EPL.html">Premier League</a></li>
-                    <li><a href="../Quang/giaidau-laliga/html/giaidau-LaLiga.html">La Liga</a></li>
-                    <li><a href="../Quang/giaidau-serie a/html/giaidau-seria.html">Serie A</a></li>
-                    <li><a href="../Quang/giaidau-bundesliga/html/giaidau-bundes.html">Bundesliga</a></li>
-                    <li><a href="../Quang/giaidau-Ligue 1/html/giaidau-l1.html">Ligue 1</a></li>
-                    <li><a href="../Quang/giaidau-V league/html/giaidau-vleague.html">V.League 1</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-EPL.html">Premier League</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-LaLiga.html">La Liga</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-seria.html">Serie A</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-bundes.html">Bundesliga</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-l1.html">Ligue 1</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-vleague.html">V.League 1</a></li>
                   </ul>
                 </li>
 
@@ -36,16 +40,41 @@
             </ul>
         </nav>
         <div class="nav-icons">
-            <a href="#">
-                <img src="img\SearchIcon.png" alt="Search Icon">
+            <a class="search-button">
+                <img src="../pics/header/Search.png" alt="Search Icon">
             </a>
-            <a href="#">
-                <img src="img\UserIcon.png" alt="User Icon">
+            <a class="account-button" href="./ADMIN_QLBB.html">
+                <img src="../pics/header/User.png" alt="User Icon">
             </a>
         </div>
     </header>
+
+     <!--search-header section-->
+    <div class="navbar search-header">
+        <div class="logo">
+          <a href="../index.html">
+            <img src="../pics/header/Logo.png" alt="Ảnh tên web">
+          </a>
+        </div>
+        
+        <form class="search-bar">
+          <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
+          <button><img src="../pics/header/Search.png" alt="Search Icon"></button>
+        </form>
+    
+        <div class="nav-icons">
+            <a class="search-button">
+                <img src="../pics/header/Search.png" alt="Search Icon">
+            </a>
+            <a class="account-button" href="./ADMIN_QLBB.html">
+                <img src="../pics/header/User.png" alt="User Icon">
+            </a>
+        </div>
+    </div>
+    <div class="dark-overlay"></div>
+    
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar2">
             <ul>
                 <li><a href="ADMIN_QLBB.html">Quản lý bài báo</a></li>
                 <li><a href="ADMIN_QLGD.html">Quản lý giải đấu</a></li>

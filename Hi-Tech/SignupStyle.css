@@ -63,6 +63,7 @@ body, html {
 .signup-form h2 {
     text-align: center;
     font-size: 50px;
+    margin: 41px 0 41px 0;
 }
 
 .input-group {

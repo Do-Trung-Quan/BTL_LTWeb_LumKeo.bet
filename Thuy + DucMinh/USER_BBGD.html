@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User - BBGD</title>
-    <link rel="stylesheet" href="USER_BBGD.css">
-    <link rel="stylesheet" href="pagination.css">
+    <link rel="stylesheet" href="./css/USER_BBGD.css">
+    <link rel="stylesheet" href="./css/pagination.css">
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="../Js/Search-header.js" defer></script>
@@ -32,7 +32,6 @@
                     <li><a href="../Quang/giaidau/html/giaidau-vleague.html">V.League 1</a></li>
                   </ul>
                 </li>
-
                 <li><a href="#">Bóng đá Việt Nam</a></li>
                 <li><a href="#">Bóng đá thế giới</a></li>
             </ul>
@@ -92,15 +91,16 @@
             <div class="functionBar">
                 <div class="dropdown_two">
                     <button class="custom-button">THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i> </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Bóng đá Việt Nam</a></li>
-                        <li><a href="#">Bóng đá thế giới</a></li>
-                        <li><a href="#">Premier League</a></li>
-                        <li><a href="#">V. League 1</a></li>
-                        <li><a href="#">Ligue 1</a></li>
-                        <li><a href="#">Bundesliga</a></li>
-                        <li><a href="#">Serie A</a></li>
-                        <li><a href="#">La Liga</a></li>
+                    <ul class="dropdown-menu" id="theLoai-menu">
+                        <li><a href="#" data-category="Tất cả">Tất cả</a></li>
+                        <li><a href="#" data-category="Bóng đá Việt Nam">Bóng đá Việt Nam</a></li>
+                        <li><a href="#" data-category="Bóng đá thế giới">Bóng đá thế giới</a></li>
+                        <li><a href="#" data-category="Premier League">Premier League</a></li>
+                        <li><a href="#" data-category="V. League 1">V. League 1</a></li>
+                        <li><a href="#" data-category="Ligue 1">Ligue 1</a></li>
+                        <li><a href="#" data-category="Bundesliga">Bundesliga</a></li>
+                        <li><a href="#" data-category="Serie A">Serie A</a></li>
+                        <li><a href="#" data-category="La Liga">La Liga</a></li>
                     </ul>
                 </div>
                 <input type="text" class="search-box" placeholder="Tìm kiếm...">
@@ -115,7 +115,7 @@
                         <th>Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="table-body">
                     <tr>
                         <tr>
                             <td>Đề xuất tăng ngoại binh cho V.League</td>
@@ -187,6 +187,9 @@
         <button class="page">68</button>
         <button class="next">Next →</button>
     </div>   
-    <script src="pagination.js"></script> 
+    <script src="./js/pagination.js"></script> 
+    <script src="./js/searchBar1.js"></script>
+    <script src="./js/delete.js"></script>
+    <script src="./js/filterCategory.js"></script>
 </body>
 </html>

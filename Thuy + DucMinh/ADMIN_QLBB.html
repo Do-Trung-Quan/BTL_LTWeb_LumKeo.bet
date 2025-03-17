@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - QLBB</title>
-    <link rel="stylesheet" href="ADMIN_QLBB.css">
+    <link rel="stylesheet" href="./css/ADMIN_QLBB.css">
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="pagination.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -97,15 +97,16 @@
             <div class="functionBar">
                 <div class="dropdown_two">
                     <button class="custom-button">THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i> </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="../Quang/">Bóng đá Việt Nam</a></li>
-                        <li><a href="../Quang/">Bóng đá thế giới</a></li>
-                        <li><a href="../Quang/">Premier League</a></li>
-                        <li><a href="../Quang/">V. League 1</a></li>
-                        <li><a href="../Quang/">Ligue 1</a></li>
-                        <li><a href="../Quang/">Bundesliga</a></li>
-                        <li><a href="../Quang/">Serie A</a></li>
-                        <li><a href="../Quang/">La Liga</a></li>
+                    <ul class="dropdown-menu" id="theLoai-menu">
+                        <li><a href="#" data-category="Tất cả">Tất cả</a></li>
+                        <li><a href="#" data-category="Bóng đá Việt Nam">Bóng đá Việt Nam</a></li>
+                        <li><a href="#" data-category="Bóng đá thế giới">Bóng đá thế giới</a></li>
+                        <li><a href="#" data-category="Premier League">Premier League</a></li>
+                        <li><a href="#" data-category="V. League 1">V. League 1</a></li>
+                        <li><a href="#" data-category="Ligue 1">Ligue 1</a></li>
+                        <li><a href="#" data-category="Bundesliga">Bundesliga</a></li>
+                        <li><a href="#" data-category="Serie A">Serie A</a></li>
+                        <li><a href="#" data-category="La Liga">La Liga</a></li>
                     </ul>
                 </div>
                 <input type="text" class="search-box" placeholder="Tìm kiếm...">
@@ -124,7 +125,7 @@
                         <th>Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="table-body">
                     <tr>
                         <tr>
                             <td>Lịch thể thao mới nhất hôm nay ngày 11/3 và rạng sáng 12/3</td>
@@ -133,7 +134,7 @@
                             <td>01/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <i class="fa-solid fa-pen editIcon"></i>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -143,7 +144,7 @@
                             <td>01/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <i class="fa-solid fa-pen editIcon"></i>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -153,7 +154,7 @@
                             <td>03/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <i class="fa-solid fa-pen editIcon"></i>
                                 <i class="fa-solid fa-trash-can"></i>
                             </td>
                         </tr>
@@ -164,7 +165,7 @@
                             <td>04/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <i class="fa-solid fa-pen editIcon"></i>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -174,7 +175,7 @@
                             <td>03/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <i class="fa-solid fa-pen editIcon"></i>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -184,7 +185,7 @@
                             <td>10/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <i class="fa-solid fa-pen editIcon"></i>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                     </tr>
@@ -192,6 +193,45 @@
             </table>
         </main>
     </div>
+    <!-- Modal Chỉnh Sửa Bài Viết -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Chỉnh sửa bài viết</h2>
+        <form id="content-form">
+            <label for="content-name">Tên bài viết</label>
+            <input type="text" id="content-name" placeholder="Nhập tiêu đề" required>
+
+            <label for="category">Chọn thể loại:</label>
+            <select id="category">
+                <option>Bóng đá Việt Nam</option>
+                <option>Bóng đá Quốc tế</option>
+                <option>Premier League</option>
+                <option>V. League 1</option>
+                <option>Ligue 1</option>
+                <option>Bundesliga</option>
+                <option>Serie A</option>
+                <option>La Liga</option>
+            </select>
+
+            <div class="file-content">
+                <label for="content">Nội dung:</label>
+                <textarea id="content" placeholder="Nhập nội dung bài viết"></textarea>
+            </div>
+
+            <div class="file-upload">
+                <label for="logo"><strong>Ảnh bài báo</strong></label>
+                <input type="file" id="logo" name="logo">
+            </div>
+
+            <div class="button_function">
+                <button type="submit" class="edit">Chỉnh sửa</button>
+                <button type="button" class="cancel">Hủy</button>
+            </div>
+        </form>
+    </div>
+</div>
+
     <div class="pagination">
         <button class="prev" disabled>← Previous</button>
         <button class="page active">1</button>
@@ -202,7 +242,11 @@
         <button class="page">68</button>
         <button class="next">Next →</button>
     </div>   
-    <script src="pagination.js"></script> 
-    <script src="editButton.js"></script>
+    <script src="./js/pagination.js"></script> 
+    <script src="./js/editButton.js"></script>
+    <script src="./js/searchBar1.js"></script>
+    <script src="./js/editButton.js"></script>
+    <script src="./js/filterCategory.js"></script>
+    <script src="./js/delete.js"></script>
 </body>
 </html>

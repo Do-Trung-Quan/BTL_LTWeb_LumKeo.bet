@@ -1,0 +1,51 @@
+/* Pagination */
+.pagination {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-family: Arial, sans-serif;
+    margin-top: 50px; /* Điều chỉnh khoảng cách với table */
+    justify-content: flex-end; /* Đẩy pagination sang phải */
+    margin-bottom: 50px;
+    bottom: 0px;
+    right: 20px;
+}
+
+.pagination button, .page-number {
+    border: none;
+    margin-right: 20px;
+    background: #f0f0f0;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.pagination button:hover, .page-number:hover {
+    background: #dcdcdc;
+}
+
+.page-number.active {
+    background: #333;
+    color: white;
+    font-weight: bold;
+}
+
+.pagination button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Adds spacing between page numbers and prev/next buttons */
+.page-number, .pagination button {
+    min-width: 35px;
+    text-align: center;
+}
+
+/* Style for ellipsis */
+.pagination span {
+    padding: 0 5px;
+    font-size: 16px;
+}

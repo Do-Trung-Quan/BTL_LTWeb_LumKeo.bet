@@ -62,161 +62,129 @@ document.addEventListener("click", function () {
 //modal
 
 // Function to open the modal (updated for "THÊM BÀI VIẾT")
-function openModal(action, id = null, category = "") {
-    const modal = document.getElementById("modal");
-    const modalTitle = document.getElementById("modal-title");
-    const modalBody = document.getElementById("modal-body");
+// Open edit modal and populate it with existing data from the row
+function openEditModal(button) {
+    let row = button.closest("tr"); // Get the table row
+    let title = row.cells[0].textContent.trim(); 
+    let imageSrc = row.cells[1].querySelector("img").src;
+    let category = row.cells[2].textContent.trim();
+    let date = row.cells[3].textContent.trim();
 
-    modal.style.display = "block";
+    // Populate modal fields
+    document.getElementById("edit-content-name").value = title;
+    document.getElementById("edit-category").value = category;
+    document.getElementById("edit-logo").dataset.currentImage = imageSrc; // Store current image path
+    document.getElementById("edit-date").value = formatDateForInput(date); // Set date
 
-    if (action === "add") {
-        modalTitle.textContent = "Thêm bài viết mới"; // Add new post title
-        modalBody.innerHTML = `
-            <label for="post-title">Tiêu đề:</label>
-            <input type="text" id="post-title" placeholder="Nhập tiêu đề">
-
-            <label for="post-category">Thể loại:</label>
-            <input type="text" id="post-category" placeholder="Nhập thể loại">
-
-            <label for="post-date">Ngày đăng:</label>
-            <input type="date" id="post-date">
-
-            <button onclick="saveNewPost()">Lưu</button>
-        `;
-    } else if (action === "view") {
-        modalTitle.textContent = `Viewing Item ID${id}`;
-        modalBody.innerHTML = `<p>Category: ${category}</p>`;
-    } else if (action === "edit") {
-        modalTitle.textContent = `Editing Item ID${id}`;
-        modalBody.innerHTML = `
-            <input type="text" value="${category}" id="edit-input">
-            <button onclick="saveEdit(${id})">Save</button>
-        `;
-    } else if (action === "delete") {
-        modalTitle.textContent = `Delete Item ID${id}?`;
-        modalBody.innerHTML = `<p>Are you sure you want to delete this item?</p>
-                               <button onclick="confirmDelete(${id})">Yes, Delete</button>`;
-    }
+    document.getElementById("editModal").style.display = "flex"; // Show modal
+    row.classList.add("editing"); // Mark row as editing
 }
 
-// Function to save the new post (dummy function for now)
-function saveNewPost() {
-    const title = document.getElementById("post-title").value;
-    const category = document.getElementById("post-category").value;
-    const date = document.getElementById("post-date").value;
-
-    console.log(`New Post Added - Title: ${title}, Category: ${category}, Date: ${date}`);
-    closeModal();
+// Format date from "DD/MM/YYYY" to "YYYY-MM-DD" for input field
+function formatDateForInput(dateString) {
+    let parts = dateString.split("/");
+    return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : "";
 }
 
-// Close modal when clicking outside
-window.onclick = function (event) {
-    const modal = document.getElementById("modal");
-    if (event.target === modal) {
-        closeModal();
-    }
-};
-
-// Function to close the modal
-function closeModal() {
-    document.getElementById("modal").style.display = "none";
-}
-function openModal() {
+// Save changes back to the table
+function saveEdit() {
     let modal = document.getElementById("editModal");
-    modal.style.display = "flex"; // Show modal
+    let title = document.getElementById("edit-content-name").value.trim();
+    let category = document.getElementById("edit-category").value.trim();
+    let date = document.getElementById("edit-date").value; // Get new date
+    let fileInput = document.getElementById("edit-logo");
+    let imageSrc = fileInput.files.length > 0 ? URL.createObjectURL(fileInput.files[0]) : fileInput.dataset.currentImage;
+
+    // Convert date from "YYYY-MM-DD" to "DD/MM/YYYY"
+    let formattedDate = date ? date.split("-").reverse().join("/") : "";
+
+    // Find the active row and update it
+    let row = document.querySelector(".editing"); 
+    if (row) {
+        row.cells[0].textContent = title;
+        row.cells[1].querySelector("img").src = imageSrc;
+        row.cells[2].textContent = category;
+        row.cells[3].textContent = formattedDate; // Update the date
+    }
+
+    closeEditModal();
 }
 
-function closeModal() {
-    let modal = document.getElementById("editModal");
-    modal.style.display = "none"; // Hide modal
+// Close modal
+function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
+    let activeRow = document.querySelector(".editing");
+    if (activeRow) activeRow.classList.remove("editing"); // Remove editing class
 }
 
-// Close when clicking outside the modal
+// Click outside to close modal
 window.onclick = function(event) {
     let modal = document.getElementById("editModal");
     if (event.target === modal) {
-        closeModal();
+        closeEditModal();
     }
 };
 
 
 
 
-// Function to open the modal (updated for "THÊM BÀI VIẾT")
-function openModal2(action, id = null, category = "") {
-    const modal = document.getElementById("modal");
-    const modalTitle = document.getElementById("modal-title");
-    const modalBody = document.getElementById("modal-body");
 
-    modal.style.display = "block";
-
-    if (action === "add") {
-        modalTitle.textContent = "Thêm bài viết mới"; // Add new post title
-        modalBody.innerHTML = `
-            <label for="post-title">Tiêu đề:</label>
-            <input type="text" id="post-title" placeholder="Nhập tiêu đề">
-
-            <label for="post-category">Thể loại:</label>
-            <input type="text" id="post-category" placeholder="Nhập thể loại">
-
-            <label for="post-date">Ngày đăng:</label>
-            <input type="date" id="post-date">
-
-            <button onclick="saveNewPost()">Lưu</button>
-        `;
-    } else if (action === "view") {
-        modalTitle.textContent = `Viewing Item ID${id}`;
-        modalBody.innerHTML = `<p>Category: ${category}</p>`;
-    } else if (action === "edit") {
-        modalTitle.textContent = `Editing Item ID${id}`;
-        modalBody.innerHTML = `
-            <input type="text" value="${category}" id="edit-input">
-            <button onclick="saveEdit(${id})">Save</button>
-        `;
-    } else if (action === "delete") {
-        modalTitle.textContent = `Delete Item ID${id}?`;
-        modalBody.innerHTML = `<p>Are you sure you want to delete this item?</p>
-                               <button onclick="confirmDelete(${id})">Yes, Delete</button>`;
-    }
+// Open modal
+function openAddModal() {
+    document.getElementById("addModal").style.display = "flex"; // Show modal
 }
 
-// Function to save the new post (dummy function for now)
-function saveNewPost2() {
-    const title = document.getElementById("post-title").value;
-    const category = document.getElementById("post-category").value;
-    const date = document.getElementById("post-date").value;
-
-    console.log(`New Post Added - Title: ${title}, Category: ${category}, Date: ${date}`);
-    closeModal2();
+// Close modal
+function closeAddModal() {
+    document.getElementById("addModal").style.display = "none"; // Hide modal
 }
 
 // Close modal when clicking outside
-window.onclick = function (event) {
-    const modal = document.getElementById("modal");
-    if (event.target === modal) {
-        closeModal2();
-    }
-};
-
-// Function to close the modal
-function closeModal2() {
-    document.getElementById("modal").style.display = "none";
-}
-function openModal2() {
-    let modal = document.getElementById("addModal");
-    modal.style.display = "flex"; // Show modal
-}
-
-function closeModal2() {
-    let modal = document.getElementById("addModal");
-    modal.style.display = "none"; // Hide modal
-}
-
-// Close when clicking outside the modal
 window.onclick = function(event) {
     let modal = document.getElementById("addModal");
     if (event.target === modal) {
-        closeModal2();
+        closeAddModal();
     }
 };
 
+// Function to add a new post to the table
+function addNewPost() {
+    let title = document.getElementById("add-content-name").value;
+    let category = document.getElementById("add-category").value;
+    let date = document.getElementById("add-date").value;
+    let fileInput = document.getElementById("add-logo");
+    
+    // Convert date format from "YYYY-MM-DD" to "DD/MM/YYYY"
+    let formattedDate = date.split("-").reverse().join("/");
+
+    // Default image if none is uploaded
+    let imageSrc = fileInput.files.length > 0 ? URL.createObjectURL(fileInput.files[0]) : "img/default.png";
+
+    // Create a new row
+    let table = document.getElementById("postTable").querySelector("tbody");
+    let newRow = table.insertRow();
+
+    newRow.innerHTML = `
+        <td>${title}</td>
+        <td><img src="${imageSrc}" alt="${category}" style="width: 100px; height: auto;"></td>
+        <td>${category}</td>
+        <td>${formattedDate}</td>
+        <td>
+            <a href="../Quang/baichitiet/html/baichitiet.html" class="icon-btn">
+                <i class="fa-regular fa-eye"></i>
+            </a>
+            <button onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+            <i class="fa-solid fa-trash-can" onclick="deletePost(this)"></i>
+        </td>
+    `;
+
+    closeAddModal(); // Close modal after adding
+}
+
+// Function to delete a post
+function deletePost(button) {
+    let row = button.closest("tr");
+    row.remove();
+}

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../css/header.css">
-    
+    <link rel="stylesheet" href="./css/pagination.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="../Js/Search-header.js" defer></script>
     <link rel="stylesheet" href="./css/style.css">
@@ -98,14 +98,24 @@
                 </div>
             </div>
 
-            <td class="category-dropdown">
-                <button id="theloai-btn" class="category-btn">Thể loại <i class="fas fa-chevron-down dropdown-icon"></i>
-                    <div id="theloai-menu" class="category-menu"></div>
-                </button>          
-            </td>
-
-            <input type="text" class="search-bar_author" placeholder="Tìm kiếm...">
-            <button class="add-post-btn" onclick="openModal2()">THÊM BÀI VIẾT</button>
+            <div class="functionBar">
+                <div class="dropdown_two">
+                    <button class="custom-button">THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i> </button>
+                    <ul class="dropdown-menu" id="theLoai-menu">
+                        <li><a href="#" data-category="Tất cả">Tất cả</a></li>
+                        <li><a href="#" data-category="Bóng đá Việt Nam">Bóng đá Việt Nam</a></li>
+                        <li><a href="#" data-category="Bóng đá thế giới">Bóng đá thế giới</a></li>
+                        <li><a href="#" data-category="Premier League">Premier League</a></li>
+                        <li><a href="#" data-category="V. League 1">V. League 1</a></li>
+                        <li><a href="#" data-category="Ligue 1">Ligue 1</a></li>
+                        <li><a href="#" data-category="Bundesliga">Bundesliga</a></li>
+                        <li><a href="#" data-category="Serie A">Serie A</a></li>
+                        <li><a href="#" data-category="La Liga">La Liga</a></li>
+                    </ul>
+                </div>
+                <input type="text" class="search-box" placeholder="Tìm kiếm...">
+                <button class="add-post-btn" onclick="openModal2()">THÊM BÀI VIẾT</button>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -198,128 +208,105 @@
                     
                 </tbody>
             </table>
-            
-
-            <!-- Pagination -->
-            
         </main>
     </div>
-   
-    
     <div class="pagination">
-        <button id="prev-btn" class="pagination-btn">← Previous</button>
-        <div id="page-numbers"></div>
-        <button id="next-btn" class="pagination-btn">Next →</button>
-    </div>
-    
-    
-        
+        <button class="prev" disabled>← Previous</button>
+        <button class="page active">1</button>
+        <button class="page">2</button>
+        <button class="page">3</button>
+        <span class="dots">...</span>
+        <button class="page">67</button>
+        <button class="page">68</button>
+        <button class="next">Next →</button>
+    </div>   
     <script src="./js/AUTHOR_QLBV.js"></script>
+    <script src="./js/pagination.js"></script>
+    <script src="./js/searchBar1.js"></script>
+    <script src="./js/delete.js"></script>
     
 </body>
 </html>
 
+<!-- Edit Modal -->
 <div id="editModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
+        <span class="close" onclick="closeEditModal()">&times;</span>
         <h2>Chỉnh sửa bài viết</h2>
         
-        <label>Tiêu đề bài viết:</label>
-        <input type="text" placeholder="Nhập tiêu đề bài viết">
+        <form id="edit-content-form">
+            <label for="edit-content-name">Tên bài viết</label>
+            <input type="text" id="edit-content-name" placeholder="Nhập tiêu đề" required>
+
+            <label for="edit-category">Chọn thể loại:</label>
+            <select id="edit-category">
+                <option>Bóng đá Việt Nam</option>
+                <option>Bóng đá Quốc tế</option>
+                <option>Premier League</option>
+                <option>V. League 1</option>
+                <option>Ligue 1</option>
+                <option>Bundesliga</option>
+                <option>Serie A</option>
+                <option>La Liga</option>
+            </select>
+            
+            <div class="file-content">
+                <label for="edit-content">Nội dung:</label>
+                <textarea id="edit-content" placeholder="Nhập nội dung bài viết"></textarea>
+            </div>
+            
+            <div class="file-upload">
+                <label for="edit-logo"><strong>Ảnh bài báo</strong></label>
+                <input type="file" id="edit-logo" name="edit-logo">
+            </div>
         
-        <label>Tác giả:</label>
-        <input type="text" placeholder="Nhập tên tác giả">
-        
-        <label>Chọn danh mục:</label>
-        <select>
-            <option>Sự kiện</option>
-            <option>Tin tức</option>
-        </select>
-        
-        <label>Nội dung bài viết:</label>
-        <textarea placeholder="Nhập nội dung bài viết"></textarea>
-        
-        <label>Ảnh minh họa:</label>
-        <input type="file">
-        
-        <!-- Button Group -->
-        <div class="modal-buttons">
-            <button class="submit-btn">Lưu thay đổi</button>
-            <button class="cancel-btn" onclick="closeModal()">Hủy</button>
-        </div>
+            <!-- Button Group -->
+            <div class="modal-buttons">
+                <button class="submit-btn">Lưu thay đổi</button>
+                <button class="cancel-btn" onclick="closeEditModal()">Hủy</button>
+            </div>
+        </form>
     </div>
 </div>
 
-
-<!-- Add Post Modal -->
-<!-- <div id="addModal" class="modal">
+<!-- Add Modal -->
+<div id="addModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModal2('addModal')">&times;</span>
-        <h2>Thêm Bài Viết Mới</h2>
-        
-        <label for="add-title">Tiêu đề bài viết:</label>
-        <input type="text" id="add-title" placeholder="Nhập tiêu đề bài viết">
-        
-        <label for="add-author">Tác giả:</label>
-        <input type="text" id="add-author" placeholder="Nhập tên tác giả">
-        
-        <label for="add-category">Chọn danh mục:</label>
-        <select id="add-category">
-            <option>Sự kiện</option>
-            <option>Tin tức</option>
-        </select>
-        
-        <label for="add-content">Nội dung bài viết:</label>
-        <textarea id="add-content" placeholder="Nhập nội dung bài viết"></textarea>
-        
-        <label for="add-image">Ảnh minh họa:</label>
-        <input type="file" id="add-image">
-        
-        <-- Button Group -->
-        <!-- <div class="modal-buttons">
-            <button class="submit-btn" onclick="saveNewPost2()">Đăng bài</button>
-            <button class="cancel-btn" onclick="closeModal2('addModal')">Hủy</button>
-        </div>
+        <span class="close" onclick="closeAddModal()">&times;</span>
+        <h2>Thêm bài viết</h2>
+            
+        <form id="add-content-form">
+            <label for="add-content-name">Tên bài viết</label>
+            <input type="text" id="add-content-name" placeholder="Nhập tiêu đề" required>
+    
+            <label for="add-category">Chọn thể loại:</label>
+            <select id="add-category">
+                <option>Bóng đá Việt Nam</option>
+                <option>Bóng đá Quốc tế</option>
+                <option>Premier League</option>
+                <option>V. League 1</option>
+                <option>Ligue 1</option>
+                <option>Bundesliga</option>
+                <option>Serie A</option>
+                <option>La Liga</option>
+            </select>
+                
+            <div class="file-content">
+                <label for="add-content">Nội dung:</label>
+                <textarea id="add-content" placeholder="Nhập nội dung bài viết"></textarea>
+            </div>
+                
+            <div class="file-upload">
+                <label for="add-logo"><strong>Ảnh bài báo</strong></label>
+                <input type="file" id="add-logo" name="add-logo">
+            </div>
+            
+            <!-- Button Group -->
+            <div class="modal-buttons">
+                <button class="submit-btn">Đăng</button>
+                <button class="cancel-btn" onclick="closeAddModal()">Hủy</button>
+            </div>
+        </form>
     </div>
-</div>  -->
+</div>
 
-
-    <!-- Modal -->
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Thêm bài viết</h2>
-            <form id="content-form">
-                <label for="content-name">Tên bài viết</label>
-                <input type="text" id="content-name" placeholder="Nhập tiêu đề" required>
-
-                <label for="category">Chọn thể loại:</label>
-                <select id="category">
-                    <option>Bóng đá Việt Nam</option>
-                    <option>Bóng đá Quốc tế</option>
-                    <option>Premier League</option>
-                    <option>V. League 1</option>
-                    <option>Ligue 1</option>
-                    <option>Bundesliga</option>
-                    <option>Serie A</option>
-                    <option>La Liga</option>
-                </select>
-                
-                <div class="file-content">
-                    <label for="content">Nội dung:</label>
-                    <textarea id="content" placeholder="Nhập nội dung bài viết"></textarea>
-                </div>
-                
-                <div class="file-upload">
-                    <label for="logo"><strong>Ảnh bài báo</strong></label>
-                    <input type="file" id="logo" name="logo">
-                </div>
-                
-                <button type="submit">Đăng</button>
-            </form>
-        </div>
-    </div>
-
-
-
-<!-- <script src="editButton.js"></script> -->

@@ -111,6 +111,7 @@ body {
 }
 
 .functionBar {
+    margin-top: 50px;
     margin-left: 30px;
     display: flex;
     justify-content: flex-start;
@@ -175,27 +176,6 @@ body {
 
 .dropdown_two > .dropdown-menu li:hover a {
     font-weight: bold;
-}
-
-.status-buttons {
-    display: flex;
-    gap: 50px;
-}
-
-.status-buttons button {
-    padding: 8px 15px;
-    border: none;
-    background-color: #d3d3d3;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.status-buttons button:hover {
-    background-color: #e0c04c;
-    color: black; 
 }
 
 table {

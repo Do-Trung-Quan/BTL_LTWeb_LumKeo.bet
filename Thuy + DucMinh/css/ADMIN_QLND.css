@@ -162,7 +162,7 @@ table {
 }
 
 th, td {
-    padding: 30px 80px;
+    padding: 30px 60px;
     text-align: center;
     border-bottom: 1px solid lightgrey;
 }
@@ -173,13 +173,16 @@ th {
 
 td {
     min-width: 200px;
+    text-align: center; /* Căn giữa nội dung trong ô */
+    vertical-align: middle; /* Căn giữa theo chiều dọc */
 }
 
 td i {
     cursor: pointer;
-    margin: 0 15px;
-    font-size: 18px;
+    margin: 0 10px; /* Điều chỉnh khoảng cách */
+    font-size: 20px; /* Tăng kích thước nếu cần */
     color: gray;
+    display: inline-block; /* Giữ các icon cùng trên một hàng */
 }
 
 td i:hover {

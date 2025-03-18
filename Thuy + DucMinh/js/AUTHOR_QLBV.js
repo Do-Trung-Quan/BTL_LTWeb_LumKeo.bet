@@ -119,9 +119,3 @@ function addNewPost() {
 
     closeAddModal(); // Close modal after adding
 }
-
-// Function to delete a post
-function deletePost(button) {
-    let row = button.closest("tr");
-    row.remove();
-}

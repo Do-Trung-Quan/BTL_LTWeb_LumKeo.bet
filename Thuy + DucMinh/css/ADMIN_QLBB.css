@@ -259,7 +259,21 @@ td i:hover {
     color: black;
 }
 
-/* Nền mờ modal */
+.edit-btn {
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.edit-btn:focus, 
+.edit-btn:hover {
+    border: none;
+    outline: none;
+}
+
+/* Modal Background */
 .modal {
     display: none;
     position: fixed;
@@ -273,15 +287,16 @@ td i:hover {
     align-items: center;
 }
 
-/* Nội dung modal */
+/* Modal Content */
 .modal-content {
     background: white;
     padding: 30px;
-    width: 60%; /* Increase width */
-    max-width: 800px; /* Prevent it from being too large on big screens */
+    width: 60%;
+    max-width: 800px;
     border-radius: 10px;
     text-align: left;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
 /* Modal Title */
@@ -290,20 +305,11 @@ td i:hover {
     margin-bottom: 20px;
 }
 
-/* Nút đóng modal */
-.close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
 /* Form Layout */
 .modal-content form {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Adds spacing between inputs */
+    gap: 15px;
 }
 
 /* Input Fields */
@@ -316,65 +322,56 @@ td i:hover {
     border-radius: 5px;
 }
 
-/* Nhãn */
-label {
-    display: block;
-    text-align: left;
-    font-weight: bold;
-    margin: 10px 0 5px;
+/* Align File Input */
+.modal-content input[type="file"] {
+    padding: 5px;
 }
 
-/* Input, Select, Textarea */
-input, select, textarea, button {
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-}
-
-/* File Upload */
-.file-upload {
-    display: flex;
-    align-items: center; 
-    gap: 50px;
-}
-
-.file-upload input[type="file"] {
-    width: 250px; 
-    max-width: 100%;
-}
-
-/* Nút chức năng */
-.button_function {
-    display: flex;  
-    justify-content: center; 
-    gap: 50px; 
-    margin-top: 25px;
-}
-
-/* Các nút */
-button.edit, button.cancel {
-    width: 150px;
-    font-size: 25px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 25px;
-}
-
-button.edit {
-    background-color: #ffc107; /* Màu vàng */
-    color: black;
-}
-
-button.edit:hover {
-    background-color: #e0a800;
-}
-
-/* Màu cho nút "Hủy" */
-button.cancel {
-    background-color: #dc3545; /* Màu đỏ */
+/* Submit Button */
+.submit-btn {
+    background-color: #007bff;
     color: white;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    width: 100%;
+    font-size: 16px;
 }
 
-button.cancel:hover {
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Cancel Button */
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    font-size: 16px;
+    width: 100%;
+    text-align: center;
+}
+
+.cancel-btn:hover {
     background-color: #b52b3a;
 }

@@ -134,7 +134,9 @@
                             <td>01/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -144,7 +146,9 @@
                             <td>01/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -154,7 +158,9 @@
                             <td>03/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i>
                             </td>
                         </tr>
@@ -165,7 +171,9 @@
                             <td>04/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -175,7 +183,9 @@
                             <td>03/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -185,7 +195,9 @@
                             <td>10/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                     </tr>
@@ -196,37 +208,37 @@
     <!-- Modal Chỉnh Sửa Bài Viết -->
 <div id="editModal" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" onclick="closeEditModal()">&times;</span>
         <h2>Chỉnh sửa bài viết</h2>
-        <form id="content-form">
-            <label for="content-name">Tên bài viết</label>
-            <input type="text" id="content-name" placeholder="Nhập tiêu đề" required>
+        
+        <form id="edit-content-form">
+            <label for="edit-content-name">Tên bài viết:</label>
+            <input type="text" id="edit-content-name" placeholder="Nhập tiêu đề" required>
 
-            <label for="category">Chọn thể loại:</label>
-            <select id="category">
+            <label for="edit-category">Chọn thể loại:</label>
+            <select id="edit-category">
                 <option>Bóng đá Việt Nam</option>
                 <option>Bóng đá Quốc tế</option>
                 <option>Premier League</option>
-                <option>V.League 1</option>
+                <option>V. League 1</option>
                 <option>Ligue 1</option>
                 <option>Bundesliga</option>
                 <option>Serie A</option>
                 <option>La Liga</option>
             </select>
 
-            <div class="file-content">
-                <label for="content">Nội dung:</label>
-                <textarea id="content" placeholder="Nhập nội dung bài viết"></textarea>
-            </div>
+            <label for="edit-date">Ngày đăng:</label>
+            <input type="date" id="edit-date" required>
 
             <div class="file-upload">
-                <label for="logo"><strong>Ảnh bài báo</strong></label>
-                <input type="file" id="logo" name="logo">
+                <label for="edit-logo"><strong>Ảnh bài báo:</strong></label>
+                <input type="file" id="edit-logo" name="edit-logo">
             </div>
-
-            <div class="button_function">
-                <button type="submit" class="edit">Chỉnh sửa</button>
-                <button type="button" class="cancel">Hủy</button>
+        
+            <!-- Button Group -->
+            <div class="modal-buttons">
+                <button type="button" class="submit-btn" onclick="saveEdit()">Lưu thay đổi</button>
+                <button type="button" class="cancel-btn" onclick="closeEditModal()">Hủy</button>
             </div>
         </form>
     </div>

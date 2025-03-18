@@ -1,0 +1,387 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+    min-height: 1600px;
+    position: relative;
+}
+
+.container {
+    display: flex;
+    margin: 20px;
+    gap: 70px;
+}
+
+/* Sidebar */
+.sidebar {
+    margin-left: 10px;
+    margin-top: 300px;
+    background: #e0e0e0;
+    display: flex;
+    padding: 10px;
+    border-radius: 10px;
+    width: 270px;
+    height: 530px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    color: black;
+}
+
+.sidebar a {
+  display: block;
+  color: black;
+  padding: 16px;
+  text-decoration: none;
+}
+
+/* Danh sách menu */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar ul li {
+    padding: 15px 20px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 5px;
+    border-radius: 10px;
+}
+
+.sidebar ul li:hover {
+    background-color: #e0c04c;
+    cursor: pointer;
+}
+
+.sidebar ul li.active{
+    background-color: #e0c04c;
+    color: black;
+}
+
+/* Admin Info */
+.admin-info {
+    position: relative;
+    left: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #e0e0e0;
+    padding: 15px 20px;
+    border-radius: 10px;
+    width: 1000px;
+    max-width: 200%;
+    height: 150px;
+    box-sizing: border-box;
+    z-index: 1;
+}
+.admin-text {
+    margin-left: 20px;
+}
+
+.admin-text h3 {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 20px;
+    color: black;
+}
+
+.admin-text p {
+    font-size: 20px;
+    color: #333;
+    margin: 5px 0 0;
+}
+
+.admin-avatar img {
+    width: 100px;
+    height: 100px;
+    border: 3px solid darkblue; 
+    border-radius: 50%;
+    margin-right: 20px;
+    object-fit: cover;
+}
+
+.functionBar {
+    margin-left: 30px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 100px;
+}
+
+.search-box {
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: none;
+    background-color: #d3d3d3; 
+    font-size: 25px;
+    width: 450px; 
+    max-width: 500px;
+    outline: none;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.custom-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #d3d3d3;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.custom-button:hover {
+    background-color: #c0c0c0; 
+}
+
+.dropdown_two {
+    position: relative;
+    display: inline-block;
+    min-width: 100px;
+    padding: 10px 15px;
+}
+
+.dropdown_two > .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 250px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 12px 10px; 
+    z-index: 1; 
+    list-style: none;
+    border: none;
+    top: calc(100% + 2px);
+}
+
+.dropdown_two > .dropdown-menu a {
+    display: block;
+    padding: 20px 16px;
+    text-decoration: none;
+    color: black;
+}
+
+.dropdown_two:hover > .dropdown-menu {
+    display: block;
+}
+
+.dropdown_two > .dropdown-menu li:hover a {
+    font-weight: bold;
+}
+
+.status-buttons {
+    display: flex;
+    gap: 50px;
+}
+
+.status-buttons button {
+    padding: 8px 15px;
+    border: none;
+    background-color: #d3d3d3;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.status-buttons button:hover {
+    background-color: #e0c04c;
+    color: black; 
+}
+
+.status-buttons .active_btn {
+    background-color: #e0c04c;
+    color: black;
+}
+
+table {
+    width: 1000px;
+    border-collapse: collapse;
+    margin-top: 50px;
+}
+
+
+.table-header {
+    position: relative;
+    width: 100%;
+    height: 50px; /* Adjust height as needed */
+    padding: 10px;
+    margin-bottom: 20px;
+}
+.table-container {
+    width: 100%;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+thead {
+    background-color: lightgrey;
+    font-weight: bold;
+}
+
+th, td {
+    padding: 20px 30px;
+    text-align: center;
+    border-bottom: 1px solid lightgrey;
+    vertical-align: middle;
+    word-break: break-word;
+    white-space: normal; 
+    max-width: 350px; 
+}
+
+th {
+    background-color: lightgray;
+}
+
+td {
+    min-width: 200px;
+}
+
+td img {
+    width: 150px; 
+    height: 100px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Icon hành động */
+td i {
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 18px;
+    color: gray;
+}
+
+td i:hover {
+    color: black;
+}
+
+.edit-btn {
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.edit-btn:focus, 
+.edit-btn:hover {
+    border: none;
+    outline: none;
+}
+
+/* Modal Background */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal Content */
+.modal-content {
+    background: white;
+    padding: 30px;
+    width: 60%;
+    max-width: 800px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* Modal Title */
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Form Layout */
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Input Fields */
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Align File Input */
+.modal-content input[type="file"] {
+    padding: 5px;
+}
+
+/* Submit Button */
+.submit-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    width: 100%;
+    font-size: 16px;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Cancel Button */
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    font-size: 16px;
+    width: 100%;
+    text-align: center;
+}
+
+.cancel-btn:hover {
+    background-color: #b52b3a;
+}

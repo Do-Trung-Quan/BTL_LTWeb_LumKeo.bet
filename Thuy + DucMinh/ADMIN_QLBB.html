@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - QLBB</title>
-    <link rel="stylesheet" href="ADMIN_QLBB.css">
+    <link rel="stylesheet" href="./css/ADMIN_QLBB.css">
     <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="pagination.css">
+    <link rel="stylesheet" href="./css/pagination.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="../Js/Search-header.js" defer></script>
     
@@ -88,25 +88,30 @@
             </ul>
         </aside>
         <main class="content">
-            <div class="Personal_Info">
-                <div class="left">
+            <div class="admin-info">
+                <div class="admin-text">
                     <h2>Đỗ Trung Quân</h2>
-                    <h3>ADMIN ID: AD190804</h3>
+                    <p>ADMIN ID: AD190804</p>
                 </div>
-                <div class="right"><img src="img\cat.jpg" alt=""></div>
+                <div class="admin-avatar">
+                    <img id="profile-pic-upper" src="img/cat.jpg" alt="Avatar" class="avatar">
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
+                </div>
             </div>
+
             <div class="functionBar">
                 <div class="dropdown_two">
                     <button class="custom-button">THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i> </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="../Quang/">Bóng đá Việt Nam</a></li>
-                        <li><a href="../Quang/">Bóng đá thế giới</a></li>
-                        <li><a href="../Quang/">Premier League</a></li>
-                        <li><a href="../Quang/">V. League 1</a></li>
-                        <li><a href="../Quang/">Ligue 1</a></li>
-                        <li><a href="../Quang/">Bundesliga</a></li>
-                        <li><a href="../Quang/">Serie A</a></li>
-                        <li><a href="../Quang/">La Liga</a></li>
+                    <ul class="dropdown-menu" id="theLoai-menu">
+                        <li><a href="#" data-category="Tất cả">Tất cả</a></li>
+                        <li><a href="#" data-category="Bóng đá Việt Nam">Bóng đá Việt Nam</a></li>
+                        <li><a href="#" data-category="Bóng đá thế giới">Bóng đá thế giới</a></li>
+                        <li><a href="#" data-category="Premier League">Premier League</a></li>
+                        <li><a href="#" data-category="V.League 1">V.League 1</a></li>
+                        <li><a href="#" data-category="Ligue 1">Ligue 1</a></li>
+                        <li><a href="#" data-category="Bundesliga">Bundesliga</a></li>
+                        <li><a href="#" data-category="Serie A">Serie A</a></li>
+                        <li><a href="#" data-category="La Liga">La Liga</a></li>
                     </ul>
                 </div>
                 <input type="text" class="search-box" placeholder="Tìm kiếm...">
@@ -125,7 +130,7 @@
                         <th>Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="table-body">
                     <tr>
                         <tr>
                             <td>Lịch thể thao mới nhất hôm nay ngày 11/3 và rạng sáng 12/3</td>
@@ -134,7 +139,9 @@
                             <td>01/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -144,17 +151,21 @@
                             <td>01/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
                             <td>Cục Cảnh sát hình sự đề nghị VFF xem xét công tác tổ trọng tài bị 'treo còi'</td>
                             <td><img src="img\AnhBaiBao3.png" alt="Ảnh bài báo"></td>
-                            <td>V League</td>
+                            <td>V.League 1</td>
                             <td>03/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i>
                             </td>
                         </tr>
@@ -165,7 +176,9 @@
                             <td>04/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -175,7 +188,9 @@
                             <td>03/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                         <tr>
@@ -185,7 +200,9 @@
                             <td>10/03/2025</td>
                             <td><a href= "../Quang/baichitiet/html/baichitiet.html">
                                 <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-pen editIcon" data-url="ChinhSuaBV.html"></i>
+                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <i class="fa-solid fa-trash-can"></i></td>
                         </tr>
                     </tr>
@@ -193,6 +210,44 @@
             </table>
         </main>
     </div>
+    <!-- Modal Chỉnh Sửa Bài Viết -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>Chỉnh sửa bài viết</h2>
+        
+        <form id="edit-content-form">
+            <label for="edit-content-name">Tên bài viết:</label>
+            <input type="text" id="edit-content-name" placeholder="Nhập tiêu đề" required>
+
+            <label for="edit-category">Chọn thể loại:</label>
+            <select id="edit-category">
+                <option>Bóng đá Việt Nam</option>
+                <option>Bóng đá Quốc tế</option>
+                <option>Premier League</option>
+                <option>V. League 1</option>
+                <option>Ligue 1</option>
+                <option>Bundesliga</option>
+                <option>Serie A</option>
+                <option>La Liga</option>
+            </select>
+
+            <label for="edit-date">Ngày đăng:</label>
+            <input type="date" id="edit-date" required>
+
+            <div class="file-upload">
+                <label for="edit-logo"><strong>Ảnh bài báo:</strong></label>
+                <input type="file" id="edit-logo" name="edit-logo">
+            </div>
+        
+            <!-- Button Group -->
+            <div class="modal-buttons">
+                <button type="button" class="submit-btn" onclick="saveEdit()">Lưu thay đổi</button>
+                <button type="button" class="cancel-btn" onclick="closeEditModal()">Hủy</button>
+            </div>
+        </form>
+    </div>
+</div>
     <div class="pagination">
         <button class="prev" disabled>← Previous</button>
         <button class="page active">1</button>
@@ -203,7 +258,11 @@
         <button class="page">68</button>
         <button class="next">Next →</button>
     </div>   
-    <script src="pagination.js"></script> 
-    <script src="editButton.js"></script>
+    <script src="./js/pagination.js"></script> 
+    <script src="./js/editButton.js"></script>
+    <script src="./js/searchBar1.js"></script>
+    <script src="./js/filterCategory.js"></script>
+    <script src="./js/delete.js"></script>
+    <script src="./js/AUTHOR_TTCN.js"></script>
 </body>
 </html>

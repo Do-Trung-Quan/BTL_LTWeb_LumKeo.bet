@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/pagination.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="../Js/Search-header.js" defer></script>
 </head>
@@ -91,17 +92,28 @@
                     <p>AUTHOR ID: AU221104</p>
                 </div>
                 <div class="admin-avatar">
-                    <img src="./img/amongUs.jpg" alt="Admin Avatar">
+                    <img id="profile-pic-upper" src="img\amongUs.jpg" alt="Avatar" class="avatar">
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
                 </div>
             </div>
 
-            <td class="category-dropdown">
-                <button id="theloai-btn" class="category-btn">Thể loại <i class="fas fa-chevron-down dropdown-icon"></i>
-                    <div id="theloai-menu" class="category-menu"></div>
-                </button>          
-            </td>
-
-            <input type="text" class="search-bar_author" placeholder="Tìm kiếm...">
+            <div class="functionBar">
+                <div class="dropdown_two">
+                    <button class="custom-button">THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i> </button>
+                    <ul class="dropdown-menu" id="theLoai-menu">
+                        <li><a href="#" data-category="Tất cả">Tất cả</a></li>
+                        <li><a href="#" data-category="Bóng đá Việt Nam">Bóng đá Việt Nam</a></li>
+                        <li><a href="#" data-category="Bóng đá thế giới">Bóng đá thế giới</a></li>
+                        <li><a href="#" data-category="Premier League">Premier League</a></li>
+                        <li><a href="#" data-category="V.League 1">V.League 1</a></li>
+                        <li><a href="#" data-category="Ligue 1">Ligue 1</a></li>
+                        <li><a href="#" data-category="Bundesliga">Bundesliga</a></li>
+                        <li><a href="#" data-category="Serie A">Serie A</a></li>
+                        <li><a href="#" data-category="La Liga">La Liga</a></li>
+                    </ul>
+                </div>
+                <input type="text" class="search-box" placeholder="Tìm kiếm...">
+            </div>
             
             <table>
                 <thead>
@@ -120,8 +132,7 @@
                         <td>V.League 1</td>
                         <td>10/03/2025</td>
                         <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
+                            <i class="fa-regular fa-eye"></i></a>
                             <i class="fa-solid fa-trash-can"></i></td>
                     </tr>
                     <tr>
@@ -130,8 +141,7 @@
                         <td>Bóng đá Việt Nam</td>
                         <td>02/03/2025</td>
                         <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
+                            <i class="fa-regular fa-eye"></i></a>
                             <i class="fa-solid fa-trash-can"></i></td>
                     </tr>
                     <tr>
@@ -140,8 +150,7 @@
                         <td>Bóng đá quốc tế</td>
                         <td>09/03/2025</td>
                         <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
+                            <i class="fa-regular fa-eye"></i></a>
                             <i class="fa-solid fa-trash-can"></i></td>
                     </tr>
                     <tr>
@@ -150,8 +159,7 @@
                         <td>Premier League</td>
                         <td>07/03/2025</td>
                         <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
+                            <i class="fa-regular fa-eye"></i></a>
                             <i class="fa-solid fa-trash-can"></i></td>
                     </tr>
                     <tr>
@@ -160,8 +168,7 @@
                         <td>Bóng đá quốc tế</td>
                         <td>08/03/2025</td>
                         <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
+                            <i class="fa-regular fa-eye"></i></a>
                             <i class="fa-solid fa-trash-can"></i></td>
                     </tr>
                     <tr>
@@ -170,57 +177,28 @@
                         <td>Premier League</td>
                         <td>10/03/2025</td>
                         <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
+                            <i class="fa-regular fa-eye"></i></a>
                             <i class="fa-solid fa-trash-can"></i></td>
                     </tr>
                 </tbody>
             </table>
-            
-
-            <!-- Pagination -->
-            
         </main>
     </div>
-   
-    
     <div class="pagination">
-        <button id="prev-btn" class="pagination-btn">← Previous</button>
-        <div id="page-numbers"></div>
-        <button id="next-btn" class="pagination-btn">Next →</button>
-    </div>  
-    <script src="./js_author/AUTHOR_BDGD.js"></script>
-    
+        <button class="prev" disabled>← Previous</button>
+        <button class="page active">1</button>
+        <button class="page">2</button>
+        <button class="page">3</button>
+        <span class="dots">...</span>
+        <button class="page">67</button>
+        <button class="page">68</button>
+        <button class="next">Next →</button>
+    </div>   
+    <script src="./js/AUTHOR_BDGD.js"></script>
+    <script src="./js/AUTHOR_TTCN.js"></script>
+    <script src="./js/pagination.js"></script>
+    <script src="./js/searchBar1.js"></script>
+    <script src="./js/delete.js"></script>
+    <script src="./js/filterCategory.js"></script>
 </body>
 </html>
-
-<!-- <div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Chỉnh sửa bài viết</h2>
-        
-        <label>Tiêu đề bài viết:</label>
-        <input type="text" placeholder="Nhập tiêu đề bài viết">
-        
-        <label>Tác giả:</label>
-        <input type="text" placeholder="Nhập tên tác giả">
-        
-        <label>Chọn danh mục:</label>
-        <select>
-            <option>Sự kiện</option>
-            <option>Tin tức</option>
-        </select>
-        
-        <label>Nội dung bài viết:</label>
-        <textarea placeholder="Nhập nội dung bài viết"></textarea>
-        
-        <label>Ảnh minh họa:</label>
-        <input type="file">
-        
-        <-- Button Group -->
-        <!-- <div class="modal-buttons">
-            <button class="submit-btn">Lưu thay đổi</button>
-            <button class="cancel-btn" onclick="closeModal()">Hủy</button>
-        </div>
-    </div>
-</div> -->

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - QLBB</title>
-    <link rel="stylesheet" href="ADMIN_TTCN.css">
+    <link rel="stylesheet" href="./css/ADMIN_TTCN.css">
     <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="pagination.css">
+    <link rel="stylesheet" href="./css/pagination.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="../Js/Search-header.js" defer></script>
     
@@ -90,7 +90,10 @@
                     <h2>Đỗ Trung Quân</h2>
                     <h3>ADMIN ID: AD190804</h3>
                 </div>
-                <div class="right"><img src="img\cat.jpg" alt=""></div>
+                <div class="right">
+                    <img id="profile-pic-upper" src="img/cat.jpg" alt="Avatar" class="avatar">
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
+                </div>
             </div>
             <div class="formContainer">
                 <div class="above">
@@ -113,10 +116,13 @@
                     </div>
                     <div class="right">
                         <div class="avatar-section">
-                            <img src="img\cat.jpg" alt="Avatar" class="avatar">
-                            <br>
-                            <button class="btn" id="uploadBtn">Thay ảnh đại diện</button>
-                            <input type="file" id="avaPic" name="avaPic" accept="image/*">
+                            <div class="avatar-section">
+                                <img id="profile-pic-lower" src="img\amongUs.jpg" alt="Avatar" class="avatar"> 
+                                <br>
+                                <button  class="btn" id="profile-pic-button">Thay ảnh đại diện</button>
+                            </div>                       
+                            <!-- Hidden File Input -->
+                            <input type="file" id="profile-pic-input" accept="image/*" style="display: none">   
                         </div>
                     </div>
                 </div>
@@ -126,6 +132,6 @@
             </div>
         </main>
     </div>
-    <script src="changeAva.js"></script>
+    <script src="./js/AUTHOR_TTCN.js"></script>
 </body>
 </html>

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - QLBB</title>
-    <link rel="stylesheet" href="ADMIN_QLTG.css">
+    <link rel="stylesheet" href="./css/ADMIN_QLTG.css">
     <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="pagination.css">
+    <link rel="stylesheet" href="./css/pagination.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="../Js/Search-header.js" defer></script>
     
@@ -86,17 +86,20 @@
             </ul>
         </aside>
         <main class="content">
-            <div class="Personal_Info">
-                <div class="left">
+            <div class="admin-info">
+                <div class="admin-text">
                     <h2>Đỗ Trung Quân</h2>
-                    <h3>ADMIN ID: AD190804</h3>
+                    <p>ADMIN ID: AD190804</p>
                 </div>
-                <div class="right"><img src="img\cat.jpg" alt=""></div>
+                <div class="admin-avatar">
+                    <img id="profile-pic-upper" src="img/cat.jpg" alt="Avatar" class="avatar">
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
+                </div>
             </div>
             <div class="functionBar">
                 <input type="text" class="search-box" placeholder="Tìm kiếm...">
             </div>        
-            <table>
+            <table id="table-body">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -178,6 +181,9 @@
         <button class="page">68</button>
         <button class="next">Next →</button>
     </div>    
-    <script src="pagination.js"></script>
+    <script src="./js/pagination.js"></script>
+    <script src="./js/searchBar2.js"></script>
+    <script src="./js/delete.js"></script>
+    <script src="./js/AUTHOR_TTCN.js"></script>
 </body>
 </html>

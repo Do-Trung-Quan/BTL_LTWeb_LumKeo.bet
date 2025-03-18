@@ -157,7 +157,7 @@ thead {
 }
 
 th, td {
-    padding: 30px 50px;
+    padding: 30px 40px;
     text-align: center;
     border-bottom: 1px solid lightgrey;
 }
@@ -173,7 +173,7 @@ td {
 td i {
     cursor: pointer;
     margin: 0 15px;
-    font-size: 18px;
+    font-size: 20px;
     color: gray;
 }
 

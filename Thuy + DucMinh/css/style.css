@@ -259,7 +259,7 @@ table {
     width: 1000px;
     border-collapse: collapse;
     margin-top: 100px;
-    min-height: 600px;
+    
 }s
 
 
@@ -572,6 +572,7 @@ th, td {
 th {
     background-color: lightgray;
     height: 80px;
+    min-width: 200px;
 }
 
 td img {

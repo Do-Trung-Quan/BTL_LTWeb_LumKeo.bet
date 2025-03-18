@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const rowsPerPage = 7; // Số bài báo hiển thị trên mỗi trang
+    const rowsPerPage = 6; // Số bài báo hiển thị trên mỗi trang
     let currentPage = 1; // Trang hiện tại
     let newsRows = Array.from(document.querySelectorAll("tbody tr")); // Lấy tất cả các dòng tin tức trong bảng
 

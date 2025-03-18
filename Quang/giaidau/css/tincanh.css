@@ -1,0 +1,73 @@
+.tincanh {
+    width: 40%;
+    padding: 0;
+    padding-left: 20px;
+}
+
+.tincanh-content {
+    display: flex;
+    min-height: 144px;
+    padding-bottom: 20px;
+}
+
+.tincanh-phanloai {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tincanh-phanloai hr {
+    flex-grow: 1;
+    height: 4px;
+    background: #f1c40f;
+    border: none;
+    margin-top: -5px;
+    margin-left: 10px;
+}
+
+.tincanh-vanban h3 {
+    margin: 0;
+    font-size: 26px;
+    color: #007bff;
+}
+
+.tincanh-vanban p {
+    margin: 5px 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.tincanh-phanloai h1 {
+    color: #f1c40f;
+    margin-top: 0;
+}
+
+.tincanh-content img {
+    width: 200px;
+    height: auto;
+    margin-right: 10px;
+    transition: filter 0.3s ease;
+}
+
+.tincanh-vanban {
+    position: relative;
+}
+
+.tincanh-vanban small {
+    position: absolute;
+    bottom: 0;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.news-list1{
+    width: 60%;
+    background: white;
+    border-radius: 5px;
+    padding-left: 20px;
+}
+
+.tincanh-hieuung:hover img {
+    filter: brightness(70%);
+}

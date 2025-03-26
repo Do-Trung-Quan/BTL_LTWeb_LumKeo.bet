@@ -11,28 +11,40 @@ body {
     background: #ffffff;
     margin: 0;
     padding: 0;
-    min-height: 1600px;
+    min-height: 1400px;
+    left: 0px;
     position: relative;
 }
 
 
+.content {
+    position: relative;
+    top: -60px;
+    left: 50px;
+    margin-left: 290px;
+    padding: 40px;
+    min-width: 900px;
+    right: 5px;
+}
 .container {
     display: flex;
     margin: 20px;
     gap: 70px;
+    left: 20px;
 }
 
 .sidebar {
     margin-left: 10px;
-    margin-top: 300px;
+    margin-top: 10px;
     background: #e0e0e0;
     display: flex;
     padding: 10px;
     border-radius: 10px;
-    width: 250px;
-    height: 520px;
+    width: 300px;
+    height: 560px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     color: black;
+    position: fixed;
 }
 
 .sidebar a {
@@ -55,6 +67,7 @@ body {
     font-weight: bold;
     margin-bottom: 5px;
     border-radius: 10px;
+    font-size: larger;
 }
 
 .sidebar ul li:hover {
@@ -123,7 +136,7 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
 table {
@@ -155,6 +168,7 @@ th, td {
     padding: 30px 50px;
     text-align: center;
     border-bottom: 1px solid lightgrey;
+    min-width: 210px;
 }
 
 th {

@@ -11,7 +11,7 @@ body {
     background: #ffffff;
     margin: 0;
     padding: 0;
-    min-height: 1600px;
+    min-height: 1400px;
     position: relative;
 }
 
@@ -23,16 +23,40 @@ body {
 
 /* Sidebar */
 .sidebar {
-    margin-left: 10px;
-    margin-top: 300px;
+    margin-left: 30px;
+    margin-top: 30px;
     background: #e0e0e0;
     display: flex;
     padding: 10px;
     border-radius: 10px;
-    width: 270px;
-    height: 530px;
+    width: 300px;
+    height: 560px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     color: black;
+    position: fixed;
+
+    /* position: absolute;
+    left: 20px;
+    margin-left: 10px;
+    margin-top: 150px;
+    background: #e0e0e0;
+    display: flex;
+    padding: 10px;
+    border-radius: 10px;
+    width: 250px;
+    height: 440px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    color: black; */
+}
+
+
+.content {
+    position: relative;
+    top: -40px;
+    left: 70px;
+    margin-left: 290px;
+    padding: 40px;
+    min-width:1120px;
 }
 
 .sidebar a {
@@ -55,6 +79,7 @@ body {
     font-weight: bold;
     margin-bottom: 5px;
     border-radius: 10px;
+    font-size: larger;
 }
 
 .sidebar ul li:hover {
@@ -171,13 +196,13 @@ body {
 
 .status-buttons {
     display: flex;
-    gap: 50px;
+    gap: 0px;
 }
 
 .status-buttons button {
     padding: 8px 15px;
     border: none;
-    background-color: #d3d3d3;
+    background-color: #f9f6f6;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
@@ -198,7 +223,7 @@ body {
 table {
     width: 1000px;
     border-collapse: collapse;
-    margin-top: 50px;
+    margin-top: 0px;
 }
 
 
@@ -229,6 +254,7 @@ th, td {
     word-break: break-word;
     white-space: normal; 
     max-width: 350px; 
+    min-width: 210px;
 }
 
 th {

@@ -67,40 +67,51 @@ body {
     color: black;
 }
 
-.Personal_Info {
+/* Admin Info */
+.admin-info {
+    position: relative;
+    left: 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: lightgray; 
-    padding: 20px 30px;
-    border-radius: 20px;
-    margin: 30px auto;
-    width: 100%;
+    background: #e0e0e0;
+    padding: 15px 20px;
+    border-radius: 10px;
+    width: 1000px;
+    max-width: 200%;
+    height: 150px;
+    box-sizing: border-box;
+    z-index: 1;
 }
-
-.left {
+.admin-text {
     margin-left: 20px;
 }
 
-.left h2 {
+.admin-text h3 {
     font-size: 32px;
+    font-weight: bold;
+    margin: 0;
     margin-bottom: 20px;
+    color: black;
 }
 
-.left h3 {
+.admin-text p {
     font-size: 20px;
+    color: #333;
     margin: 5px 0 0;
 }
 
-.right img {
+.admin-avatar img {
     width: 100px;
     height: 100px;
-    border-radius: 50%; 
     border: 3px solid darkblue; 
+    border-radius: 50%;
+    margin-right: 20px;
     object-fit: cover;
 }
 
 .functionBar {
+    margin-top: 50px;
     margin-left: 30px;
     display: flex;
     justify-content: flex-start;
@@ -165,27 +176,6 @@ body {
 
 .dropdown_two > .dropdown-menu li:hover a {
     font-weight: bold;
-}
-
-.status-buttons {
-    display: flex;
-    gap: 50px;
-}
-
-.status-buttons button {
-    padding: 8px 15px;
-    border: none;
-    background-color: #d3d3d3;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.status-buttons button:hover {
-    background-color: #e0c04c;
-    color: black; 
 }
 
 table {

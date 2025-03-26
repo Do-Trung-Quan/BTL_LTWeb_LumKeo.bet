@@ -20,3 +20,22 @@ function showLoginForm() {
         resetForm.style.display = 'none';
     }, 500);
 }
+
+document.getElementById('login-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    const accounts = {
+        'admin': { password: '123', redirect: '../Thuy + DucMinh/ADMIN_QLBB.html' },
+        'author': { password: '123', redirect: '../Thuy + DucMinh/AUTHOR_QLBV.html' },
+        'user': { password: '123', redirect: '../Thuy + DucMinh/USER_BBDL.html' }
+    };
+
+    if (accounts[username] && accounts[username].password === password) {
+        window.location.href = accounts[username].redirect;
+    } else {
+        alert('Sai tài khoản hoặc mật khẩu');
+    }
+});
+

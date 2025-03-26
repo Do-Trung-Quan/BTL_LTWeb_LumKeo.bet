@@ -104,6 +104,25 @@ body, html {
     height: 45px;
 }
 
+.input-group input[type="text"]:not([id="reset-username"]):not([id="username"]) {
+    background-image: url('Images/PasswordIcon.png');
+    background-position: 5px center;
+    background-repeat: no-repeat;
+    padding-left: 45px;
+    font-size: 16px;
+    height: 45px;
+}
+
+.input-group input[type="text"][id="username"],
+.input-group input[type="text"][id="reset-username"] {
+    background-image: url('Images/UserIcon.png');
+    background-position: 1px center;
+    background-repeat: no-repeat;
+    padding-left: 45px;
+    font-size: 16px;
+    height: 45px;
+}
+
 .input-group label {
     display: block;
     margin-bottom: 5px;
@@ -122,6 +141,28 @@ body, html {
 .input-group input:focus {
     outline: none;
     border-bottom: 2px solid #007BFF; /* Thay đổi màu khi focus */
+}
+
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+.password-field input {
+    width: 85%%;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+}
+
+.toggle-password:hover {
+    color: #333;
 }
 
 .forgot-password {

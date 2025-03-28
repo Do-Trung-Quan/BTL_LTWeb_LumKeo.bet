@@ -59,6 +59,7 @@
         <form class="search-bar">
           <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
           <button><img src="../pics/header/Search.png" alt="Search Icon"></button>
+          <div id="dropdown-searchbar" class="dropdown-searchbar"></div>
         </form>
     
         <div class="nav-icons">
@@ -85,12 +86,15 @@
             </ul>
         </aside>
         <main class="content">
-            <div class="Personal_Info">
-                <div class="left">
+            <div class="admin-info">
+                <div class="admin-text">
                     <h2>Đỗ Trung Quân</h2>
-                    <h3>ADMIN ID: AD190804</h3>
+                    <p>ADMIN ID: AD190804</p>
                 </div>
-                <div class="right"><img src="img\cat.jpg" alt=""></div>
+                <div class="admin-avatar">
+                    <img id="profile-pic-upper" src="img/cat.jpg" alt="Avatar" class="avatar">
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
+                </div>
             </div>
             <div class="functionBar">
                 <input type="text" class="search-box" placeholder="Tìm kiếm...">
@@ -174,5 +178,6 @@
     <script src="./js/pagination.js"></script> 
     <script src="./js/searchBar1.js"></script>
     <script src="./js/delete.js"></script>
+    <script src="./js/AUTHOR_TTCN.js"></script>
 </body>
 </html>

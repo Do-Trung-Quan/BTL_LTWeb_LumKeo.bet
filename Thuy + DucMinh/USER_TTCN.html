@@ -58,6 +58,7 @@
         <form class="search-bar">
           <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
           <button><img src="../pics/header/Search.png" alt="Search Icon"></button>
+          <div id="dropdown-searchbar" class="dropdown-searchbar"></div>
         </form>
     
         <div class="nav-icons">
@@ -86,7 +87,10 @@
                     <h2>Trần Nhật Minh</h2>
                     <h3>USER ID: US00350</h3>
                 </div>
-                <div class="right"><img src="img\SonTung.jpg" alt=""></div>
+                <div class="right">
+                    <img id="profile-pic-upper" src="img/SonTung.jpg" alt="Avatar" class="avatar">
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
+                </div>
             </div>
             <div class="formContainer">
                 <div class="above">
@@ -109,10 +113,13 @@
                     </div>
                     <div class="right">
                         <div class="avatar-section">
-                            <img src="img\SonTung.jpg" alt="Avatar" class="avatar">
-                            <br>
-                            <button class="btn" id="uploadBtn">Thay ảnh đại diện</button>
-                            <input type="file" id="avaPic" name="avaPic" accept="image/*">
+                            <div class="avatar-section">
+                                <img id="profile-pic-lower" src="img/SonTung.jpg" alt="Avatar" class="avatar"> 
+                                <br>
+                                <button  class="btn" id="profile-pic-button">Thay ảnh đại diện</button>
+                            </div>                       
+                            <!-- Hidden File Input -->
+                            <input type="file" id="profile-pic-input" accept="image/*" style="display: none">   
                         </div>
                     </div>
                 </div>
@@ -122,6 +129,6 @@
             </div>
         </main>
     </div>
-    <script src="./js/changeAva.js"></script>
+    <script src="./js/AUTHOR_TTCN.js"></script>
 </body>
 </html>

@@ -110,6 +110,7 @@
 }
 
 .search-bar{
+  position: relative;
   width: 700px;
   height: 40px;
   background-color: white;
@@ -161,4 +162,54 @@
 .dark-overlay.active {
   opacity: 1;
   visibility: visible;
+}
+
+/*dropdown searchbar section*/
+.dropdown-searchbar {
+  position: absolute;
+  top: 41px;
+  left: 0;
+  width: 92%;
+  background: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  display: none;
+  max-height: 402px;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+.news-search-item {
+  display: flex;
+  /* align-items: center; */
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.news-search-item:hover {
+  background: #e4e4e4;
+}
+
+.news-search-img {
+  width: 100px !important;
+  height: 60px;
+  object-fit: cover;
+}
+
+.news-search-content {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.news-search-title {
+  font-weight: bold;
+}
+
+.news-search-source {
+  font-size: 12px;
+  color: gray;
+  margin-top: 5px;
 }

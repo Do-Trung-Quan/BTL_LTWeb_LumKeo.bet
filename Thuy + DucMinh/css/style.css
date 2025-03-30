@@ -10,18 +10,18 @@ body {
 
 /* Floating Sidebar */
 .sidebar {
-    position: absolute;
-    left: 20px;
-    margin-left: 10px;
-    margin-top: 150px;
+    margin-left: 30px;
+    margin-top: 30px;
     background: #e0e0e0;
     display: flex;
     padding: 10px;
     border-radius: 10px;
-    width: 250px;
-    height: 440px;
+    width: 300px;
+    height: 460px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     color: black;
+    position: fixed;
+
 }
 
 .sidebar a {
@@ -44,6 +44,7 @@ body {
     font-weight: bold;
     margin-bottom: 5px;
     border-radius: 10px;
+    font-size: larger;
 }
 
 .sidebar ul li:hover {
@@ -205,10 +206,11 @@ button {
 /* Main Content */
 .content {
     position: relative;
-    top: 50px;
-    left: 50px;
+    top: -10px;
+    left: 70px;
     margin-left: 290px;
     padding: 40px;
+    min-width:1200000px;
 }
 
 /* Admin Info */
@@ -221,7 +223,7 @@ button {
     background: #e0e0e0;
     padding: 15px 20px;
     border-radius: 10px;
-    width: 1000px;
+    width: 1060px;
     max-width: 200%;
     height: 150px;
     box-sizing: border-box;
@@ -256,7 +258,7 @@ button {
 
 /* Table */
 table {
-    width: 1000px;
+    width: 1060px;
     border-collapse: collapse;
     margin-top: 100px;
     
@@ -305,7 +307,7 @@ table {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 100px;
+    gap: 140px;
 }
 
 .search-box {

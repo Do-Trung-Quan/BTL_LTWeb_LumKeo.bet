@@ -149,26 +149,6 @@ table {
     margin-top: 0px;
 }
 
-table {
-    width: 1000px;
-    border-collapse: collapse;
-    margin-top: 50px;
-}
-
-.table-header {
-    position: relative;
-    width: 100%;
-    height: 50px; /* Adjust height as needed */
-    padding: 10px;
-    margin-bottom: 20px;
-}
-.table-container {
-    width: 100%;
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 8px;
-}
-
 thead {
     background-color: lightgrey;
     font-weight: bold;

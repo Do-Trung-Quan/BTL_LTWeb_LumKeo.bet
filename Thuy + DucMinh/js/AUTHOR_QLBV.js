@@ -1,3 +1,66 @@
+// Function to get unique values from the third column ("Thể loại")
+function populateCategoryDropdown() {
+    const categories = new Set(); // Using a Set to store unique values
+
+    document.querySelectorAll("#table-body tr").forEach(row => {
+        let categoryValue = row.children[2].textContent.trim(); // Get value from 3rd column
+        categories.add(categoryValue);
+    });
+
+    const dropdown = document.getElementById("theloai-menu");
+    dropdown.innerHTML = ""; // Clear old values
+
+    // Add "Clear All" option
+    let clearOption = document.createElement("a");
+    clearOption.href = "#";
+    clearOption.textContent = "Clear All";
+    clearOption.style.fontWeight = "bold";
+    clearOption.style.color = "red";
+    clearOption.addEventListener("click", () => displayPage(1));
+    dropdown.appendChild(clearOption);
+    
+    // Add category options
+    categories.forEach(category => {
+        let option = document.createElement("a");
+        option.href = "#";
+        option.textContent = category;
+        option.addEventListener("click", () => filterTableByCategory(category));
+        dropdown.appendChild(option);
+    });
+}
+
+// Function to filter table rows by category
+function filterTableByCategory(category) {
+    document.querySelectorAll("#table-body tr").forEach(row => {
+        let categoryValue = row.children[2].textContent.trim();
+        row.style.display = categoryValue === category ? "table-row" : "none";
+    });
+}
+
+// Function to reset table and show all rows
+function resetTable() {
+    document.querySelectorAll("#table-body tr").forEach(row => {
+        row.style.display = "table-row";
+    });
+}
+
+// Toggle dropdown menu for "Thể loại" button
+document.getElementById("theloai-btn").addEventListener("click", function (event) {
+    event.stopPropagation();
+    let dropdown = document.getElementById("theloai-menu");
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    populateCategoryDropdown(); // Update dropdown when opening
+});
+
+// Close dropdown when clicking outside
+document.addEventListener("click", function () {
+    document.getElementById("theloai-menu").style.display = "none";
+});
+
+
+
+//modal
+
 // Function to open the modal (updated for "THÊM BÀI VIẾT")
 // Open edit modal and populate it with existing data from the row
 function openEditModal(button) {
@@ -118,4 +181,10 @@ function addNewPost() {
     `;
 
     closeAddModal(); // Close modal after adding
+}
+
+// Function to delete a post
+function deletePost(button) {
+    let row = button.closest("tr");
+    row.remove();
 }

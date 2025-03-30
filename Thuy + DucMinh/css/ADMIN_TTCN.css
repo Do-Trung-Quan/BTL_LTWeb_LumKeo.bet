@@ -105,7 +105,7 @@ body {
     margin-bottom: 10px;
 }
 
-.Personal_Info .user_detail h3 {
+.Personal_Info .user_detail p {
     font-size: 18px;
     margin: 5px 0 0;
 }
@@ -158,8 +158,6 @@ body {
     padding: 20px;
     margin-top: 15px;
     position: relative;
-    /* width: 100%;
-    max-width: 400px; */
 }
 
 .upload_complete {
@@ -172,6 +170,10 @@ body {
     width: 100%;
 }
 
+.img_upload {
+    margin-bottom: 20px;
+}
+
 /* Kích thước ảnh upload */
 .img_upload img {
     width: 150px;
@@ -179,6 +181,7 @@ body {
     border-radius: 50%;
     border: 3px solid darkblue;
     object-fit: cover;
+
 }
 
 /* Nút hành động */
@@ -209,8 +212,6 @@ body {
     padding: 20px;
     margin-top: 15px;
     position: relative;
-    /* width: 100%;
-    max-width: 400px; */
 }
 
 #form_update_Password .edit_password {

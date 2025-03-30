@@ -70,132 +70,189 @@ body {
 }
 
 .content {
-    
     margin-left: 290px;
     padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: calc(100% - 290px); /* Giữ kích thước phù hợp */
 }
 
+/* Personal Information Section */
 .Personal_Info {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: lightgray; 
-    padding: 20px 30px;
+    background-color: lightgray;
+    padding: 20px;
     border-radius: 20px;
-    margin: 50px;
-    width: 1000px;
-    height: 150px;
+    margin: 20px auto;
+    width: 100%;  /* Để linh hoạt hơn */
+    max-width: 900px; /* Giới hạn tối đa */
+    height: 180px;
 }
 
-.Personal_Info .left {
+/* Chi tiết người dùng */
+.Personal_Info .user_detail {
     margin-left: 20px;
+    flex: 1; /* Giúp co giãn tự động */
 }
 
-.Personal_Info .left h2 {
-    font-size: 32px;
-    margin-bottom: 20px;
+.Personal_Info .user_detail h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
 }
 
-.Personal_Info .left h3 {
-    font-size: 20px;
+.Personal_Info .user_detail p {
+    font-size: 18px;
     margin: 5px 0 0;
 }
 
-.Personal_Info .right img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%; 
-    border: 3px solid darkblue; 
+/* Hình ảnh đại diện */
+.Personal_Info .profile_image img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid darkblue;
     object-fit: cover;
-    right: 23px;
-    position: relative;
 }
 
-.formContainer {
-    background: #e0e0e0;
-    padding: 20px 30px;
-    border-radius: 10px;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
-    width: 1000px;
-    margin: 50px auto;
+.userContainer {
+    width: 100%;  /* Để linh hoạt hơn */
+    max-width: 900px; /* Giới hạn tối đa */
+    height: 180px;
+    margin-top: 20px;
+}
+
+/* Avatar Upload Section */
+.userAvatar, .userPassword {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.formContainer .above {
+.contentFill {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     width: 100%;
+    border-bottom: solid 1px lightgray;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
 }
 
-.formContainer .above .left {
-    padding-right: 20px;
+.labelFill {
+    width: 100%;
+    font-size: 18px;
+    color: black;
+    margin-bottom: 8px;
 }
 
-.formContainer .above .right {
+/* Box Upload Avatar */
+#boxAva {
+    background: #FAFAFA;
+    border: 1px solid #E5E5E5;
+    border-radius: 6px;
+    padding: 20px;
+    margin-top: 15px;
+    position: relative;
+}
+
+.upload_complete {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-}
-
-.formContainer .above .right .avatar-section {
-    text-align: center;
-}
-
-.formContainer .above .right .avatar {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%; 
-    border: 3px solid darkblue; 
-    object-fit: cover;
-    margin-bottom: 30px;
-}
-
-.formContainer .above .left .form-section h2 {
-    margin-bottom: 50px;
-}
-
-
-.formContainer .above .left .form-group {
-    display: flex;
-    align-items: center;  /* Căn giữa label và input theo chiều dọc */
-    gap: 15px;  /* Khoảng cách giữa label và input */
-    margin-bottom: 15px;  /* Khoảng cách giữa các dòng */
-}
-
-.formContainer .above .left label {
-    min-width: 160px;  /* Đảm bảo tất cả các label có độ rộng cố định */
-    text-align: left;  /* Căn chữ về bên phải */
-    font-weight: bold;  /* In đậm như trong ảnh */
-}
-
-.formContainer .above .left input {
-    flex: 1; /* Để input tự động giãn ra hết chiều ngang có thể */
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
-    background: #e0e0e0;
-    width: 300px;
-}
-
-.formContainer .below {
+    background: #FAFAFA;
+    border-radius: 6px;
+    padding: 20px;
     width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
 }
 
-.btn {
-    background: #d0d0d0;
+.img_upload {
+    margin-bottom: 20px;
+}
+
+/* Kích thước ảnh upload */
+.img_upload img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid darkblue;
+    object-fit: cover;
+}
+
+/* Nút hành động */
+.button_act {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.button_act button {
+    background: #900C3F;
+    color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 18px;
     border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
+    font-size: 16px;
 }
 
-#avaPic {
-    display: none;
+.button_act button:hover {
+    background: #72092f;
+}
+
+/* Password Update Form */
+#form_update_Password {
+    background: #FAFAFA;
+    border: 1px solid #E5E5E5;
+    border-radius: 6px;
+    padding: 20px;
+    margin-top: 15px;
+    position: relative;
+}
+
+#form_update_Password .edit_password {
+    font-size: 16px;
+    color: #222;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+#form_update_Password .input_log {
+    width: 100%;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#form_update_Password .input_form {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #BDBDBD;
+    border-radius: 6px;
+    font-size: 16px;
+    padding: 0 15px;
+    outline: none;
+}
+
+.icon_input {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    color: #900C3F;
+}
+
+.toggle-password {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Khoảng cách giữa icon và chữ */
+    cursor: pointer; /* Biểu tượng con trỏ chuột */
+    font-size: 16px;
+    color: #600;
+    user-select: none; /* Ngăn chọn văn bản */
+}
+.toggle-password i {
+    font-size: 18px;
 }

@@ -85,48 +85,52 @@
         </aside>
         <main class="content">
             <div class="Personal_Info">
-                <div class="left">
+                <div class="user_detail">
                     <h2>Nguyễn Đức Minh</h2>
-                    <h3>AUTHOR ID: AU221104</h3>
+                    <p>AUTHOR ID: AU221104</p>
                 </div>
-                <div class="right">
-                    <img id="profile-pic-upper" src="img\amongUs.jpg" alt="Avatar" class="avatar">
-                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
+                <div class="profile_image">
+                    <img id="profile_pic" src="img/amongUs.jpg" alt="Avatar">
+                    <input type="file" id="profile_pic_input" accept="image/*" hidden>
                 </div>
             </div>
-            <div class="formContainer">
-                <div class="above">
-                    <div class="left">
-                        <div class="form-section">
-                            <h2>Chỉnh sửa thông tin tài khoản</h2>
-                            <div class="form-group">
-                                <label for="username">Tên tài khoản:</label>
-                                <input type="text" id="username" name="username">
+            <div class="userContainer">
+                <div class="userAvatar">
+                    <div class="contentFill">
+                        <div class="labelFill">Ảnh đại diện</div>
+                        <div class="box_upload_Ava" id="boxAva">
+                            <input type="hidden" id="avaInput" name="avatar">
+                            <div class="upload_complete">
+                                <span class="img_upload">
+                                    <img src="img/amongUs.jpg" alt="Ảnh đại diện">
+                                </span>
+                                <div class="button_act">
+                                    <button id="btn_select_ava">Chọn lại ảnh</button>
+                                    <button id="btn_save_ava">Lưu thay đổi</button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="password">Mật khẩu mới:</label>
-                                <input type="password" id="password" name="password">
-                            </div>
-                            <div class="form-group">
-                                <label for="confirm-password">Nhập lại mật khẩu:</label>
-                                <input type="password" id="confirm-password" name="confirm-password">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="right">
-                        <div class="avatar-section">
-                            <div class="avatar-section">
-                                <img id="profile-pic-lower" src="img\amongUs.jpg" alt="Avatar" class="avatar"> 
-                                <br>
-                                <button  class="btn" id="profile-pic-button">Thay ảnh đại diện</button>
-                            </div>                       
-                            <!-- Hidden File Input -->
-                            <input type="file" id="profile-pic-input" accept="image/*" style="display: none">   
                         </div>
                     </div>
                 </div>
-                <div class="below">
-                    <button class="btn">Lưu thay đổi</button>
+                <div class="userPassword">
+                    <div class="contentFill">
+                        <div class="labelFill">Mật khẩu</div>
+                        <div id="form_update_Password">
+                            <p class="edit_password">Nhập mật khẩu hiện tại</p>
+                            <div class="input_log">
+                                <input id="pass_old" class="input_form" type="password" placeholder="Nhập mật khẩu hiện tại">
+                                <span class="icon_input toggle-password">Hiện</span>
+                            </div>
+                            <p class="edit_password">Nhập mật khẩu mới</p>
+                            <div class="input_log">
+                                <input id="pass_new" class="input_form" type="password" placeholder="Nhập mật khẩu mới">
+                                <span class="icon_input toggle-password">Hiện</span>
+                            </div>
+                            <div class="button_act">
+                                <button id="btn_change_password">Đổi mật khẩu</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

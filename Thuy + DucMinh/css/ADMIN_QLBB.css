@@ -52,11 +52,11 @@ body {
 
 .content {
     position: relative;
-    top: -40px;
-    left: 70px;
+    top: -10px;
+    left: 120px;
     margin-left: 290px;
     padding: 40px;
-    min-width:1120px;
+    min-width:1000px;
 }
 
 .sidebar a {
@@ -263,8 +263,8 @@ th, td {
     vertical-align: middle;
     word-break: break-word;
     white-space: normal; 
-    max-width: 350px; 
-    min-width: 210px;
+    max-width: 180px; 
+    min-width: 180px;
 }
 
 th {

@@ -17,11 +17,11 @@ body {
 
 .content {
     position: relative;
-    top: -60px;
-    left: 50px;
+    top: -30px;
+    left: 100px;
     margin-left: 290px;
     padding: 40px;
-    min-width:1120px;
+    min-width:1000px;
 }
 
 .container {
@@ -176,7 +176,8 @@ th, td {
     padding: 30px 60px;
     text-align: center;
     border-bottom: 1px solid lightgrey;
-    min-width: 259px;
+    min-width: 240px;
+    max-width: 240px;
 }
 
 th {

@@ -19,13 +19,13 @@ body {
 
 .content {
     position: relative;
-    top: -60px;
-    left: 50px;
+    top: -30px;
+    left: 100px;
     margin-left: 290px;
     padding: 40px;
-    min-width: 900px;
-    right: 5px;
+    min-width:1000px;
 }
+
 .container {
     display: flex;
     margin: 20px;
@@ -175,10 +175,12 @@ thead {
 }
 
 th, td {
-    padding: 30px 40px;
+    padding: 30px 60px;
     text-align: center;
     border-bottom: 1px solid lightgrey;
-    min-width: 210px;
+    min-width: 100px;
+    max-width: 100px;
+    gap: 10px;
 }
 
 th {
@@ -188,6 +190,7 @@ th {
 
 td {
     min-width: 200px;
+    white-space: nowrap; /* Prevent line breaks */
 }
 
 td img {

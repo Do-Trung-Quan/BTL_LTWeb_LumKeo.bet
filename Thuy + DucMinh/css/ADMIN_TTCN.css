@@ -136,7 +136,7 @@ body {
 }
 
 /* Avatar Upload Section */
-.userAvatar, .userPassword {
+.userAvatar, .userPassword, .userFullname {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -199,6 +199,10 @@ body {
     margin-top: 10px;
 }
 
+#btn_select_ava {
+    margin-right: 10px;
+}
+
 .button_act button {
     background: #900C3F;
     color: white;
@@ -214,7 +218,7 @@ body {
 }
 
 /* Password Update Form */
-#form_update_Password {
+#form_update_Password, #form_update_FullName {
     background: #FAFAFA;
     border: 1px solid #E5E5E5;
     border-radius: 6px;
@@ -223,20 +227,20 @@ body {
     position: relative;
 }
 
-#form_update_Password .edit_password {
+#form_update_Password .edit_password, #form_update_FullName .edit_fullname {
     font-size: 16px;
     color: #222;
     font-weight: 400;
     margin-bottom: 10px;
 }
 
-#form_update_Password .input_log {
+#form_update_Password .input_log, #form_update_FullName .input_log {
     width: 100%;
     margin-bottom: 20px;
     position: relative;
 }
 
-#form_update_Password .input_form {
+#form_update_Password .input_form, #form_update_FullName .input_form {
     width: 100%;
     height: 48px;
     border: 1px solid #BDBDBD;
@@ -267,4 +271,10 @@ body {
 }
 .toggle-password i {
     font-size: 18px;
+}
+
+button:disabled {
+    background-color: #e0e0e0; /* Màu nền xám */
+    color: #a0a0a0; /* Màu chữ xám nhạt */
+    cursor: not-allowed; /* Con trỏ chuột hiển thị dấu cấm */
 }

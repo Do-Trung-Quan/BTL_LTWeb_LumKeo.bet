@@ -30,23 +30,10 @@ body {
     padding: 10px;
     border-radius: 10px;
     width: 300px;
-    height: 560px;
+    height: 650px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     color: black;
     position: fixed;
-
-    /* position: absolute;
-    left: 20px;
-    margin-left: 10px;
-    margin-top: 150px;
-    background: #e0e0e0;
-    display: flex;
-    padding: 10px;
-    border-radius: 10px;
-    width: 250px;
-    height: 440px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    color: black; */
 }
 
 

@@ -33,16 +33,51 @@
                     <label for="author">Author</label>
                 </div>
             </div>
-            <button type="submit">Submit</button>
+            <button type="submit">Sign Up</button>
         </form>
     </div>
 </div>
 <script>
-    function handleSignup(event) {
-        event.preventDefault();
-        // Add any signup logic here
-        window.location.href = 'Login.html';
+// Đăng ký tài khoản — Gọi API
+async function handleSignup(event) {
+    event.preventDefault();
+
+    const username = document.getElementById('new-username').value.trim();
+    const password = document.getElementById('new-password').value.trim();
+    const confirmPassword = document.getElementById('confirm-password').value.trim();
+    const role = document.querySelector('input[name="role"]:checked').value;
+
+    if (!username || !password || !confirmPassword) {
+        alert('Vui lòng điền đầy đủ thông tin!');
+        return;
     }
+
+    if (password !== confirmPassword) {
+        alert('Mật khẩu xác nhận không khớp!');
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:3000/api/users/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, role })
+        });
+
+        console.log({ username, password, role });
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert('Đăng ký thành công! Mời bạn đăng nhập.');
+            window.location.href = 'Login.html';
+        } else {
+            alert(data.message || 'Đăng ký thất bại!');
+        }
+    } catch (error) {
+        console.error('Lỗi khi gửi yêu cầu:', error);
+        alert('Không thể kết nối tới server.');
+    }
+}
 </script>
 </body>
 </html>

@@ -27,21 +27,35 @@ document.getElementById('login-form').addEventListener('submit', async function(
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
 
+    if (!username || !password) {
+        alert('Vui lòng điền đầy đủ tên đăng nhập và mật khẩu.');
+        return;
+    }
+
     try {
-        const response = await fetch('/api/login', {
+        console.log('Data being sent:', { username, password });
+        const response = await fetch('http://localhost:3000/api/users/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
         });
 
         const data = await response.json();
+        console.log('Phản hồi từ backend:', data); // Log để kiểm tra
 
         if (response.ok) {
-            // Lưu token vào localStorage
             localStorage.setItem('token', data.token);
-            
-            // Điều hướng dựa vào role
-            switch (data.role) {
+
+            // Kiểm tra role trước khi vào switch
+            if (!data.role) {
+                alert('Không nhận được quyền truy cập từ server.');
+                return;
+            }
+
+            // Chuyển role về chữ thường để đảm bảo khớp với case
+            const role = data.role.toLowerCase();
+
+            switch (role) {
                 case 'admin':
                     window.location.href = '../Thuy + DucMinh/ADMIN_QLBB.html';
                     break;
@@ -52,7 +66,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
                     window.location.href = '../Thuy + DucMinh/USER_BBDL.html';
                     break;
                 default:
-                    alert('Không xác định được quyền truy cập.');
+                    alert('Không xác định được quyền truy cập: ' + role);
             }
         } else {
             alert(data.message || 'Sai tài khoản hoặc mật khẩu');
@@ -75,7 +89,7 @@ document.getElementById('password-reset-form').addEventListener('submit', async 
     }
 
     try {
-        const response = await fetch('/api/reset-password', {
+        const response = await fetch('http://localhost:3000/api/users/reset-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, newPassword, confirmPassword })

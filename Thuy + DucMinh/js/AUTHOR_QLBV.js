@@ -1,120 +1,104 @@
-// Function to get unique values from the third column ("Thể loại")
-function populateCategoryDropdown() {
-    const categories = new Set(); // Using a Set to store unique values
+async function fetchNews() {
+    try {
+        const res = await fetch('http://localhost:3000/api/news');
+        if (!res.ok) throw new Error("Lỗi khi tải dữ liệu");
 
-    document.querySelectorAll("#table-body tr").forEach(row => {
-        let categoryValue = row.children[2].textContent.trim(); // Get value from 3rd column
-        categories.add(categoryValue);
-    });
+        const newsList = await res.json();
+        const tableBody = document.getElementById("table-body");
+        tableBody.innerHTML = ""; // Clear table
 
-    const dropdown = document.getElementById("theloai-menu");
-    dropdown.innerHTML = ""; // Clear old values
+        newsList.forEach(news => {
+            const row = document.createElement("tr");
+            row.dataset.id = news._id;
 
-    // Add "Clear All" option
-    let clearOption = document.createElement("a");
-    clearOption.href = "#";
-    clearOption.textContent = "Clear All";
-    clearOption.style.fontWeight = "bold";
-    clearOption.style.color = "red";
-    clearOption.addEventListener("click", () => displayPage(1));
-    dropdown.appendChild(clearOption);
-    
-    // Add category options
-    categories.forEach(category => {
-        let option = document.createElement("a");
-        option.href = "#";
-        option.textContent = category;
-        option.addEventListener("click", () => filterTableByCategory(category));
-        dropdown.appendChild(option);
-    });
+            row.innerHTML = `
+                <td>${news.title}</td>
+                <td><img src="${news.image_url}" alt="Thumbnail" width="60" height="60"></td>
+                <td>${news.category_name || news.category_id}</td>
+                <td>${formatDateDisplay(news.published_at)}</td>
+                <td>
+                    <button onclick="openEditModal(this)">Sửa</button>
+                    <button onclick="deletePost(this)">Xoá</button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Fetch lỗi:", error);
+        alert("Không thể tải dữ liệu từ máy chủ.");
+    }
 }
 
-// Function to filter table rows by category
-function filterTableByCategory(category) {
-    document.querySelectorAll("#table-body tr").forEach(row => {
-        let categoryValue = row.children[2].textContent.trim();
-        row.style.display = categoryValue === category ? "table-row" : "none";
-    });
+// Helper: Hiển thị ngày dạng DD/MM/YYYY
+function formatDateDisplay(dateStr) {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("vi-VN");
 }
 
-// Function to reset table and show all rows
-function resetTable() {
-    document.querySelectorAll("#table-body tr").forEach(row => {
-        row.style.display = "table-row";
-    });
+function openEditModal(postId) {
+    // Gọi API để lấy dữ liệu bài viết cần sửa
+    fetch(`${API_URL}/${postId}`)
+        .then(response => response.json())
+        .then(post => {
+            document.getElementById('edit-content-name').value = post.title;
+            document.getElementById('edit-category').value = post.category;
+            document.getElementById('edit-date').value = post.date;
+            document.getElementById('edit-content-name').dataset.postId = post.id; // Lưu ID bài viết
+        })
+        .catch(error => console.error('Error fetching post data for edit:', error));
+    document.getElementById('editModal').style.display = 'block'; // Mở modal chỉnh sửa
 }
 
-// Toggle dropdown menu for "Thể loại" button
-document.getElementById("theloai-btn").addEventListener("click", function (event) {
-    event.stopPropagation();
-    let dropdown = document.getElementById("theloai-menu");
-    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-    populateCategoryDropdown(); // Update dropdown when opening
-});
-
-// Close dropdown when clicking outside
-document.addEventListener("click", function () {
-    document.getElementById("theloai-menu").style.display = "none";
-});
-
-
-
-//modal
-
-// Function to open the modal (updated for "THÊM BÀI VIẾT")
-// Open edit modal and populate it with existing data from the row
-function openEditModal(button) {
-    let row = button.closest("tr"); // Get the table row
-    let title = row.cells[0].textContent.trim(); 
-    let imageSrc = row.cells[1].querySelector("img").src;
-    let category = row.cells[2].textContent.trim();
-    let date = row.cells[3].textContent.trim();
-
-    // Populate modal fields
-    document.getElementById("edit-content-name").value = title;
-    document.getElementById("edit-category").value = category;
-    document.getElementById("edit-logo").dataset.currentImage = imageSrc; // Store current image path
-    document.getElementById("edit-date").value = formatDateForInput(date); // Set date
-
-    document.getElementById("editModal").style.display = "flex"; // Show modal
-    row.classList.add("editing"); // Mark row as editing
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
 }
 
-// Format date from "DD/MM/YYYY" to "YYYY-MM-DD" for input field
-function formatDateForInput(dateString) {
-    let parts = dateString.split("/");
-    return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : "";
+function closeAddModal() {
+    document.getElementById('addModal').style.display = 'none';
 }
 
 // Save changes back to the table
-function saveEdit() {
+async function saveEdit() {
     let modal = document.getElementById("editModal");
     let title = document.getElementById("edit-content-name").value.trim();
     let category = document.getElementById("edit-category").value.trim();
-    let date = document.getElementById("edit-date").value; // Get new date
+    let date = document.getElementById("edit-date").value;
     let fileInput = document.getElementById("edit-logo");
-    let imageSrc = fileInput.files.length > 0 ? URL.createObjectURL(fileInput.files[0]) : fileInput.dataset.currentImage;
 
-    // Convert date from "YYYY-MM-DD" to "DD/MM/YYYY"
-    let formattedDate = date ? date.split("-").reverse().join("/") : "";
+    let imageSrc = fileInput.files.length > 0 ? fileInput.files[0].name : fileInput.dataset.currentImage;
+    let formattedDate = date ? new Date(date).toISOString() : null;
 
-    // Find the active row and update it
-    let row = document.querySelector(".editing"); 
-    if (row) {
-        row.cells[0].textContent = title;
-        row.cells[1].querySelector("img").src = imageSrc;
-        row.cells[2].textContent = category;
-        row.cells[3].textContent = formattedDate; // Update the date
+    let row = document.querySelector(".editing");
+    let postId = row.dataset.id;  // bạn cần thêm: `<tr data-id="news_id">` khi load table.
+
+    let updatedPost = {
+        title: title,
+        category_id: category,
+        image_url: `./uploads/${imageSrc}`,
+        published_at: formattedDate
+    };
+
+    try {
+        let res = await fetch(`http://localhost:3000/api/news/${postId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedPost)
+        });
+
+        if (res.ok) {
+            alert("Cập nhật bài viết thành công!");
+            closeEditModal();
+            location.reload();  // Load lại bảng.
+        } else {
+            let err = await res.json();
+            alert("Lỗi khi cập nhật bài viết: " + err.message);
+        }
+    } catch (error) {
+        alert("Lỗi mạng: " + error);
     }
-
     closeEditModal();
-}
-
-// Close modal
-function closeEditModal() {
-    document.getElementById("editModal").style.display = "none";
-    let activeRow = document.querySelector(".editing");
-    if (activeRow) activeRow.classList.remove("editing"); // Remove editing class
 }
 
 // Click outside to close modal
@@ -148,43 +132,66 @@ window.onclick = function(event) {
 };
 
 // Function to add a new post to the table
-function addNewPost() {
+async function addNewPost() {
     let title = document.getElementById("add-content-name").value;
     let category = document.getElementById("add-category").value;
     let date = document.getElementById("add-date").value;
     let fileInput = document.getElementById("add-logo");
-    
-    // Convert date format from "YYYY-MM-DD" to "DD/MM/YYYY"
-    let formattedDate = date.split("-").reverse().join("/");
 
-    // Default image if none is uploaded
-    let imageSrc = fileInput.files.length > 0 ? URL.createObjectURL(fileInput.files[0]) : "img/default.png";
+    let imageSrc = fileInput.files.length > 0 ? fileInput.files[0].name : "default.png";
+    let formattedDate = date ? new Date(date).toISOString() : null;
 
-    // Create a new row
-    let table = document.getElementById("postTable").querySelector("tbody");
-    let newRow = table.insertRow();
+    let newPost = {
+        title: title,
+        category_id: category,  // cần map ID từ tên nếu có.
+        image_url: `./uploads/${imageSrc}`,
+        published_at: formattedDate
+    };
 
-    newRow.innerHTML = `
-        <td>${title}</td>
-        <td><img src="${imageSrc}" alt="${category}" style="width: 100px; height: auto;"></td>
-        <td>${category}</td>
-        <td>${formattedDate}</td>
-        <td>
-            <a href="../Quang/baichitiet/html/baichitiet.html" class="icon-btn">
-                <i class="fa-regular fa-eye"></i>
-            </a>
-            <button onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
-                <i class="fa-solid fa-pen"></i>
-            </button>
-            <i class="fa-solid fa-trash-can" onclick="deletePost(this)"></i>
-        </td>
-    `;
+    try {
+        let res = await fetch('http://localhost:3000/api/news', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newPost)
+        });
 
+        if (res.ok) {
+            alert("Thêm bài viết thành công!");
+            closeAddModal();
+            location.reload();  // Load lại bảng.
+        } else {
+            let err = await res.json();
+            alert("Lỗi khi thêm bài viết: " + err.message);
+        }
+    } catch (error) {
+        alert("Lỗi mạng: " + error);
+    }
     closeAddModal(); // Close modal after adding
 }
 
 // Function to delete a post
-function deletePost(button) {
+async function deletePost(button) {
     let row = button.closest("tr");
-    row.remove();
+    let postId = row.dataset.id;
+
+    if (confirm("Bạn có chắc chắn muốn xoá bài viết này?")) {
+        try {
+            let res = await fetch(`http://localhost:3000/api/news/${postId}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                alert("Xoá thành công!");
+                row.remove();
+            } else {
+                let err = await res.json();
+                alert("Lỗi khi xoá bài viết: " + err.message);
+            }
+        } catch (error) {
+            alert("Lỗi mạng: " + error);
+        }
+    }
 }
+
+let newRow = table.insertRow();
+newRow.dataset.id = news._id; 

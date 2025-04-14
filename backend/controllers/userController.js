@@ -33,24 +33,28 @@ exports.loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // Validate request body
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Vui lòng cung cấp tên đăng nhập và mật khẩu.' });
+    }
+
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(400).json({ message: 'Tên đăng nhập hoặc mật khẩu không chính xác.' });
     }
 
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Tên đăng nhập hoặc mật khẩu không chính xác.' });
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id, role: user.role }, 'thuyptit2004_secret2025!', { expiresIn: '1h' });
 
-    res.json({ message: 'Đăng nhập thành công!', token });
+    res.json({ message: 'Đăng nhập thành công!', token, role: user.role });
   } catch (error) {
     res.status(500).json({ message: `Lỗi máy chủ: ${error.message}` });
   }
 };
-
 // Lấy thông tin user
 exports.getUser = async (req, res) => {
   try {

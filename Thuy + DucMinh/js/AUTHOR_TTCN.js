@@ -30,18 +30,28 @@ document.addEventListener("DOMContentLoaded", function () {
     btnSaveAva.addEventListener("click", () => {
         const avatarData = avatarInput.value;
         if (avatarData) {
-            localStorage.setItem("savedAvatar", avatarData); // Lưu vào localStorage (nếu cần)
-            alert("Ảnh đại diện đã được cập nhật!");
+            // Gửi ảnh đại diện lên server để lưu
+            fetch('/api/user/update-avatar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ avatar: avatarData }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Ảnh đại diện đã được cập nhật!");
+                } else {
+                    alert("Có lỗi xảy ra khi cập nhật ảnh đại diện.");
+                }
+            })
+            .catch(error => {
+                console.error('Error updating avatar:', error);
+                alert("Có lỗi xảy ra.");
+            });
         }
     });
-    
-    // Load thông tin đã lưu khi trang tải lại
-    // const savedAvatar = localStorage.getItem("savedAvatar");
-    // if (savedAvatar) {
-    //     profilePic.src = savedAvatar;       // Cập nhật ảnh ở header
-    //     imgUpload.src = savedAvatar;        // Cập nhật ảnh trong form
-    //     avatarInput.value = savedAvatar;    // Cập nhật giá trị ẩn (nếu cần gửi đi)
-    // }
 
     // 📌 Hiện/Ẩn mật khẩu
     const togglePasswordBtns = document.querySelectorAll(".toggle-password");
@@ -74,8 +84,34 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     btnChangePassword.addEventListener("click", () => {
-        alert("Mật khẩu đã được cập nhật!");
-        // Bạn có thể gửi dữ liệu này lên server ở đây
+        const oldPassword = passOld.value.trim();
+        const newPassword = passNew.value.trim();
+        
+        if (oldPassword && newPassword) {
+            // Gửi mật khẩu mới lên server để thay đổi
+            fetch('/api/user/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    oldPassword: oldPassword,
+                    newPassword: newPassword
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Mật khẩu đã được thay đổi!");
+                } else {
+                    alert("Có lỗi xảy ra khi thay đổi mật khẩu.");
+                }
+            })
+            .catch(error => {
+                console.error('Error changing password:', error);
+                alert("Có lỗi xảy ra.");
+            });
+        }
     });
 
     // 📌 Lưu thông tin họ tên
@@ -88,21 +124,59 @@ document.addEventListener("DOMContentLoaded", function () {
         saveButton.disabled = fullnameInput.value.trim() === "";
     });
 
-    // Lưu thông tin họ tên vào localStorage
+    // Lưu thông tin họ tên vào backend
     saveButton.addEventListener("click", function () {
         const fullname = fullnameInput.value.trim();
         if (fullname) {
-            localStorage.setItem("savedFullname", fullname);
-            personalInfoName.textContent = fullname; // Cập nhật tên trên thanh personal_info
-            alert("Đã lưu họ tên thành công!");
+            // Gửi tên người dùng mới lên server để lưu
+            fetch('/api/user/update-fullname', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ fullname: fullname }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    personalInfoName.textContent = fullname; // Cập nhật tên trên thanh personal_info
+                    alert("Họ tên đã được cập nhật!");
+                } else {
+                    alert("Có lỗi xảy ra khi cập nhật họ tên.");
+                }
+            })
+            .catch(error => {
+                console.error('Error updating fullname:', error);
+                alert("Có lỗi xảy ra.");
+            });
         }
     });
 
-    // Load thông tin đã lưu khi trang tải lại
-    // const savedFullname = localStorage.getItem("savedFullname");
-    // if (savedFullname) {
-    //     fullnameInput.value = savedFullname;
-    //     personalInfoName.textContent = savedFullname; // Cập nhật tên khi trang tải lại
-    //     saveButton.disabled = false;
-    // }
+    // 📌 Lấy thông tin người dùng từ API
+    fetch('/api/user')
+    .then(response => response.json())
+    .then(data => {
+        // Cập nhật tên người dùng vào phần tử <h2> có id="username"
+        document.getElementById('username').textContent = data.username;
+
+        // Cập nhật User ID vào phần tử <p> có id="userID"
+        document.getElementById('userID').textContent = `USER ID: ${data.userID}`;
+
+        // Cập nhật thêm các thông tin khác nếu có từ API
+        document.getElementById('email').textContent = `Email: ${data.email}`;
+        document.getElementById('phone').textContent = `Phone: ${data.phone}`;
+
+        // Cập nhật ảnh đại diện nếu có từ API
+        if (data.avatar) {
+            profilePic.src = data.avatar;
+            imgUpload.src = data.avatar;
+            avatarInput.value = data.avatar; // Lưu giá trị ẩn nếu cần gửi đi
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching user data:', error);
+        // Trong trường hợp có lỗi, bạn có thể hiển thị thông báo lỗi
+        document.getElementById('username').textContent = 'Error loading user data';
+        document.getElementById('userID').textContent = '';
+    });
 });

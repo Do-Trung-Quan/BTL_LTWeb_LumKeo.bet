@@ -6,7 +6,7 @@ const auth = (req, res, next) => {
   if (!token) return res.status(401).json({ message: 'Chưa đăng nhập hoặc token không hợp lệ.' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, 'thuyptit2004_secret2025!');
     req.user = decoded;
     next();
   } catch (error) {

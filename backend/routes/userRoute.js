@@ -15,4 +15,9 @@ router.get('/me', auth, userController.getUser);
 // Cập nhật avatar (yêu cầu xác thực)
 router.put('/avatar', auth, userController.updateAvatar);
 
+// Route Reset Mật Khẩu
+router.post('/reset-password', userController.resetPassword);
+
+router.get('/public', userController.getPublicUsers);
+
 module.exports = router;

@@ -1,11 +1,14 @@
 const User = require('../models/User');
-const { hashPassword, comparePassword } = require('../utils/bcrypt');
+const { comparePassword } = require('../utils/bcrypt');
 const jwt = require('jsonwebtoken');
 
 // Đăng ký user mới
 exports.registerUser = async (req, res) => {
+  console.log(req.body);
   try {
+    
     const { username, password, role } = req.body;
+    
 
     // Kiểm tra username đã tồn tại chưa
     const existingUser = await User.findOne({ username });
@@ -32,6 +35,8 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
+
+    console.log(req.body);
 
     // Validate request body
     if (!username || !password) {
@@ -99,10 +104,21 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'Mật khẩu mới và xác nhận mật khẩu không khớp!' });
     }
 
-    user.password = await hashPassword(newPassword);
+    user.password = newPassword;
     await user.save();
 
     res.status(200).json({ message: 'Đặt lại mật khẩu thành công!' });
+  } catch (error) {
+    res.status(500).json({ message: `Lỗi máy chủ: ${error.message}` });
+  }
+};
+
+// API công khai để lấy danh sách người dùng
+exports.getPublicUsers = async (req, res) => {
+  try {
+    // Chỉ trả về username và role, không trả _id và createdAt để giảm rủi ro
+    const users = await User.find({ role: { $in: ['user', 'author'] } }).select('username role');
+    res.json(users);
   } catch (error) {
     res.status(500).json({ message: `Lỗi máy chủ: ${error.message}` });
   }

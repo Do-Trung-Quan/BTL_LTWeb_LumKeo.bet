@@ -1,23 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController');
-const auth = require('../middlewares/auth');
+const UserController = require('../controllers/userController');
+const authMiddleware = require('../middlewares/authMiddleware');
+const upload = require('../middlewares/fileUpload');
 
-// Đăng ký user
-router.post('/register', userController.registerUser);
+// Các API không yêu cầu phân quyền
+router.post('/register', UserController.register);
+router.post('/login', UserController.login);
+router.post('/reset-password', UserController.resetPassword);
 
-// Đăng nhập user
-router.post('/login', userController.loginUser);
+// Các API yêu cầu quyền admin
+router.get('/users', authMiddleware('admin'), UserController.getUsers);
+router.get('/authors', authMiddleware('admin'), UserController.getAuthors);
+router.get('/authors/:authorId', authMiddleware('admin'), UserController.getAuthorById);
+router.delete('/users/:userId', authMiddleware('admin'), UserController.deleteUser);
+router.get('/statistics/new-users', authMiddleware('admin'), UserController.getNewUsersStatistics);
+router.get('/statistics/new-authors', authMiddleware('admin'), UserController.getNewAuthorsStatistics);
+router.get('/statistics/all-users', authMiddleware('admin'), UserController.getAllUsersStatistics);
+router.get('/statistics/all-authors', authMiddleware('admin'), UserController.getAllAuthorsStatistics);
 
-// Lấy thông tin user (yêu cầu xác thực)
-router.get('/me', auth, userController.getUser);
+// API cập nhật user (chỉ yêu cầu đăng nhập, không cần quyền admin)
+router.put('/users/:userId', authMiddleware(), UserController.updateUser);
 
-// Cập nhật avatar (yêu cầu xác thực)
-router.put('/avatar', auth, userController.updateAvatar);
-
-// Route Reset Mật Khẩu
-router.post('/reset-password', userController.resetPassword);
-
-router.get('/public', userController.getPublicUsers);
+// API upload ảnh (yêu cầu đăng nhập)
+router.post('/upload-img', authMiddleware(), upload.single('avatar'), UserController.uploadImgFile);
 
 module.exports = router;

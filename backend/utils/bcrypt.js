@@ -1,15 +1,14 @@
 const bcrypt = require('bcrypt');
 
+// Mã hóa mật khẩu
 const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
 };
 
-const comparePassword = async (password, hashedPassword) => {
-  return bcrypt.compare(password, hashedPassword);
+// So sánh mật khẩu
+const comparePassword = async (candidatePassword, hashedPassword) => {
+  return await bcrypt.compare(candidatePassword, hashedPassword);
 };
 
-module.exports = {
-  hashPassword,
-  comparePassword,
-};
+module.exports = { hashPassword, comparePassword };

@@ -194,7 +194,10 @@ const UserService = {
 
       const count = await User.countDocuments({
         role: 'user',
-        created_at: { $gte: pastDate, $lte: currentDate },
+        created_at: {
+          $gte: new Date(pastDate.toISOString()), 
+          $lte: new Date(currentDate.toISOString())  
+        },
       });
 
       return {
@@ -215,7 +218,10 @@ const UserService = {
 
       const count = await User.countDocuments({
         role: 'author',
-        created_at: { $gte: pastDate, $lte: currentDate },
+        created_at: { 
+          $gte: new Date(pastDate.toISOString()), 
+          $lte: new Date(currentDate.toISOString()) 
+        },
       });
 
       return {

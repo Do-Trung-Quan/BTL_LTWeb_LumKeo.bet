@@ -1,37 +1,10 @@
 const mongoose = require('mongoose');
+const Category = require('./Category');
 
 const leagueSchema = new mongoose.Schema({
-    category_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
-        required: true
-    },
-    name: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true
-    },
-    slug: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        lowercase: true
-    },
-    logo_url: {
-        type: String,
-        trim: true
-    },
-    season_time: {
-        type: String,
-        trim: true
-    }
-}, {
-    timestamps: {
-        createdAt: 'created_at',
-        updatedAt: false
-    }
+  logo_url: { type: String, maxlength: 255 },
+  season_time: { type: String, maxlength: 50 },
+  created_at: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('League', leagueSchema);
+module.exports = Category.discriminator('League', leagueSchema);

@@ -1,51 +1,18 @@
-// models/news.js
 const mongoose = require('mongoose');
 
-const newsSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    slug: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true
-    },
-    content: {
-        type: String,
-        required: true
-    },
-    summary: {
-        type: String,
-        required: true
-    },
-    author_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    category_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
-        required: true
-    },
-    league_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'League',
-        default: null
-    },
-    image_url: {
-        type: String,
-        trim: true
-    },
-    published_at: {
-        type: Date,
-        default: null
-    }
-}, {
-    timestamps: true
+const articleSchema = new mongoose.Schema({
+  ID: { type: String, required: true, unique: true, maxlength: 10 },
+  title: { type: String, required: true, maxlength: 255 },
+  slug: { type: String, required: true, unique: true, maxlength: 50 },
+  summary: { type: String, maxlength: 255 },
+  content: { type: String, maxlength: 255 },
+  thumbnail: { type: String, maxlength: 255 },
+  is_published: { type: Boolean, default: false },
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date },
+  published_date: { type: Date },
+  UserID: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  CategoryID: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' }
 });
 
-module.exports = mongoose.model('News', newsSchema);
+module.exports = mongoose.model('Article', articleSchema);

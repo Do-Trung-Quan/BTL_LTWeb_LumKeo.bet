@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Dashboard</title>
+    <link rel="stylesheet" href="./css/ADMIN_DASHBOARD.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="./css/pagination.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../Js/Search-header.js" defer></script>
+</head>
+<body>
+<header class="navbar">
+    <div class="logo">
+        <a href="../index.html">
+            <img src="../pics/header/Logo.png" alt="Ảnh tên web">
+        </a>
+    </div>
+    <nav class="menu">
+        <ul>
+            <li><a href="../index.html">Trang chủ</a></li>
+            <li class="dropdown">
+                <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="../Quang/giaidau/html/giaidau-EPL.html">Premier League</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-LaLiga.html">La Liga</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-seria.html">Serie A</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-bundes.html">Bundesliga</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-l1.html">Ligue 1</a></li>
+                    <li><a href="../Quang/giaidau/html/giaidau-vleague.html">V.League 1</a></li>
+                </ul>
+            </li>
+            <li><a href="#">Bóng đá Việt Nam</a></li>
+            <li><a href="#">Bóng đá thế giới</a></li>
+        </ul>
+    </nav>
+    <div class="nav-icons">
+        <a class="search-button">
+            <img src="../pics/header/Search.png" alt="Search Icon">
+        </a>
+        <a class="account-button" href="./ADMIN_QLBB.html">
+            <img src="../pics/header/User.png" alt="User Icon">
+        </a>
+    </div>
+</header>
+
+<!--search-header section-->
+<div class="navbar search-header">
+    <div class="logo">
+        <a href="../index.html">
+            <img src="../pics/header/Logo.png" alt="Ảnh tên web">
+        </a>
+    </div>
+
+    <form class="search-bar">
+        <input type="text" id="search-text" placeholder="Nhập nội dung tìm kiếm...">
+        <button><img src="../pics/header/Search.png" alt="Search Icon"></button>
+        <div id="dropdown-searchbar" class="dropdown-searchbar"></div>
+    </form>
+
+    <div class="nav-icons">
+        <a class="search-button">
+            <img src="../pics/header/Search.png" alt="Search Icon">
+        </a>
+        <a class="account-button" href="./ADMIN_QLBB.html">
+            <img src="../pics/header/User.png" alt="User Icon">
+        </a>
+    </div>
+</div>
+
+<div class="dark-overlay"></div>
+<div class="container">
+    <aside class="sidebar">
+        <ul>
+            <li><a href="ADMIN_QLBB.html">Quản lý bài báo</a></li>
+            <li><a href="ADMIN_QLGD.html">Quản lý giải đấu</a></li>
+            <li><a href="ADMIN_QLND.html">Quản lý người dùng</a></li>
+            <li><a href="ADMIN_QLTG.html">Quản lý tác giả</a></li>
+            <li class="active"><a href="ADMIN_DASHBOARD.html">Chức năng thống kê</a></li>
+            <li><a href="ADMIN_TTCN.html">Thông tin cá nhân</a></li>
+            <li><a href="../Hi-Tech/Login.html">Đăng xuất</a></li>
+        </ul>
+    </aside>
+    
+    <main class="content">
+        <div class="admin-info">
+            <div class="admin-text">
+                <h2>Đỗ Trung Quân</h2>
+                <p>ADMIN ID: AD190804</p>
+            </div>
+            <div class="admin-avatar">
+                <img id="profile-pic-upper" src="img/cat.jpg" alt="Avatar" class="avatar">
+                <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <h2>Chức năng thống kê</h2>
+            <div class="stats-cards">
+                <div class="card" data-type="baibao">
+                    <h3>Tổng số bài báo</h3>
+                    <p>150</p>
+                </div>
+                <div class="card" data-type="nguoidung">
+                    <h3>Số người dùng</h3>
+                    <p>342</p>
+                </div>
+                <div class="card" data-type="tacgia">
+                    <h3>Số tác giả</h3>
+                    <p>24</p>
+                </div>
+                <div class="card" data-type="binhluan">
+                    <h3>Lượt bình luận</h3>
+                    <p>1249</p>
+                </div>
+            </div>
+        
+            <!-- Vị trí biểu đồ -->
+            <div id="chart-container" style="display:none; margin-top:30px;">
+                <h3 id="chart-title"></h3>
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>        
+        
+ 
+    </main>
+</div>
+
+<!-- Thêm Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>   
+<script src="./js/chart.js"></script>
+</body>
+</html>

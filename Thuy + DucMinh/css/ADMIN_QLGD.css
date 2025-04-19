@@ -11,28 +11,39 @@ body {
     background: #ffffff;
     margin: 0;
     padding: 0;
-    min-height: 1600px;
+    min-height: 1400px;
+    left: 0px;
     position: relative;
 }
 
 
+.content {
+    position: relative;
+    top: -30px;
+    left: 100px;
+    margin-left: 290px;
+    padding: 40px;
+    min-width:1000px;
+}
 .container {
     display: flex;
     margin: 20px;
     gap: 70px;
+    left: 20px;
 }
 
 .sidebar {
     margin-left: 10px;
-    margin-top: 300px;
+    margin-top: 10px;
     background: #e0e0e0;
     display: flex;
     padding: 10px;
     border-radius: 10px;
-    width: 250px;
-    height: 520px;
+    width: 300px;
+    height: 650px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     color: black;
+    position: fixed;
 }
 
 .sidebar a {
@@ -55,6 +66,7 @@ body {
     font-weight: bold;
     margin-bottom: 5px;
     border-radius: 10px;
+    font-size: larger;
 }
 
 .sidebar ul li:hover {
@@ -67,6 +79,18 @@ body {
     color: black;
 }
 
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+}
+
+.sidebar ul::-webkit-scrollbar {
+    display: none; /* Chrome, Edge, Safari */
+}
 /* Admin Info */
 .admin-info {
     position: relative;
@@ -133,27 +157,7 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table {
-    width: 1000px;
-    border-collapse: collapse;
-    margin-top: 50px;
-}
-
-.table-header {
-    position: relative;
-    width: 100%;
-    height: 50px; /* Adjust height as needed */
-    padding: 10px;
-    margin-bottom: 20px;
-}
-.table-container {
-    width: 100%;
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 8px;
+    margin-top: 0px;
 }
 
 thead {
@@ -162,9 +166,14 @@ thead {
 }
 
 th, td {
-    padding: 30px 50px;
+    padding: 20px 30px;
     text-align: center;
     border-bottom: 1px solid lightgrey;
+    vertical-align: middle;
+    word-break: break-word;
+    white-space: normal; 
+    max-width: 180px; 
+    min-width: 180px;
 }
 
 th {

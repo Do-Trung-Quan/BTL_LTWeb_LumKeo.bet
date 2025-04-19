@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
-const categorySchema = new mongoose.Schema({
-  name: {type: String, required: true, maxlength: 255},
-  slug: {type: String, required: true, maxlength: 50, unique: true},  // Đảm bảo slug duy nhất trong toàn collection
-  type: {type: String, enum: ['Category', 'League'], required: true},
-  parentCategory: {type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null} // Chỉ có League cần parentCategory, Category thì để null
-}, 
-{ discriminatorKey: 'type', collection: 'categories', timestamps: false });
+const commentSchema = new mongoose.Schema({
+  content: {type: String, required: true, maxlength: 255},
+  created_at: {type: Date, default: Date.now},
+  updated_at: {type: Date},
+  UserID: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+  ArticleID: {type: mongoose.Schema.Types.ObjectId, ref: 'Article', required: true},
+  CommentID: {type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}
+}, { timestamps: false });
 
-const Category = mongoose.model('Category', categorySchema);
+module.exports = mongoose.model('Comment', commentSchema);

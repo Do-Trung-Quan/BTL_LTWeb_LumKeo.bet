@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-  ID: { type: String, required: true, unique: true, maxlength: 10 },
   noti_entity_ID: { type: String },
   noti_entity_type: { type: String, maxlength: 255 },
   content: { type: String, maxlength: 255 },

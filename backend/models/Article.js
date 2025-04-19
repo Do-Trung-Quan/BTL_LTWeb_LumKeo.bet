@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema({
-  ID: { type: String, required: true, unique: true, maxlength: 10 },
   title: { type: String, required: true, maxlength: 255 },
   slug: { type: String, required: true, unique: true, maxlength: 50 },
   summary: { type: String, maxlength: 255 },

@@ -1,16 +1,7 @@
 const multer = require('multer');
-const path = require('path');
 
-// Cấu hình nơi lưu trữ file tạm thời
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Lưu file tạm vào thư mục uploads/
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`); // Đặt tên file duy nhất
-  },
-});
+// Dùng memoryStorage để có file.buffer upload lên Cloudinary
+const storage = multer.memoryStorage();
 
 // Kiểm tra loại file (chỉ cho phép ảnh)
 const fileFilter = (req, file, cb) => {
@@ -22,11 +13,15 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Middleware upload file
+// Middleware upload file với nhiều trường
 const upload = multer({
   storage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn kích thước file: 5MB
-});
+}).fields([
+  { name: 'avatar', maxCount: 1 },      // Trường avatar
+  { name: 'thumbnails', maxCount: 1 }, // Trường thumbnails
+  { name: 'logo', maxCount: 1 }        // Trường logo
+]);
 
 module.exports = upload;

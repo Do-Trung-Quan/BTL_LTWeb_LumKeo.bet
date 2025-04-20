@@ -10,6 +10,7 @@ const articleSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date },
   published_date: { type: Date },
+  views: { type: Number, default: 0 },
   UserID: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   CategoryID: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' }
 });

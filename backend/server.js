@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const path= require('path');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -23,11 +24,19 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Đã có lỗi xảy ra trên server!' });
 });
 
+// Cấu hình để phục vụ các file trong thư mục uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Routes
 const userRoutes = require('./routes/userRoute');
+const articleRoutes = require('./routes/articleRoute');
+const categoryRoutes = require('./routes/categoryRoute');
+const leagueRoutes = require('./routes/leagueRoute');
 
-app.use('/api/users', userRoutes);
-
+app.use('/api', userRoutes);
+app.use('/api', articleRoutes);
+app.use('/api', categoryRoutes);
+app.use('/api', leagueRoutes);
 
 
 // Start server

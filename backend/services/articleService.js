@@ -3,38 +3,59 @@ const ViewHistory = require('../models/viewHistory');
 const Category = require('../models/Category'); 
 const User = require('../models/User'); 
 const cloudinary = require('../config/cloudinary');
+const mongoose = require('mongoose');
 
 // 1. Create Article (Thêm bài viết)
+
 const createArticle = async (articleData, file) => {
-    let thumbnailUrl = null;
-  
-    // Nếu có file ảnh được gửi, upload lên Cloudinary
-    if (file) {
-      const result = await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: 'thumbnails' },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        uploadStream.end(file.buffer);
-      });
-      thumbnailUrl = result.secure_url;
-    }
-  
-    // Tạo bài viết với thông tin và URL thumbnail (nếu có)
-    const article = await Article.create({
-      ...articleData,
-      thumbnail: thumbnailUrl,
-      created_at: Date.now()
+  // Kiểm tra UserID
+  const { UserID, CategoryID } = articleData;
+  if (!mongoose.Types.ObjectId.isValid(UserID)) {
+    throw new Error('Invalid UserID format');
+  }
+  const userExists = await User.findById(UserID);
+  if (!userExists) {
+    throw new Error('UserID does not exist');
+  }
+
+  // Kiểm tra CategoryID
+  if (!mongoose.Types.ObjectId.isValid(CategoryID)) {
+    throw new Error('Invalid CategoryID format');
+  }
+  const categoryExists = await Category.findById(CategoryID);
+  if (!categoryExists) {
+    throw new Error('CategoryID does not exist');
+  }
+
+  let thumbnailUrl = null;
+
+  // Nếu có file ảnh được gửi, upload lên Cloudinary
+  if (file) {
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: 'thumbnails' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      uploadStream.end(file.buffer);
     });
-  
-    // Populate để trả về thông tin đầy đủ
-    return await Article.findById(article._id)
-      .populate('UserID', 'username avatar')
-      .populate('CategoryID', 'name slug type');
-  };
+    thumbnailUrl = result.secure_url;
+  }
+
+  // Tạo bài viết với thông tin và URL thumbnail
+  const article = await Article.create({
+    ...articleData,
+    thumbnail: thumbnailUrl,
+    created_at: Date.now(),
+  });
+
+  // Populate để trả về thông tin đầy đủ
+  return await Article.findById(article._id)
+    .populate('UserID', 'username avatar')
+    .populate('CategoryID', 'name slug type');
+};
 
 // 2. Get All Post Articles (Lấy tất cả bài đăng đã duyệt, sắp xếp theo ngày đăng DESC)
 const getAllPostArticles = async (page = 1, limit = 10) => {
@@ -99,7 +120,7 @@ const getArticleByCategory = async (categoryId, page = 1, limit = 10) => {
 const getArticleByAuthor = async (authorId, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
   // Kiểm tra role của UserID (giả định role là 'author')
-  const user = await require('../models/user.model').findById(authorId);
+  const user = await User.findById(authorId);
   if (!user) throw new Error('User not found');
   if (user.role !== 'author') throw new Error('User is not an author');
 
@@ -165,17 +186,28 @@ const updateArticle = async (articleId, articleData, user, file) => {
   if (!article) throw new Error('Article not found');
 
   // Kiểm tra quyền: Chỉ author của bài viết mới được sửa
-  if (article.UserID.toString() !== user._id) {
+  if (article.UserID.toString() !== user._id.toString()) {
     throw new Error('Access denied. You are not the author of this article.');
   }
 
-  let thumbnailUrl = article.thumbnail_url; // Dùng ảnh cũ nếu không có file mới
+  // Kiểm tra CategoryID nếu có
+  if (articleData.CategoryID) {
+    if (!mongoose.Types.ObjectId.isValid(articleData.CategoryID)) {
+      throw new Error('Invalid CategoryID format');
+    }
+    const categoryExists = await Category.findById(articleData.CategoryID);
+    if (!categoryExists) {
+      throw new Error('CategoryID does not exist');
+    }
+  }
 
-  // Nếu có file thumbnail mới thì upload lên Cloudinary
+  let thumbnailUrl = article.thumbnail; // Dùng thumbnail cũ nếu không có file mới
+
+  // Nếu có file ảnh mới được gửi, upload lên Cloudinary
   if (file) {
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'article_thumbnails' }, // Lưu trong thư mục article_thumbnails
+        { folder: 'article_thumbnails' }, // Lưu vào thư mục 'article_thumbnails'
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
@@ -183,17 +215,17 @@ const updateArticle = async (articleId, articleData, user, file) => {
       );
       uploadStream.end(file.buffer);
     });
-    thumbnailUrl = result.secure_url; // Lấy URL mới
+    thumbnailUrl = result.secure_url; // Lấy URL thumbnail từ Cloudinary
   }
 
-  // Cập nhật bài viết với thông tin mới và thumbnail (nếu có)
+  // Cập nhật Article với thông tin mới và URL thumbnail (nếu có)
   const updatedArticle = await Article.findByIdAndUpdate(
     articleId,
-    { $set: { ...articleData, thumbnail_url: thumbnailUrl, updated_at: Date.now() } },
+    { $set: { ...articleData, thumbnail: thumbnailUrl, updated_at: Date.now() } },
     { new: true, runValidators: true }
   )
-  .populate('UserID', 'username avatar')
-  .populate('CategoryID', 'name slug type');
+    .populate('UserID', 'username avatar')
+    .populate('CategoryID', 'name slug type');
 
   return updatedArticle;
 };
@@ -234,35 +266,43 @@ const publishArticle = async (articleId) => {
     return updatedArticle;
 };
 
-// 14. API Upload Thumbnail
-const uploadThumbnail = async (articleId, file, user) => {
-    const article = await Article.findById(articleId);
-    if (!article) throw new Error('Article not found');
-    if (article.UserID.toString() !== user._id) {
-      throw new Error('Access denied. You are not the author of this article.');
-    }
-  
-    // Upload file lên Cloudinary
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'thumbnails' }, // Lưu vào thư mục 'thumbnails' trên Cloudinary
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      uploadStream.end(file.buffer);
-    });
-  
-    // Cập nhật trường thumbnail với URL từ Cloudinary
-    const updatedArticle = await Article.findByIdAndUpdate(
-      articleId,
-      { $set: { thumbnail: result.secure_url, updated_at: Date.now() } },
-      { new: true, runValidators: true }
-    ).populate('UserID', 'username avatar')
-     .populate('CategoryID', 'name slug type');  
-    return updatedArticle;
-  };
+// Ghi lại lịch sử xem bài viết
+const recordArticleView = async (userId, articleId) => {
+  // Kiểm tra userId và articleId hợp lệ
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error('Invalid UserID format');
+  }
+  if (!mongoose.Types.ObjectId.isValid(articleId)) {
+    throw new Error('Invalid ArticleID format');
+  }
+
+  // Kiểm tra user có tồn tại không
+  const userExists = await User.findById(userId);
+  if (!userExists) {
+    throw new Error('User not found');
+  }
+
+  // Kiểm tra bài viết có tồn tại không
+  const articleExists = await Article.findById(articleId);
+  if (!articleExists) {
+    throw new Error('Article not found');
+  }
+
+  // Kiểm tra bài viết có được publish không
+  if (!articleExists.is_published) {
+    throw new Error('Article is not published, view cannot be recorded');
+  }
+
+  // Tạo bản ghi ViewHistory
+  await ViewHistory.create({
+    UserID: userId,
+    ArticleID: articleId,
+    viewed_at: Date.now(),
+  });
+
+  // Tăng số lượt xem của bài viết
+  await Article.findByIdAndUpdate(articleId, { $inc: { views: 1 } });
+};
 
 module.exports = {
   createArticle,
@@ -275,8 +315,8 @@ module.exports = {
   getNewPublishedArticlesStats,
   getAllViewedArticlesByUser,
   getAllPostArticlesStats,
-  uploadThumbnail,
   updateArticle,
   deleteArticle,
-  publishArticle
+  publishArticle,
+  recordArticleView
 };

@@ -32,11 +32,13 @@ const userRoutes = require('./routes/userRoute');
 const articleRoutes = require('./routes/articleRoute');
 const categoryRoutes = require('./routes/categoryRoute');
 const leagueRoutes = require('./routes/leagueRoute');
+const bookmarkRoutes = require('./routes/bookmarkRoute');
 
 app.use('/api', userRoutes);
 app.use('/api', articleRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', leagueRoutes);
+app.use('/api', bookmarkRoutes);
 
 
 // Start server

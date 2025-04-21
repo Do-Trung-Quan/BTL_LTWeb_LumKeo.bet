@@ -70,7 +70,7 @@ const deleteCategory = async (categoryId) => {
 // Chỉ lấy bài viết trực tiếp thuộc danh mục, không lấy từ các League con
 const getMostViewedArticlesInEachCategory = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
-  const categories = await Category.find({ type: 'Category' });
+  const categories = await Category.find({ type: 'Category', name: { $ne: 'Giải đấu' }});
   const result = [];
 
   for (const category of categories) {

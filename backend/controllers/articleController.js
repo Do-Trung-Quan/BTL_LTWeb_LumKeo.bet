@@ -1,5 +1,6 @@
 const articleService = require('../services/articleService');
 const Category = require('../models/Category'); 
+const User = require('../models/User');
 
 // 1. Create Article (Thêm bài viết)
 const createArticle = async (req, res) => {
@@ -20,25 +21,36 @@ const createArticle = async (req, res) => {
     // Lấy dữ liệu từ request body
     const { title, slug, summary, content, CategoryName } = req.body;
     console.log(req.body);
-    
+
+    // Kiểm tra UserID từ token
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    // Kiểm tra UserID có tồn tại không
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     // Tìm kiếm Category theo tên
     const category = await Category.findOne({ name: CategoryName.trim() });
     if (!category) {
       return res.status(400).json({ message: 'Category not found' });
     }
 
-    // Tạo bài viết
-    const articleData = { 
-      title, 
-      slug, 
-      summary, 
-      content, 
-      CategoryID: category._id,  // ID của category
-      UserID: req.user._id       // ID của user từ token
+    // Tạo dữ liệu bài viết
+    const articleData = {
+      title,
+      slug,
+      summary,
+      content,
+      CategoryID: category._id, // ID của category
+      UserID: req.user._id, // ID của user từ token
     };
 
     // Gọi service để tạo bài viết
-    const article = await articleService.createArticle(articleData, File);
+    const article = await articleService.createArticle(articleData, file); // Sửa File thành file
 
     res.status(201).json({ message: 'Article created successfully', article });
   } catch (error) {
@@ -150,9 +162,18 @@ const getAllPostArticlesStats = async (req, res) => {
 // 11. Update Article (Chỉnh sửa bài viết - Chỉ author được phép)
 const updateArticle = async (req, res) => {
   try {
-    // Lấy dữ liệu từ request body
-    const { title, content, CategoryID, tags } = req.body;
-    const articleData = { title, content, CategoryID, tags };
+    // Lấy dữ liệu từ request
+    const { title, slug, summary, content, CategoryName } = req.body;
+    const articleData = { title, slug, summary, content };
+
+    // Nếu có CategoryName, tìm CategoryID tương ứng
+    if (CategoryName) {
+      const category = await Category.findOne({ name: CategoryName.trim() });
+      if (!category) {
+        return res.status(404).json({ message: 'Category not found' });
+      }
+      articleData.CategoryID = category._id;
+    }
 
     // Lấy file (thumbnail) từ multer
     const file = req.files && req.files.thumbnails ? req.files.thumbnails[0] : null;
@@ -163,18 +184,18 @@ const updateArticle = async (req, res) => {
     // Trả về phản hồi thành công
     res.status(200).json({ message: 'Article updated successfully', article: updatedArticle });
   } catch (error) {
-    // Xử lý lỗi không tìm thấy hoặc không có quyền chỉnh sửa
-    if (error.message === 'Article not found' || 
-        error.message === 'Access denied. You are not the author of this article.') {
+    // Kiểm tra lỗi nếu không tìm thấy bài viết hoặc không có quyền
+    if (
+      error.message === 'Article not found' ||
+      error.message === 'Access denied. You are not the author of this article.'
+    ) {
       return res.status(403).json({ message: error.message });
     }
-
-    // Lỗi khác trong quá trình cập nhật
+    // Lỗi trong quá trình cập nhật
     res.status(500).json({ message: 'Error updating article', error: error.message });
   }
 };
 
-  
   // 12. Delete Article (Xóa bài viết)
   const deleteArticle = async (req, res) => {
     try {
@@ -203,21 +224,33 @@ const updateArticle = async (req, res) => {
     }
   };
 
-  const uploadThumbnail = async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: 'No file uploaded' });
-      }
-      const updatedArticle = await articleService.uploadThumbnail(req.params.id, req.file, req.user);
-      res.status(200).json({ message: 'Thumbnail uploaded successfully', article: updatedArticle });
-    } catch (error) {
-      if (error.message === 'Article not found' || 
-          error.message === 'Access denied. You are not the author of this article.') {
-        return res.status(403).json({ message: error.message });
-      }
-      res.status(500).json({ message: 'Error uploading thumbnail', error: error.message });
+  // Ghi lại lịch sử xem bài viết
+const recordArticleView = async (req, res) => {
+  try {
+    // Kiểm tra req.user (được gán bởi authMiddleware)
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: 'User not authenticated' });
     }
-  };
+
+    const userId = req.user._id;
+    const articleId = req.params.id;
+
+    // Gọi service để ghi lại lịch sử xem
+    await articleService.recordArticleView(userId, articleId);
+
+    res.status(200).json({ message: 'Article view recorded successfully' });
+  } catch (error) {
+    if (
+      error.message === 'User not found' ||
+      error.message === 'Article not found' ||
+      error.message === 'Article is not published, view cannot be recorded'
+    ) {
+      return res.status(404).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Error recording article view', error: error.message });
+  }
+};
+
 
 module.exports = {
   createArticle,
@@ -233,5 +266,5 @@ module.exports = {
   updateArticle,
   deleteArticle,
   publishArticle,
-  uploadThumbnail
+  recordArticleView
 };

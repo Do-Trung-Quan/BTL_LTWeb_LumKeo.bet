@@ -12,15 +12,15 @@ router.post('/login', UserController.login);
 router.post('/reset-password', UserController.resetPassword);
 
 // Các API yêu cầu quyền admin
-router.get('/users', authMiddleware('admin'), UserController.getUsers);
-router.get('/authors', authMiddleware('admin'), UserController.getAuthors);
-router.get('/authors/:authorId', authMiddleware('admin'), UserController.getAuthorById);
-router.delete('/users/:userId', authMiddleware('admin'), UserController.deleteUser);
+router.get('/users', authMiddleware(['admin']), UserController.getUsers);
+router.get('/authors', authMiddleware(['admin']), UserController.getAuthors);
+router.get('/authors/:authorId', authMiddleware(['admin']), UserController.getAuthorById);
+router.delete('/users/:userId', authMiddleware(['admin']), UserController.deleteUser);
 
-router.get('/statistics/new-users', authMiddleware('admin'), UserController.getNewUsersStatistics);
-router.get('/statistics/new-authors', authMiddleware('admin'), UserController.getNewAuthorsStatistics);
-router.get('/statistics/all-users', authMiddleware('admin'), UserController.getAllUsersStatistics);
-router.get('/statistics/all-authors', authMiddleware('admin'), UserController.getAllAuthorsStatistics);
+router.get('/statistics/new-users', authMiddleware(['admin']), UserController.getNewUsersStatistics);
+router.get('/statistics/new-authors', authMiddleware(['admin']), UserController.getNewAuthorsStatistics);
+router.get('/statistics/all-users', authMiddleware(['admin']), UserController.getAllUsersStatistics);
+router.get('/statistics/all-authors', authMiddleware(['admin']), UserController.getAllAuthorsStatistics);
 
 // API cập nhật user (chỉ yêu cầu đăng nhập)
 router.put('/users/:userId/username', authMiddleware(), UserController.updateUsername);

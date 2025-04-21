@@ -161,36 +161,29 @@ const updateAvatar = async (userId, file) => {
 
 // Hàm thống kê số lượng người dùng mới
 const getNewUsersStatistics = async () => {
-  const currentDate = new Date('2025-04-15');
-  const pastDate = new Date(currentDate);
-  pastDate.setDate(currentDate.getDate() - NEW_USER_DAYS);
+  const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
 
   const count = await User.countDocuments({
     role: 'user',
     created_at: {
-      $gte: new Date(pastDate.toISOString()),
-      $lte: new Date(currentDate.toISOString()),
+      $gte: fifteenDaysAgo
     },
   });
 
-  return { count };
+  return { total: count };
 };
 
 // Hàm thống kê số lượng tác giả mới
 const getNewAuthorsStatistics = async () => {
-  const currentDate = new Date('2025-04-15');
-  const pastDate = new Date(currentDate);
-  pastDate.setDate(currentDate.getDate() - NEW_USER_DAYS);
-
+  const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
   const count = await User.countDocuments({
     role: 'author',
     created_at: {
-      $gte: new Date(pastDate.toISOString()),
-      $lte: new Date(currentDate.toISOString()),
+      $gte: fifteenDaysAgo
     },
   });
 
-  return { count };
+  return { total: count };
 };
 
 // Hàm thống kê tất cả người dùng

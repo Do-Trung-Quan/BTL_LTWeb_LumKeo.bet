@@ -1,5 +1,13 @@
 const Comment = require('../models/Comment');
+const notificationService = require('../services/notificationService');
 const mongoose = require('mongoose');
+
+let websocket = null;
+
+// Initialize WebSocket
+const initWebSocket = (ws) => {
+  websocket = ws;
+};
 
 const CommentService = {
   // Lấy tất cả bình luận theo bài viết (bao gồm replies)
@@ -10,10 +18,10 @@ const CommentService = {
 
     const rootComments = await Comment.find({
       ArticleID: articleId,
-      CommentID: null
+      CommentID: null,
     })
-    .populate('UserID', 'name avatar')
-    .sort({ created_at: -1 });
+      .populate('UserID', 'name avatar')
+      .sort({ created_at: -1 });
 
     const commentsWithReplies = await Promise.all(
       rootComments.map(async (comment) => {
@@ -23,7 +31,7 @@ const CommentService = {
 
         return {
           ...comment.toObject(),
-          replies
+          replies,
         };
       })
     );
@@ -45,12 +53,43 @@ const CommentService = {
       UserID: userId,
       ArticleID,
       CommentID: CommentID || null,
-      created_at: new Date()
+      created_at: new Date(),
     });
 
     await comment.save();
 
-    return await Comment.findById(comment._id).populate('UserID', 'name avatar');
+    const populatedComment = await Comment.findById(comment._id)
+    .populate('UserID', 'username avatar')
+    .populate('CommentID', 'content UserID created_at');
+    // Notify parent comment's author if this is a reply
+    let parentComment = null;
+    if (CommentID) {
+      parentComment = await Comment.findById(CommentID);
+    }
+    if (parentComment) {
+      try {
+        console.log('Creating notification for reply comment:', comment._id);
+        const notification = await notificationService.createNotification({
+          noti_entity_ID: comment._id,
+          noti_entity_type: 'Comment',
+          content: `Someone replied to your comment: "${parentComment.content.slice(0, 50)}..."`,
+          UserID: parentComment.UserID,
+        });
+        console.log('Reply notification created:', notification);
+        if (websocket) {
+          websocket.notifyUser(parentComment.UserID.toString(), {
+            type: 'COMMENT_NOTIFICATION',
+            message: `Someone replied to your comment: "${parentComment.content.slice(0, 50)}..."`,
+            commentId: comment._id,
+            articleId: ArticleID,
+            createdAt: Date.now(),
+          });
+        }
+      } catch (error) {
+        console.error('Failed to create reply notification:', error.message);
+      }
+    }
+    return populatedComment
   },
 
   // Cập nhật bình luận
@@ -62,16 +101,15 @@ const CommentService = {
     comment.content = content;
     comment.updated_at = new Date();
     await comment.save();
-
     return comment;
   },
 
   // Xóa bình luận và các bình luận con
-  async deleteComment(commentId, userId, role) {
+  async deleteComment(commentId, userId) {
     const comment = await Comment.findById(commentId);
     if (!comment) throw new Error('Không tìm thấy bình luận');
 
-    if (comment.UserID.toString() !== userId.toString() && role !== 'admin') {
+    if (comment.UserID.toString() !== userId.toString()) {
       throw new Error('Bạn không có quyền xóa bình luận này');
     }
 
@@ -86,20 +124,20 @@ const CommentService = {
     const replies = total - rootComments;
 
     const mostCommentedArticle = await Comment.aggregate([
-      { $group: { _id: "$ArticleID", count: { $sum: 1 } } },
+      { $group: { _id: '$ArticleID', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
-      { $limit: 1 }
+      { $limit: 1 },
     ]);
 
     const latestComment = await Comment.findOne().sort({ created_at: -1 });
 
     const fifteenDaysAgo = new Date();
     fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
-  
+
     const newComments = await Comment.countDocuments({
-      created_at: { $gte: fifteenDaysAgo }
+      created_at: { $gte: fifteenDaysAgo },
     });
-  
+
     return {
       totalComments: total,
       rootComments,
@@ -109,11 +147,14 @@ const CommentService = {
       newCommentsLast15Days: {
         from: fifteenDaysAgo.toISOString(),
         to: new Date().toISOString(),
-        count: newComments
-      }
+        count: newComments,
+      },
     };
-  }
-};  
+  },
+};
 
 
-module.exports = CommentService;
+module.exports = {
+  initWebSocket,
+  CommentService
+};

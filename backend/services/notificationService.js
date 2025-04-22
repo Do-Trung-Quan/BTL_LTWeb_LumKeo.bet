@@ -4,6 +4,13 @@ const Notification = require('../models/Notification');
 const Article = require('../models/Article');
 const Comment = require('../models/Comment');
 
+let websocket = null;
+
+// Initialize WebSocket
+const initWebSocket = (ws) => {
+  websocket = ws;
+};
+
 const NotificationService = {
   // Tạo thông báo
   async createNotification({ noti_entity_ID, noti_entity_type, content, UserID }) {
@@ -24,34 +31,28 @@ const NotificationService = {
     }
 
     // Kiểm tra noti_entity_type
-    const validEntityTypes = ['Article', 'Comment', 'Reply Comment'];
+    const validEntityTypes = ['Article', 'Comment'];
     if (!validEntityTypes.includes(noti_entity_type)) {
-      throw new Error('noti_entity_type must be one of: Article, Comment, Reply Comment');
+      throw new Error('noti_entity_type must be one of: Article, Comment');
     }
 
     // Kiểm tra noti_entity_ID
-    if (noti_entity_ID) {
-      if (!mongoose.Types.ObjectId.isValid(noti_entity_ID)) {
-        throw new Error('Invalid noti_entity_ID format');
-      }
+    if (!noti_entity_ID) {
+      throw new Error('noti_entity_ID is required');
+    }
+    if (!mongoose.Types.ObjectId.isValid(noti_entity_ID)) {
+      throw new Error('Invalid noti_entity_ID format');
+    }
 
-      if (noti_entity_type === 'Article') {
-        const articleExists = await Article.findById(noti_entity_ID).lean();
-        if (!articleExists) {
-          throw new Error('Article not found for noti_entity_ID');
-        }
-      } else if (noti_entity_type === 'Comment' || noti_entity_type === 'Reply Comment') {
-        const commentExists = await Comment.findById(noti_entity_ID).lean();
-        if (!commentExists) {
-          throw new Error('Comment not found for noti_entity_ID');
-        }
-        // Kiểm tra thêm nếu là Reply Comment
-        if (noti_entity_type === 'Reply Comment' && !commentExists.parent_comment_id) {
-          throw new Error('This comment is not a Reply Comment');
-        }
-        if (noti_entity_type === 'Comment' && commentExists.parent_comment_id) {
-          throw new Error('This comment is a Reply Comment, not a regular Comment');
-        }
+    if (noti_entity_type === 'Article') {
+      const articleExists = await Article.findById(noti_entity_ID).lean();
+      if (!articleExists) {
+        throw new Error('Article not found for noti_entity_ID');
+      }
+    } else if (noti_entity_type === 'Comment') {
+      const commentExists = await Comment.findById(noti_entity_ID).lean();
+      if (!commentExists) {
+        throw new Error('Comment not found for noti_entity_ID');
       }
     }
 
@@ -65,6 +66,17 @@ const NotificationService = {
     });
 
     const savedNotification = await notification.save();
+
+    // Send WebSocket notification
+    if (websocket) {
+      websocket.notifyUser(UserID, {
+        type: noti_entity_type.toUpperCase() + '_NOTIFICATION',
+        message: content,
+        entityId: noti_entity_ID,
+        notificationId: savedNotification._id,
+        createdAt: savedNotification.created_at,
+      });
+    }
 
     return {
       success: true,
@@ -85,14 +97,12 @@ const NotificationService = {
     if (!article) {
       throw new Error('Article not found');
     }
-
     // Tìm tất cả user có role admin
     const admins = await User.find({ role: 'admin' }).lean();
+    console.log('Found admins:', admins.length);
     if (!admins || admins.length === 0) {
       throw new Error('No admin users found');
     }
-
-    // Tạo thông báo cho từng admin
     const notifications = await Promise.all(
       admins.map(async (admin) => {
         const notification = new Notification({
@@ -103,15 +113,11 @@ const NotificationService = {
           is_read: false,
           created_at: Date.now(),
         });
+        console.log('Creating notification for admin:', admin._id);
         return notification.save();
       })
     );
-
-    return {
-      success: true,
-      data: notifications,
-      message: 'Notifications created for admins successfully',
-    };
+    console.log('Notifications created:', notifications.length);
   },
 
   // Lấy danh sách thông báo theo UserID
@@ -234,3 +240,4 @@ const NotificationService = {
 };
 
 module.exports = NotificationService;
+module.exports.initWebSocket = initWebSocket;

@@ -1,9 +1,17 @@
 const Article = require('../models/Article');
 const ViewHistory = require('../models/viewHistory');
 const Category = require('../models/Category'); 
+const notificationService = require('../services/notificationService');
 const User = require('../models/User'); 
 const cloudinary = require('../config/cloudinary');
 const mongoose = require('mongoose');
+
+let websocket = null; // Will be initialized in main server file
+
+// Initialize websocket
+const initWebSocket = (ws) => {
+  websocket = ws;
+};
 
 // 1. Create Article (Thêm bài viết)
 
@@ -52,11 +60,21 @@ const createArticle = async (articleData, file) => {
   });
 
   // Populate để trả về thông tin đầy đủ
-  return await Article.findById(article._id)
+  const populatedArticle = await Article.findById(article._id)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-};
 
+  // Create notifications for admins
+  try {
+    console.log('Creating notification for article:', article._id);
+    await notificationService.createPendingArticleNotification(article._id);
+    console.log('Notification created successfully');
+  } catch (error) {
+    console.error('Failed to create pending article notification:', error.message);
+  }
+
+  return populatedArticle;
+};
 // 2. Get All Post Articles (Lấy tất cả bài đăng đã duyệt, sắp xếp theo ngày đăng DESC)
 const getAllPostArticles = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
@@ -246,24 +264,46 @@ const deleteArticle = async (articleId, user) => {
 
 // 13. Publish Article (Duyệt bài viết - Chỉ Admin được phép)
 const publishArticle = async (articleId) => {
-    const article = await Article.findById(articleId);
-    if (!article) throw new Error('Article not found');
-    if (article.is_published) throw new Error('Article is already published');
-  
-    const updatedArticle = await Article.findByIdAndUpdate(
-      articleId,
-      { 
-        $set: {
-          is_published: true,
-          published_date: Date.now(),
-          updated_at: Date.now()
-        }
+  const article = await Article.findById(articleId);
+  if (!article) throw new Error('Article not found');
+  if (article.is_published) throw new Error('Article is already published');
+
+  const updatedArticle = await Article.findByIdAndUpdate(
+    articleId,
+    {
+      $set: {
+        is_published: true,
+        published_date: Date.now(),
+        updated_at: Date.now(),
       },
-      { new: true, runValidators: true }
-    )
-      .populate('UserID', 'username avatar')
-      .populate('CategoryID', 'name slug type');
-    return updatedArticle;
+    },
+    { new: true, runValidators: true }
+  )
+    .populate('UserID', 'username avatar')
+    .populate('CategoryID', 'name slug type');
+
+  // Send notification to the article's author
+  try {
+    console.log('Creating notification for article publish:', article._id);
+    const notification = await notificationService.createNotification({
+      noti_entity_ID: article._id,
+      noti_entity_type: 'Article',
+      content: `Your article "${article.title}" has been published`,
+      UserID: article.UserID,
+    });
+    console.log('Publish notification created:', notification);
+    if (websocket) {
+      websocket.notifyUser(article.UserID.toString(), {
+        type: 'ARTICLE_NOTIFICATION',
+        message: `Your article "${article.title}" has been published`,
+        articleId: article._id,
+        createdAt: Date.now(),
+      });
+    }
+  } catch (error) {
+    console.error('Failed to create publish notification:', error.message);
+  }
+  return updatedArticle;
 };
 
 // Ghi lại lịch sử xem bài viết
@@ -318,5 +358,6 @@ module.exports = {
   updateArticle,
   deleteArticle,
   publishArticle,
-  recordArticleView
+  recordArticleView, 
+  initWebSocket
 };

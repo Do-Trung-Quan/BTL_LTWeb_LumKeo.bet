@@ -39,18 +39,16 @@ const createArticle = async (req, res) => {
       return res.status(400).json({ message: 'Category not found' });
     }
 
-    // Tạo dữ liệu bài viết
     const articleData = {
       title,
       slug,
       summary,
       content,
-      CategoryID: category._id, // ID của category
-      UserID: req.user._id, // ID của user từ token
+      CategoryID: category._id,
+      UserID: req.user._id,
     };
 
-    // Gọi service để tạo bài viết
-    const article = await articleService.createArticle(articleData, file); // Sửa File thành file
+    const article = await articleService.createArticle(articleData, file);
 
     res.status(201).json({ message: 'Article created successfully', article });
   } catch (error) {
@@ -213,11 +211,15 @@ const updateArticle = async (req, res) => {
   // 13. Publish Article (Duyệt bài viết)
   const publishArticle = async (req, res) => {
     try {
+      // Kiểm tra quyền admin
+      if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admin role required.' });
+      }
+  
       const updatedArticle = await articleService.publishArticle(req.params.id);
       res.status(200).json({ message: 'Article published successfully', article: updatedArticle });
     } catch (error) {
-      if (error.message === 'Article not found' || 
-          error.message === 'Article is already published') {
+      if (error.message === 'Article not found' || error.message === 'Article is already published') {
         return res.status(400).json({ message: error.message });
       }
       res.status(500).json({ message: 'Error publishing article', error: error.message });

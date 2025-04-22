@@ -1,5 +1,4 @@
 const NotificationService = require('../services/notificationService');
-const { sendNotification } = require('../websocket');
 
 const NotificationController = {
   // Tạo thông báo
@@ -22,14 +21,6 @@ const NotificationController = {
         UserID,
       });
 
-      // Gửi thông báo qua WebSocket
-      await sendNotification(
-        UserID,
-        content,
-        noti_entity_type,
-        noti_entity_ID
-      );
-
       res.status(201).json(result);
     } catch (error) {
       const status = error.message.includes('not found') || error.message.includes('Invalid') ? 400 : 500;
@@ -46,22 +37,13 @@ const NotificationController = {
       if (!req.user || !req.user._id) {
         return res.status(401).json({ success: false, message: 'User not authenticated' });
       }
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Admin role required' });
+      }
 
-      // Chỉ admin được gọi API này (đã kiểm tra trong authMiddleware)
       const { articleId } = req.body;
 
       const result = await NotificationService.createPendingArticleNotification(articleId);
-
-      // Gửi thông báo qua WebSocket cho tất cả admin
-      const admins = await User.find({ role: 'admin' }).lean();
-      for (const admin of admins) {
-        await sendNotification(
-          admin._id.toString(),
-          `A new article is pending approval`,
-          'Article',
-          articleId
-        );
-      }
 
       res.status(201).json(result);
     } catch (error) {

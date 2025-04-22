@@ -1,3 +1,4 @@
+
 const NotificationService = require('../services/notificationService');
 
 const NotificationController = {

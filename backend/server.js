@@ -28,7 +28,6 @@ mongoose.connect('mongodb+srv://thuyptit2004:Thuy2004@cluster0.b2b9od0.mongodb.n
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-
 // Middleware xử lý lỗi toàn cục
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);

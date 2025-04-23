@@ -111,7 +111,7 @@ const getMostViewedArticlesInEachLeague = async () => {
   const result = [];
 
   for (const league of leagues) {
-    const mostViewedArticle = await Article.findOne({
+    const mostViewedArticle = await Article.find({
       CategoryID: league._id,
       is_published: true
     })

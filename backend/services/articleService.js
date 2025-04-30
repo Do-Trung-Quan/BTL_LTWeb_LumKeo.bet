@@ -176,28 +176,54 @@ const getNewPublishedArticlesStats = async () => {
 
 // 9. Get All Viewed Articles by User (Lấy danh sách bài báo đã đọc của người dùng)
 const getAllViewedArticlesByUser = async (userId, page = 1, limit = 10) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error('Invalid UserID format');
+  }
   const skip = (page - 1) * limit;
   const viewedArticles = await ViewHistory.find({ UserID: userId })
-    .sort({ viewed_at: -1 })
     .skip(skip)
     .limit(limit)
+    .populate('UserID', 'username avatar') // Populate user fields
     .populate({
       path: 'ArticleID',
-      populate: [
-        { path: 'UserID', select: 'username avatar' },
-        { path: 'CategoryID', select: 'name slug type' }
-      ]
-    });
-  return viewedArticles;
+      select: 'title thumbnail created_at', // Select fields from Article
+      populate: {
+        path: 'CategoryID', // Populate CategoryID within ArticleID
+        select: 'name' // Only select the 'name' field from Category
+      }
+    })
+    .sort({ viewed_at: -1 }); // Sắp xếp theo thời gian xem, mới nhất trước
+
+  const total = await ViewHistory.countDocuments({ UserID: userId });
+  return {
+    data: viewedArticles,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  }};
+
+// 10. Delete a View History Record (Xóa một lịch sử xem bài báo)
+const deleteViewHistory = async (historyId, userId) => {
+  const history = await ViewHistory.findOneAndDelete({
+    _id: historyId,
+    UserID: userId // Ensure the history belongs to the user
+  });
+
+  if (!history) {
+    throw new Error('Lịch sử xem không tồn tại hoặc bạn không có quyền xóa.');
+  }
+
+  return { success: true, message: 'Xóa lịch sử xem thành công!' };
 };
 
-// 10. Get All Post Articles Statistics (Lấy tổng số lượng bài báo đã đăng)
+// 11. Get All Post Articles Statistics (Lấy tổng số lượng bài báo đã đăng)
 const getAllPostArticlesStats = async () => {
   const count = await Article.countDocuments({ is_published: true });
   return { total: count };
 };
 
-// 11. Update Article (Chỉnh sửa bài viết - Chỉ author của bài viết được phép)
+// 12. Update Article (Chỉnh sửa bài viết - Chỉ author của bài viết được phép)
 const updateArticle = async (articleId, articleData, user, file) => {
   // Tìm bài viết theo ID
   const article = await Article.findById(articleId);
@@ -248,7 +274,7 @@ const updateArticle = async (articleId, articleData, user, file) => {
   return updatedArticle;
 };
 
-  // 12. Delete Article (Xóa bài viết - Author hoặc Admin được phép)
+  // 13. Delete Article (Xóa bài viết - Author hoặc Admin được phép)
 const deleteArticle = async (articleId, user) => {
     const article = await Article.findById(articleId);
     if (!article) throw new Error('Article not found');
@@ -262,7 +288,7 @@ const deleteArticle = async (articleId, user) => {
     return { message: 'Article deleted successfully' };
   };
 
-// 13. Publish Article (Duyệt bài viết - Chỉ Admin được phép)
+// 14. Publish Article (Duyệt bài viết - Chỉ Admin được phép)
 const publishArticle = async (articleId) => {
   const article = await Article.findById(articleId);
   if (!article) throw new Error('Article not found');
@@ -306,7 +332,7 @@ const publishArticle = async (articleId) => {
   return updatedArticle;
 };
 
-// Ghi lại lịch sử xem bài viết
+// 15. Ghi lại lịch sử xem bài viết
 const recordArticleView = async (userId, articleId) => {
   // Kiểm tra userId và articleId hợp lệ
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -354,6 +380,7 @@ module.exports = {
   getArticleByPublishedState, 
   getNewPublishedArticlesStats,
   getAllViewedArticlesByUser,
+  deleteViewHistory,
   getAllPostArticlesStats,
   updateArticle,
   deleteArticle,

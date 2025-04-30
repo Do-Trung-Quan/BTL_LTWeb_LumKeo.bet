@@ -20,11 +20,10 @@ const createCategory = async (categoryData) => {
 // 2. Get All Categories (Lấy tất cả danh mục, filter theo type = Category)
 const getAllCategories = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
-  const [categories, total] = await Promise.all([
+  const [categories] = await Promise.all([
     Category.find({ type: 'Category' }).skip(skip).limit(limit), // Lấy các document có type là 'Category'
-    Category.countDocuments({ type: 'Category' })
   ]);
-  return { total, categories };
+  return {categories};
 };
 
 // 3. Get Category by ID (Lấy danh mục theo ID)

@@ -83,14 +83,15 @@
             </ul>
         </aside>
         <main class="content">
-            <div class="Personal_Info">
-                <div class="user_detail">
-                    <h2>Nguyễn Đức Minh</h2>
-                    <p>AUTHOR ID: AU221104</p>
+            <!-- Admin Information -->
+            <div class="user-info">
+                <div class="user-text">
+                    <h3 id="user-name">Loading...</h3>
+                    <p id="user-role">Loading...</p>
                 </div>
-                <div class="profile_image">
-                    <img id="profile_pic" src="img/amongUs.jpg" alt="Avatar">
-                    <input type="file" id="profile_pic_input" accept="image/*" hidden>
+                <div class="user-avatar">
+                    <img id="profile-pic-upper" src= "" alt= "" class="avatar">
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
                 </div>
             </div>
             <div class="userContainer">
@@ -133,19 +134,18 @@
                 </div>
                 <div class="userFullName">
                     <div class="contentFill">
-                        <div class="labelFill">Họ tên</div>
+                        <div class="labelFill">Tên đăng nhập</div>
                         <div id="form_update_FullName">
-                            <p class="edit_fullname">Nhập họ tên</p>
+                            <p class="edit_fullname">Nhập tên đăng nhập</p>
                             <div class="input_log">
-                                <input id="txtFullname" class="input_form" type="text" placeholder="Nhập họ tên">
+                                <input id="txtFullname" class="input_form" type="text" placeholder="Nhập tên đăng nhập">
                             </div>
                             <div class="button_act">
-                                <button id="btn_save_fullname" disabled="disabled">Đổi tên</button>
+                                <button id="btn_save_fullname">Đổi tên đăng nhập</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
             </div>
         </main>
     </div>

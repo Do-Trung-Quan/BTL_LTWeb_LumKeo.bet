@@ -60,8 +60,15 @@ const getBookmarksByUser = async (userId, page = 1, limit = 10) => {
   const bookmarks = await Bookmark.find({ UserID: userId })
     .skip(skip)
     .limit(limit)
-    .populate('UserID', 'username avatar')
-    .populate('ArticleID', 'title slug views')
+    .populate('UserID', 'username avatar') // Populate user fields
+    .populate({
+      path: 'ArticleID',
+      select: 'title thumbnail created_at', // Select fields from Article
+      populate: {
+        path: 'CategoryID', // Populate CategoryID within ArticleID
+        select: 'name' // Only select the 'name' field from Category
+      }
+    })
     .sort({ created_at: -1 }); // Sắp xếp theo thời gian tạo, mới nhất trước
 
   const total = await Bookmark.countDocuments({ UserID: userId });
@@ -73,43 +80,6 @@ const getBookmarksByUser = async (userId, page = 1, limit = 10) => {
     limit,
     totalPages: Math.ceil(total / limit),
   };
-};
-
-// Cập nhật bookmark
-const updateBookmark = async (bookmarkId, userId, updateData) => {
-  if (!mongoose.Types.ObjectId.isValid(bookmarkId)) {
-    throw new Error('Invalid BookmarkID format');
-  }
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    throw new Error('Invalid UserID format');
-  }
-
-  const bookmark = await Bookmark.findById(bookmarkId);
-  if (!bookmark) {
-    throw new Error('Bookmark not found');
-  }
-
-  // Kiểm tra xem user có quyền cập nhật bookmark không
-  if (bookmark.UserID.toString() !== userId.toString()) {
-    throw new Error('You can only update your own bookmarks');
-  }
-
-  // Cập nhật bookmark (chỉ cho phép cập nhật ArticleID, vì created_at tự động)
-  if (updateData.ArticleID) {
-    if (!mongoose.Types.ObjectId.isValid(updateData.ArticleID)) {
-      throw new Error('Invalid ArticleID format');
-    }
-    if (!updateData.ArticleID) {
-        throw new Error('Article not found');
-      }
-      if (!updateData.ArticleID.is_published) {
-        throw new Error('Cannot bookmark an unpublished article');
-      }
-    bookmark.ArticleID = updateData.ArticleID;
-  }
-
-  await bookmark.save();
-  return bookmark;
 };
 
 // Xóa bookmark
@@ -139,6 +109,5 @@ module.exports = {
   createBookmark,
   getBookmarkById,
   getBookmarksByUser,
-  updateBookmark,
   deleteBookmark,
 };

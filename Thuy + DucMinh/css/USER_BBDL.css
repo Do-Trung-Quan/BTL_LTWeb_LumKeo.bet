@@ -21,7 +21,7 @@ body {
     gap: 70px;
 }
 
-/* Sidebar */
+/* Floating Sidebar */
 .sidebar {
     margin-left: 30px;
     margin-top: 30px;
@@ -35,28 +35,6 @@ body {
     color: black;
     position: fixed;
 
-    /* position: absolute;
-    left: 20px;
-    margin-left: 10px;
-    margin-top: 150px;
-    background: #e0e0e0;
-    display: flex;
-    padding: 10px;
-    border-radius: 10px;
-    width: 250px;
-    height: 440px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    color: black; */
-}
-
-
-.content {
-    position: relative;
-    top: -10px;
-    left: 100px;
-    margin-left: 290px;
-    padding: 40px;
-    min-width:1000px;
 }
 
 .sidebar a {
@@ -92,8 +70,18 @@ body {
     color: black;
 }
 
-/* Admin Info */
-.admin-info {
+/* Main Content */
+.content {
+    position: relative;
+    top: -10px;
+    left: 70px;
+    margin-left: 290px;
+    padding: 40px;
+    min-width:1120px;
+}
+
+/* User Info */
+.user-info {
     position: relative;
     left: 0px;
     display: flex;
@@ -102,17 +90,17 @@ body {
     background: #e0e0e0;
     padding: 15px 20px;
     border-radius: 10px;
-    width: 1000px;
+    width: 1060px;
     max-width: 200%;
     height: 150px;
     box-sizing: border-box;
     z-index: 1;
 }
-.admin-text {
+.user-text {
     margin-left: 20px;
 }
 
-.admin-text h3 {
+.user-text h3 {
     font-size: 32px;
     font-weight: bold;
     margin: 0;
@@ -120,13 +108,13 @@ body {
     color: black;
 }
 
-.admin-text p {
+.user-text p {
     font-size: 20px;
     color: #333;
     margin: 5px 0 0;
 }
 
-.admin-avatar img {
+.user-avatar img {
     width: 100px;
     height: 100px;
     border: 3px solid darkblue; 
@@ -135,13 +123,94 @@ body {
     object-fit: cover;
 }
 
+
+/* Table */
+table {
+    width: 1060px;
+    border-collapse: collapse;
+    margin-top: 100px;
+    
+}
+
+
+td {
+    text-align: center; /* Horizontally center text and images */
+    vertical-align: middle; /* Vertically center content */
+}
+
+th, td {
+    padding: 20px 30px;
+    text-align: center;
+    border-bottom: 1px solid lightgrey;
+    vertical-align: middle;
+    word-break: break-word;
+    white-space: normal; 
+    max-width: 200px; 
+    min-width: 100px;
+}
+
+th {
+    background-color: lightgray;
+    height: 80px;
+    min-width: 200px;
+}
+
+td img {
+    width: 150px; 
+    height: 100px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Icon hành động */
+td i {
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 18px;
+    color: gray;
+}
+
+td i:hover {
+    color: black;
+}
+
+.table-container {
+    width: 100%;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+}
+
+.custom-table th, .custom-table td {
+    padding: 12px;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+}
+
+.custom-table th {
+    background: #d6d6d6;
+}
+
+.custom-table tbody tr:hover {
+    background: #f0f0f0;
+}
+
 .functionBar {
     margin-top: 50px;
-    margin-left: 30px;
+    margin-bottom: -50px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
-    gap: 100px;
+    gap: 140px;
 }
 
 .search-box {
@@ -203,213 +272,4 @@ body {
 
 .dropdown_two > .dropdown-menu li:hover a {
     font-weight: bold;
-}
-
-
-.status-buttons {
-    display: flex;
-    gap: 0px;
-}
-
-.status-buttons button {
-    padding: 8px 15px;
-    border: none;
-    background-color: #f9f6f6;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.status-buttons button:hover {
-    background-color: #e0c04c;
-    color: black; 
-}
-
-.status-buttons .active_btn {
-    background-color: #e0c04c;
-    color: black;
-}
-
-table {
-    width: 1000px;
-    border-collapse: collapse;
-    margin-top: 0px;
-}
-
-
-.table-header {
-    position: relative;
-    width: 100%;
-    height: 50px; /* Adjust height as needed */
-    padding: 10px;
-    margin-bottom: 20px;
-}
-.table-container {
-    width: 100%;
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 8px;
-}
-
-thead {
-    background-color: lightgrey;
-    font-weight: bold;
-}
-
-th, td {
-    padding: 20px 30px;
-    text-align: center;
-    border-bottom: 1px solid lightgrey;
-    vertical-align: middle;
-    word-break: break-word;
-    white-space: normal; 
-    max-width: 180px; 
-    min-width: 180px;
-}
-
-th {
-    background-color: lightgray;
-}
-
-td {
-    min-width: 200px;
-}
-
-td img {
-    width: 150px; 
-    height: 100px;
-    object-fit: cover;
-    display: block;
-    margin: 0 auto;
-}
-
-/* Icon hành động */
-td i {
-    cursor: pointer;
-    margin: 0 5px;
-    font-size: 18px;
-    color: gray;
-}
-
-td i:hover {
-    color: black;
-}
-
-.edit-btn {
-    background: none;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 5px;
-}
-
-.edit-btn:focus, 
-.edit-btn:hover {
-    border: none;
-    outline: none;
-}
-
-/* Modal Background */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
-
-/* Modal Content */
-.modal-content {
-    background: white;
-    padding: 30px;
-    width: 60%;
-    max-width: 800px;
-    border-radius: 10px;
-    text-align: left;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-    position: relative;
-}
-
-/* Modal Title */
-.modal-content h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* Form Layout */
-.modal-content form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-/* Input Fields */
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* Align File Input */
-.modal-content input[type="file"] {
-    padding: 5px;
-}
-
-/* Submit Button */
-.submit-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
-    width: 100%;
-    font-size: 16px;
-}
-
-.submit-btn:hover {
-    background-color: #0056b3;
-}
-
-/* Close Button */
-.close {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-/* Modal Buttons */
-.modal-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-/* Cancel Button */
-.cancel-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 14px;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
-    font-size: 16px;
-    width: 100%;
-    text-align: center;
-}
-
-.cancel-btn:hover {
-    background-color: #b52b3a;
 }

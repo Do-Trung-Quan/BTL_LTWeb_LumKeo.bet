@@ -75,33 +75,6 @@ const getBookmarksByUser = async (req, res) => {
   }
 };
 
-// Cập nhật bookmark
-const updateBookmark = async (req, res) => {
-  try {
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({ message: 'User not authenticated' });
-    }
-
-    const bookmarkId = req.params.id;
-    const userId = req.user._id;
-    const updateData = req.body;
-
-    const updatedBookmark = await bookmarkService.updateBookmark(bookmarkId, userId, updateData);
-    res.status(200).json({ message: 'Bookmark updated successfully', bookmark: updatedBookmark });
-  } catch (error) {
-    if (
-      error.message === 'Invalid BookmarkID format' ||
-      error.message === 'Invalid UserID format' ||
-      error.message === 'Invalid ArticleID format' ||
-      error.message === 'Bookmark not found' ||
-      error.message === 'You can only update your own bookmarks'
-    ) {
-      return res.status(400).json({ message: error.message });
-    }
-    res.status(500).json({ message: 'Error updating bookmark', error: error.message });
-  }
-};
-
 // Xóa bookmark
 const deleteBookmark = async (req, res) => {
   try {
@@ -131,6 +104,5 @@ module.exports = {
   createBookmark,
   getBookmarkById,
   getBookmarksByUser,
-  updateBookmark,
   deleteBookmark,
 };

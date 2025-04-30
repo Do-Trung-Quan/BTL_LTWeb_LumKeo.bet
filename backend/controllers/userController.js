@@ -13,12 +13,26 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
+
     const result = await UserService.loginUser({ username, password });
-    res.status(200).json(result);
+    
+    if (!result.token) {
+      throw new Error('Token not generated');
+    }
+
+    res.cookie('token', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({ message: 'Login successful', user: result.user, token: result.token });
   } catch (error) {
+    console.error(error);
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
 
 const resetPassword = async (req, res) => {
   try {
@@ -48,11 +62,11 @@ const getAuthors = async (req, res) => {
   }
 };
 
-const getAuthorById = async (req, res) => {
+const getUserById = async (req, res) => {
   try {
-    const { authorId } = req.params;
-    const result = await UserService.getAuthorById(authorId);
-    res.status(200).json(result);
+    const { userId } = req.params;
+    const result = await UserService.getUserById(userId);
+    res.status(200).json({ success: true, data: result });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
@@ -68,28 +82,37 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Update username
 const updateUsername = async (req, res) => {
   try {
     const { username } = req.body;
     const result = await UserService.updateUsername(req.params.userId, username);
-    res.status(200).json({ message: 'Username updated successfully', user: result });
+    res.status(200).json({
+      message: 'Username updated successfully',
+      user: result.user,
+      token: result.token // Include the new token in the response
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
 };
 
+// Update password
 const updatePassword = async (req, res) => {
   try {
     const { newPassword } = req.body;
     const result = await UserService.updatePassword(req.params.userId, newPassword);
-    res.status(200).json({ message: 'Password updated successfully', user: result });
+    res.status(200).json({
+      message: 'Password updated successfully',
+      user: result.user,
+      token: result.token // Include the new token in the response
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
 };
 
-
-// Hàm xử lý cập nhật avatar cho người dùng
+// Update avatar for user
 const updateAvatar = async (req, res) => {
   try {
     // Lấy file avatar từ multer
@@ -100,14 +123,18 @@ const updateAvatar = async (req, res) => {
       return res.status(400).json({ success: false, message: 'No avatar uploaded' });
     }
 
-     // Log file nhận được từ multer để debug
-     console.log("Uploaded file:", file);
+    // Log file nhận được từ multer để debug
+    console.log("Uploaded file:", file);
 
     // Gọi service để cập nhật avatar người dùng
-    const updatedUser = await UserService.updateAvatar(req.params.userId, file);
+    const result = await UserService.updateAvatar(req.params.userId, file);
 
     // Trả về phản hồi thành công
-    res.status(200).json({ message: 'Avatar updated successfully', user: updatedUser });
+    res.status(200).json({
+      message: 'Avatar updated successfully',
+      user: result.user,
+      token: result.token // Include the new token in the response
+    });
   } catch (error) {
     console.error("Error updating avatar:", error);
     // Xử lý lỗi
@@ -157,7 +184,7 @@ module.exports = {
   resetPassword,
   getUsers,
   getAuthors,
-  getAuthorById,
+  getUserById,
   deleteUser,
   updateUsername,
   updatePassword,

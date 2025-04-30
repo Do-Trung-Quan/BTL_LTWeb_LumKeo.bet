@@ -1,9 +1,20 @@
 const User = require('../models/User');
 const cloudinary = require('cloudinary').v2;
 const jwt = require('jsonwebtoken');
+require('dotenv').config();  
 
-const JWT_SECRET = 'Thuy123@';
-const NEW_USER_DAYS = 15;
+const JWT_SECRET = process.env.JWT_SECRET
+
+// Generate a new JWT token
+const generateToken = (user) => {
+  const payload = {
+    id: user._id,
+    username: user.username,
+    role: user.role,
+    avatar: user.avatar
+  };
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' }); // Adjust expiration as needed
+};
 
 // Hàm kiểm tra username có tồn tại hay không
 const checkUsernameExists = async (username) => {
@@ -43,29 +54,43 @@ const loginUser = async ({ username, password }) => {
     throw new Error('User not found');
   }
 
+  // Kiểm tra mật khẩu (có thể cần thêm hàm kiểm tra mật khẩu đúng)
   await checkPasswordMatch(user, password);
 
   user.last_login = new Date();
   await user.save();
 
   const token = jwt.sign(
-    { id: user._id, username: user.username, role: user.role },
-    JWT_SECRET,
-    { expiresIn: '1d' }
-  );
+    { id: user._id.toString(), username: user.username, role: user.role, avatar: user.avatar },
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
+);
 
+  // Trả về đối tượng gồm user và token
   return { user, token };
 };
 
 // Hàm reset mật khẩu
 const resetPassword = async ({ username, newPassword }) => {
+  // Input validation
+  if (!username || !newPassword) {
+    throw new Error('Username và mật khẩu mới là bắt buộc.');
+  }
+
+  if (newPassword.length < 6) {
+    throw new Error('Mật khẩu mới phải có ít nhất 6 ký tự.');
+  }
+
+  // Find the user
   const user = await User.findOne({ username });
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('Người dùng không tồn tại.');
   }
 
   user.password = newPassword;
   await user.save();
+  // Return a success result
+  return { success: true, message: 'Đặt lại mật khẩu thành công!' };
 };
 
 // Hàm lấy tất cả users
@@ -80,15 +105,14 @@ const getAuthors = async () => {
   return authors;
 };
 
-// Hàm tìm author theo ID
-const getAuthorById = async (authorId) => {
-  const author = await User.findById(authorId).select('-password');
-  if (!author || author.role !== 'author') {
-    throw new Error('Author not found');
+const getUserById = async (userId) => {
+  const user = await User.findById(userId).select('-password');
+  if (!user) {
+    throw new Error('User not found');
   }
-
-  return author;
+  return user;
 };
+
 
 // Hàm xóa user
 const deleteUser = async (userId) => {
@@ -104,7 +128,7 @@ const deleteUser = async (userId) => {
 };
 
 
-// Hàm cập nhật username
+// Update username
 const updateUsername = async (userId, username) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -114,10 +138,18 @@ const updateUsername = async (userId, username) => {
   await checkUsernameExists(username); // Kiểm tra username trước khi cập nhật
 
   user.username = username;
-  return await user.save();
+  const updatedUser = await user.save();
+
+  // Generate a new token with the updated username
+  const newToken = generateToken(updatedUser);
+
+  return {
+    user: updatedUser,
+    token: newToken
+  };
 };
 
-// Hàm cập nhật password
+// Update password
 const updatePassword = async (userId, newPassword) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -125,10 +157,18 @@ const updatePassword = async (userId, newPassword) => {
   }
 
   user.password = newPassword;
-  return await user.save();
+  const updatedUser = await user.save();
+
+  // Generate a new token (optional, since password updates don't affect the token payload)
+  const newToken = generateToken(updatedUser);
+
+  return {
+    user: updatedUser,
+    token: newToken
+  };
 };
 
-// Hàm cập nhật avatar cho người dùng
+// Update avatar for user
 const updateAvatar = async (userId, file) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -156,7 +196,14 @@ const updateAvatar = async (userId, file) => {
     { avatar: avatarUrl },
     { new: true, runValidators: true }
   );
-  return updatedUser;
+
+  // Generate a new token with the updated avatar
+  const newToken = generateToken(updatedUser);
+
+  return {
+    user: updatedUser,
+    token: newToken
+  };
 };
 
 // Hàm thống kê số lượng người dùng mới
@@ -205,7 +252,7 @@ module.exports = {
   resetPassword,
   getUsers,
   getAuthors,
-  getAuthorById,
+  getUserById,
   deleteUser,
   updateUsername,
   updatePassword,

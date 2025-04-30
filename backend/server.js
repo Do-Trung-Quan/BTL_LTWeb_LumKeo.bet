@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config();  
 const http = require('http');
 const articleService = require('./services/articleService');
 const commentService = require('./services/commentService');
@@ -24,15 +25,20 @@ commentService.initWebSocket(websocket);
 notificationService.initWebSocket(websocket);
 
 // Kết nối MongoDB
-mongoose.connect('mongodb+srv://thuyptit2004:Thuy2004@cluster0.b2b9od0.mongodb.net/websiteDB?retryWrites=true&w=majority&appName=Cluster0')
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+const mongoURI = process.env.MONGO_URI;
+
+mongoose.connect(mongoURI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => console.log('Error connecting to MongoDB:', error));
 
 // Middleware xử lý lỗi toàn cục
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
     res.status(500).json({ message: 'Đã có lỗi xảy ra trên server!' });
 });
+
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 // Routes
 const userRoutes = require('./routes/userRoute');

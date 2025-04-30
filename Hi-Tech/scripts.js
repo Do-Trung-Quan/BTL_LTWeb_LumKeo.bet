@@ -1,3 +1,6 @@
+{/* <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script> */}
+
+// Hiển thị form Reset mật khẩu
 function showResetForm() {
     const loginForm = document.getElementById('login-form');
     const resetForm = document.getElementById('password-reset-form');
@@ -9,6 +12,7 @@ function showResetForm() {
     }, 10);
 }
 
+// Hiển thị form Đăng nhập
 function showLoginForm() {
     const loginForm = document.getElementById('login-form');
     const resetForm = document.getElementById('password-reset-form');
@@ -23,7 +27,8 @@ function showLoginForm() {
 
 // Đăng nhập — Gọi API
 document.getElementById('login-form').addEventListener('submit', async function(event) {
-    event.preventDefault();
+    event.preventDefault();  // Ngừng gửi form theo cách mặc định
+
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
 
@@ -34,27 +39,27 @@ document.getElementById('login-form').addEventListener('submit', async function(
 
     try {
         console.log('Data being sent:', { username, password });
-        const response = await fetch('http://localhost:3000/api/users/login', {
-            method: 'POST',
+        const response = await fetch('http://localhost:3000/api/login/', {
+            method: 'POST',  // Gửi dữ liệu qua POST request
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password })  // Gửi dữ liệu trong body của request
         });
 
         const data = await response.json();
         console.log('Phản hồi từ backend:', data); // Log để kiểm tra
 
         if (response.ok) {
-            localStorage.setItem('token', data.token);
+            // Lưu token vào cookie, hết hạn sau 7 ngày
+            document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; secure`;
 
             // Kiểm tra role trước khi vào switch
-            if (!data.role) {
+            if (!data.user || !data.user.role) {
                 alert('Không nhận được quyền truy cập từ server.');
                 return;
             }
 
             // Chuyển role về chữ thường để đảm bảo khớp với case
-            const role = data.role.toLowerCase();
-
+            const role = data.user.role.toLowerCase();
             switch (role) {
                 case 'admin':
                     window.location.href = '../Thuy + DucMinh/ADMIN_QLBB.html';
@@ -89,13 +94,27 @@ document.getElementById('password-reset-form').addEventListener('submit', async 
     }
 
     try {
-        const response = await fetch('http://localhost:3000/api/users/reset-password', {
+        const response = await fetch('http://localhost:3000/api/reset-password/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, newPassword, confirmPassword })
+            body: JSON.stringify({ username, newPassword })
         });
 
-        const data = await response.json();
+        // Check if the response has a body before trying to parse JSON
+        const contentType = response.headers.get('content-type');
+        let data = {};
+
+        if (response.status === 204) {
+            // 204 No Content: No body to parse
+            data = { message: 'No content returned from server' };
+        } else if (contentType && contentType.includes('application/json')) {
+            // Only parse as JSON if the Content-Type is application/json
+            data = await response.json();
+        } else {
+            // If not JSON, treat the response as text
+            const text = await response.text();
+            throw new Error(`Unexpected response format: ${text}`);
+        }
 
         if (response.ok) {
             alert('Đặt lại mật khẩu thành công!');
@@ -104,11 +123,12 @@ document.getElementById('password-reset-form').addEventListener('submit', async 
             alert(data.message || 'Đặt lại mật khẩu thất bại.');
         }
     } catch (error) {
+        console.error('Reset Password Error:', error);
         alert(`Lỗi kết nối: ${error.message}`);
     }
 });
 
-// Toggle Password
+// Toggle Password Visibility
 document.querySelectorAll('.toggle-password').forEach(icon => {
     icon.addEventListener('click', function() {
         const input = this.previousElementSibling;

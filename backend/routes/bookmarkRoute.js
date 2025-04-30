@@ -12,9 +12,6 @@ router.get('/bookmarks/:id/', authMiddleware(['user', 'author']), bookmarkContro
 // Lấy danh sách bookmark theo User
 router.get('/bookmarks/user/:userId/', authMiddleware(['user', 'author']), bookmarkController.getBookmarksByUser);
 
-// Cập nhật bookmark
-router.put('/bookmarks/:id/', authMiddleware(['user', 'author']), bookmarkController.updateBookmark);
-
 // Xóa bookmark
 router.delete('/bookmarks/:id/', authMiddleware(['user', 'author']), bookmarkController.deleteBookmark);
 

@@ -1,6 +1,9 @@
 const Article = require('../models/Article');
 const ViewHistory = require('../models/viewHistory');
 const Category = require('../models/Category'); 
+const Comment = require('../models/Comment');
+const Bookmark = require('../models/Bookmark');
+const Notification = require('../models/Notification');
 const notificationService = require('../services/notificationService');
 const User = require('../models/User'); 
 const cloudinary = require('../config/cloudinary');
@@ -275,18 +278,26 @@ const updateArticle = async (articleId, articleData, user, file) => {
 };
 
   // 13. Delete Article (Xóa bài viết - Author hoặc Admin được phép)
-const deleteArticle = async (articleId, user) => {
+  const deleteArticle = async (articleId, user) => {
     const article = await Article.findById(articleId);
     if (!article) throw new Error('Article not found');
   
-    // Kiểm tra quyền: Chỉ author của bài viết hoặc admin được phép xóa
-    if (article.UserID.toString() !== user._id && user.role !== 'admin') {
+    if (article.UserID.toString() !== user._id.toString() && user.role !== 'admin') {
       throw new Error('Access denied. You are not the author or an admin.');
     }
+  
+    // Xóa liên quan
+    await Promise.all([
+      Comment.deleteMany({ ArticleID: articleId }),
+      Bookmark.deleteMany({ ArticleID: articleId }),
+      ViewHistory.deleteMany({ ArticleID: articleId }),
+      Notification.deleteMany({ noti_entity_ID: articleId, noti_entity_type: 'Article' }),
+    ]);
   
     await Article.findByIdAndDelete(articleId);
     return { message: 'Article deleted successfully' };
   };
+  
 
 // 14. Publish Article (Duyệt bài viết - Chỉ Admin được phép)
 const publishArticle = async (articleId) => {

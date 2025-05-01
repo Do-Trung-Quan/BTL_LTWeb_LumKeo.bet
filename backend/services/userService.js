@@ -1,4 +1,9 @@
 const User = require('../models/User');
+const Article = require('../models/Article');
+const Comment = require('../models/Comment');
+const Bookmark = require('../models/Bookmark');
+const ViewHistory = require('../models/viewHistory');
+const Notification = require('../models/Notification');
 const cloudinary = require('cloudinary').v2;
 const jwt = require('jsonwebtoken');
 require('dotenv').config();  
@@ -116,16 +121,25 @@ const getUserById = async (userId) => {
 
 // Hàm xóa user
 const deleteUser = async (userId) => {
-  const user = await User.findByIdAndDelete(userId);
-  if (!user) {
-    throw new Error('User not found');
-  }
+  const user = await User.findById(userId);
+  if (!user) throw new Error('User not found');
+
+  await Promise.all([
+    Article.deleteMany({ UserID: userId }),
+    Comment.deleteMany({ UserID: userId }),
+    Bookmark.deleteMany({ UserID: userId }),
+    ViewHistory.deleteMany({ UserID: userId }),
+    Notification.deleteMany({ UserID: userId }),
+  ]);
 
   if (user.avatar && !user.avatar.includes('defaultAva')) {
     const publicId = user.avatar.split('/').slice(-2).join('/').split('.')[0];
     await cloudinary.uploader.destroy(publicId).catch(() => {});
   }
+
+  await User.findByIdAndDelete(userId);
 };
+
 
 
 // Update username

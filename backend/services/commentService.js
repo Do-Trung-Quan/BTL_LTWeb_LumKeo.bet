@@ -1,4 +1,5 @@
 const Comment = require('../models/Comment');
+const Notification = require('../models/Notification');
 const notificationService = require('../services/notificationService');
 const mongoose = require('mongoose');
 
@@ -113,8 +114,15 @@ const CommentService = {
       throw new Error('Bạn không có quyền xóa bình luận này');
     }
 
-    await Comment.deleteMany({ CommentID: commentId }); // Xóa các comment con
-    await Comment.findByIdAndDelete(commentId); // Xóa chính nó
+    // Xóa các bình luận con và thông báo liên quan nếu có
+    await Promise.all([
+      Comment.deleteMany({ CommentID: commentId }),
+      Notification.deleteMany({ noti_entity_ID: commentId, noti_entity_type: 'Comment' }),
+    ]);
+
+    await Comment.findByIdAndDelete(commentId);
+
+    return { message: 'Xóa bình luận thành công' };
   },
 
   // Thống kê tất cả bình luận + 15 ngày gần nhất

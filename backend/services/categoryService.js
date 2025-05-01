@@ -1,5 +1,9 @@
 const Category = require('../models/Category');
 const Article = require('../models/Article');
+const Comment = require('../models/Comment');
+const Bookmark = require('../models/Bookmark');
+const ViewHistory = require('../models/viewHistory');
+const Notification = require('../models/Notification');
 
 // 1. Create Category (Tạo danh mục: Giải đấu, Bóng đá Việt Nam, Bóng đá thế giới)
 const createCategory = async (categoryData) => {
@@ -57,13 +61,25 @@ const deleteCategory = async (categoryId) => {
   const category = await Category.findById(categoryId);
   if (!category) throw new Error('Category not found');
 
-  // Kiểm tra xem danh mục có giải đấu con không
   const childLeagues = await Category.find({ parentCategory: categoryId, type: 'League' });
   if (childLeagues.length > 0) throw new Error('Cannot delete category with child leagues');
+
+  // Xoá các bài viết thuộc category
+  const articles = await Article.find({ CategoryID: categoryId });
+  const articleIds = articles.map(a => a._id);
+
+  await Promise.all([
+    Comment.deleteMany({ ArticleID: { $in: articleIds } }),
+    Bookmark.deleteMany({ ArticleID: { $in: articleIds } }),
+    ViewHistory.deleteMany({ ArticleID: { $in: articleIds } }),
+    Notification.deleteMany({ noti_entity_ID: { $in: articleIds }, noti_entity_type: 'Article' }),
+    Article.deleteMany({ CategoryID: categoryId }),
+  ]);
 
   await Category.findByIdAndDelete(categoryId);
   return { message: 'Category deleted successfully' };
 };
+
 
 // 6. Get Most Viewed Articles in Each Category (Lấy bài báo có lượt xem cao nhất trong từng danh mục)
 // Chỉ lấy bài viết trực tiếp thuộc danh mục, không lấy từ các League con

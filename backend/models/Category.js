@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { cascadeDeleteCategory } = require('../utils/cascade');
 
 const categorySchema = new mongoose.Schema({
   name: { type: String, required: true, maxlength: 255 },
@@ -6,10 +7,15 @@ const categorySchema = new mongoose.Schema({
   type: { type: String, enum: ['Category', 'League'], required: true },
   views: { type: Number, default: 0 },
   parentCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
-  logo_url: { type: String, maxlength: 255 },   // chỉ dùng cho League
-  season_time: { type: String, maxlength: 50 }, // chỉ dùng cho League
+  logo_url: { type: String, maxlength: 255 },
+  season_time: { type: String, maxlength: 50 },
   created_at: { type: Date, default: Date.now }
 });
 
-const Category = mongoose.model('Category', categorySchema);
-module.exports = Category;
+categorySchema.pre('findOneAndDelete', async function (next) {
+  const doc = await this.model.findOne(this.getFilter());
+  if (doc) await cascadeDeleteCategory(doc._id);
+  next();
+});
+
+module.exports = mongoose.model('Category', categorySchema);

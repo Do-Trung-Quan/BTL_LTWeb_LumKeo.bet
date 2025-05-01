@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>AUTHOR_QLBV</title>
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="./css/pagination.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -74,88 +74,63 @@
         </div>
     </div>
     <div class="dark-overlay"></div>
-    
-    
-    <!DOCTYPE html>
-    <html lang="vi">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Quản Lý Bài Viết</title>
-        <!-- Font Awesome for icons -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <!-- Your custom CSS -->
-        <link rel="stylesheet" href="./css/style.css">
-    </head>
-    <body>
-        <div class="container">
-            <!-- Sidebar Navigation -->
-            <div class="sidebar">
-                <ul>
-                    <li class="active"><a href="AUTHOR_QLBV.html">Quản lý bài viết</a></li>
-                    <li><a href="AUTHOR_BBDL.html">Bài báo đã lưu</a></li>
-                    <li><a href="AUTHOR_BDGD.html">Bài đọc gần đây</a></li>
-                    <li><a href="AUTHOR_TTCN.html">Thông tin cá nhân</a></li>
-                    <li><a href="../Hi-Tech/Login.html">Đăng xuất</a></li>
-                </ul>
-            </div>
-    
-            <!-- Main Content -->
-            <main class="content">
-                <!-- Admin Information -->
-                <div class="user-info">
-                    <div class="user-text">
-                        <h3 id="user-name">Loading...</h3>
-                        <p id="user-role">Loading...</p>
-                    </div>
-                    <div class="user-avatar">
-                        <img id="profile-pic-upper" src= "" alt= "" class="avatar">
-                        <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
-                    </div>
-                </div>
-    
-                <!-- Function Bar -->
-                <div class="functionBar">
-                    <!-- Category Dropdown -->
-                    <div class="dropdown_two">
-                        <button class="custom-button">
-                            THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </button>
-                        <ul class="dropdown-menu" id="theLoai-menu">
-                            <li><a href="#" data-category="Tất cả">Tất cả</a></li>
-                            <li><a href="#" data-category="Bóng đá Việt Nam">Bóng đá Việt Nam</a></li>
-                            <li><a href="#" data-category="Bóng đá thế giới">Bóng đá thế giới</a></li>
-                            <li><a href="#" data-category="Premier League">Premier League</a></li>
-                            <li><a href="#" data-category="V. League 1">V. League 1</a></li>
-                            <li><a href="#" data-category="Ligue 1">Ligue 1</a></li>
-                            <li><a href="#" data-category="Bundesliga">Bundesliga</a></li>
-                            <li><a href="#" data-category="Serie A">Serie A</a></li>
-                            <li><a href="#" data-category="La Liga">La Liga</a></li>
-                        </ul>
-                    </div>
-                    <!-- Search Box -->
-                    <input type="text" class="search-box" placeholder="Tìm kiếm...">
-                    <!-- Add Post Button -->
-                    <button class="add-post-btn" onclick="openAddModal()">THÊM BÀI VIẾT</button>
-                </div>
-    
-                <!-- Articles Table -->
-                <table id="postTable">
-                    <thead>
-                        <tr>
-                            <th>Tiêu đề</th>
-                            <th>Ảnh</th>
-                            <th class="category-column">Thể loại</th>
-                            <th>Ngày đăng</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body">
-                        <!-- Rows will be populated dynamically by JavaScript -->
-                    </tbody>
-                </table>
-            </main>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <ul>
+                <li class="active"><a href="AUTHOR_QLBV.html">Quản lý bài viết</a></li>
+                <li><a href="AUTHOR_BBDL.html">Bài báo đã lưu</a></li>
+                <li><a href="AUTHOR_BDGD.html">Bài đọc gần đây</a></li>
+                <li><a href="AUTHOR_TTCN.html">Thông tin cá nhân</a></li>
+                <li><a href="../Hi-Tech/Login.html">Đăng xuất</a></li>
+            </ul>
         </div>
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Admin Information -->
+            <div class="user-info">
+                <div class="user-text">
+                    <h3 id="user-name">Loading...</h3>
+                    <p id="user-role">Loading...</p>
+                </div>
+                <div class="user-avatar">
+                    <img id="profile-pic-upper" src= "" alt= "" class="avatar">
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
+                </div>
+            </div>
+            <!-- Function Bar -->
+            <div class="functionBar">
+                 <!-- Category Dropdown -->
+                 <div class="dropdown_two">
+                    <button class="custom-button">
+                        THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </button>
+                    <ul class="dropdown-menu" id="theLoai-menu">
+                        <li><a href="#" data-category="Tất cả">Tất cả</a></li>
+                    </ul>
+                </div>
+                <!-- Search Box -->
+                <input type="text" class="search-box" placeholder="Tìm kiếm...">
+                <!-- Add Post Button -->
+                <button class="add-post-btn" onclick="openAddModal()">THÊM BÀI VIẾT</button>
+            </div>
+            <!-- Articles Table -->
+            <table id="postTable">
+                <thead>
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Ảnh</th>
+                        <th class="category-column">Thể loại</th>
+                        <th>Ngày đăng</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Rows will be populated dynamically by JavaScript -->
+                </tbody>
+            </table>
+        </main>
+    </div>
     
         <!-- Pagination -->
         <div class="pagination">

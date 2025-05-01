@@ -154,6 +154,28 @@ body {
     box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+.add-league-btn {
+    background: #d4aa00;
+    color: black;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s ease;
+    z-index: 3;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.add-league-btn:hover {
+    background: #c9c9c9;
+    text-decoration: none;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -202,3 +224,149 @@ td i:hover {
     color: black;
 }
 
+/* Modal Background */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto; /* Thêm thanh cuộn nếu nội dung dài */
+}
+
+/* Modal Content */
+.modal-content {
+    background: white;
+    padding: 30px;
+    width: 60%;
+    max-width: 800px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    margin: 20px auto; /* Thêm margin để không sát cạnh khi cuộn */
+}
+
+/* Modal Title */
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #333;
+}
+
+/* Form Layout */
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Tăng khoảng cách giữa các trường */
+}
+
+/* Labels */
+.modal-content label {
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 5px;
+    display: block; /* Đảm bảo label chiếm toàn bộ chiều rộng */
+}
+
+/* Input Fields */
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
+}
+
+/* Textarea */
+.modal-content textarea {
+    resize: vertical; /* Chỉ cho phép thay đổi chiều cao */
+    min-height: 100px; /* Đảm bảo textarea đủ lớn cho nội dung */
+}
+
+/* Select Fields */
+.modal-content select {
+    appearance: none; /* Tùy chỉnh giao diện select */
+    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSI3IiB2aWV3Qm94PSIwIDAgMTIgNyI+PHBhdGggZmlsbD0iIzY2NiIgZD0iTTYgN0wzIDRIMXMtMS0xLTEtMXM0LTQtNC00aDhMMTAgMXM0IDQtNCA0eiIvPjwvc3ZnPg==') no-repeat right 10px center;
+    background-size: 12px;
+    padding-right: 30px; /* Đảm bảo không che mũi tên */
+}
+
+/* Align File Input */
+.modal-content input[type="file"] {
+    padding: 5px;
+    border: none; /* Bỏ viền mặc định của input file */
+}
+
+/* File Upload Container */
+.file-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s ease-in-out;
+}
+
+.close:hover {
+    color: #333;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px; /* Khoảng cách giữa các nút */
+    margin-top: 25px;
+}
+
+/* Submit Button */
+.submit-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Cancel Button */
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.cancel-btn:hover {
+    background-color: #b52b3a;
+}

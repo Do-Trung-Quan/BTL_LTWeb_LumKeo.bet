@@ -1,3 +1,54 @@
+async function fetchCategories() {
+    try {
+        const res = await fetch('http://localhost:3000/api/categories/', {
+            headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('Fetch categories error:', errorText);
+            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+        }
+        const data = await res.json();
+        console.log('Categories API response:', data);
+        return Array.isArray(data.categories) ? data.categories : [];
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        return [];
+    }
+}
+
+async function fetchLeagues() {
+    try {
+        const res = await fetch('http://localhost:3000/api/leagues/', {
+            headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('Fetch leagues error:', errorText);
+            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+        }
+        const data = await res.json();
+        console.log('Leagues API response:', data);
+        const leagues = Array.isArray(data) ? data : Array.isArray(data.leagues) ? data.leagues : [];
+        // Preserve all fields, ensure _id and name are present
+        const normalizedLeagues = leagues.map(league => ({
+            _id: league._id || league.id,
+            name: league.name || 'Unknown League',
+            type: league.type || 'League',
+            parentCategory: league.parentCategory || null,
+            slug: league.slug || '',
+            logo_url: league.logo_url || ''
+        }));
+        console.log('Normalized leagues:', normalizedLeagues);
+        window.leagues = normalizedLeagues; // Assign to window.leagues
+        return normalizedLeagues;
+    } catch (error) {
+        console.error('Error fetching leagues:', error);
+        window.leagues = [];
+        return [];
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const API_BASE_URL = "http://localhost:3000";
 

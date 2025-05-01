@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - QLBB</title>
+    <title>Admin - QLGD</title>
     <link rel="stylesheet" href="./css/ADMIN_QLGD.css">
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="./css/pagination.css">
@@ -98,7 +98,9 @@
                 </div>
             </div>
             <div class="functionBar">
-                <input type="text" class="search-box" placeholder="Tìm kiếm...">               
+                <input type="text" class="search-box" placeholder="Tìm kiếm...">     
+                <!-- Add Post Button -->
+                <button class="add-league-btn" onclick="openAddModal()">THÊM GIẢI ĐẤU</button>          
             </div>
             <table id="table-body">
                 <thead>
@@ -171,6 +173,33 @@
             </table>
         </main>
     </div>
+    <!-- Add Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddModal()">×</span>
+            <h2>Thêm giải đấu</h2>
+            <form id="add-content-form">
+                <label for="add-content-name">Tên giải đấu:</label>
+                <input type="text" id="add-content-name" placeholder="Nhập tiêu đề" required>
+
+                <label for="add-slug">Slug:</label>
+                <input type="text" id="add-slug" placeholder="Nhập slug (ví dụ: la-liga)" required>
+
+                <label for="add-season-time">Thời gian mùa giải:</label>
+                <textarea id="add-season-time" placeholder="Nhập thời gian mùa giải" required></textarea>
+
+                <div class="file-upload">
+                    <label for="add-logo">Ảnh giải đấu:</label>
+                    <input type="file" id="add-logo" name="add-logo" accept="image/*">
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="submit-btn" onclick="addNewPost()">Đăng</button>
+                    <button type="button" class="cancel-btn" onclick="closeAddModal()">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="pagination">
         <button class="prev" disabled>← Previous</button>
         <button class="page active">1</button>
@@ -183,6 +212,5 @@
     </div>   
     <script src="./js/pagination.js"></script> 
     <script src="./js/searchBar1.js"></script>
-    <script src="./js/AUTHOR_TTCN.js"></script>
 </body>
 </html>

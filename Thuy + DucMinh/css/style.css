@@ -307,9 +307,10 @@ table {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 140px;
+    gap: 100px;
 }
 
+/* Giữ nguyên phần này */
 .search-box {
     padding: 10px 15px;
     border-radius: 10px;
@@ -322,6 +323,7 @@ table {
     box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+/* Cập nhật để không chiếm quá nhiều không gian ngang */
 .custom-button {
     padding: 10px 20px;
     border: none;
@@ -336,11 +338,12 @@ table {
     background-color: #c0c0c0; 
 }
 
+/* Không cần đổi phần dropdown và add-post-btn */
 .dropdown_two {
     position: relative;
     display: inline-block;
-    min-width: 100px;
     padding: 10px 15px;
+    width: 250px;
 }
 
 .dropdown_two > .dropdown-menu {
@@ -384,12 +387,15 @@ table {
     display: inline-block;
     transition: background 0.3s ease;
     z-index: 3;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .add-post-btn:hover {
     background: #c9c9c9;
     text-decoration: none;
 }
+
 
 /* Pagination */
 .pagination {
@@ -541,11 +547,6 @@ table {
     display: flex;
     flex-direction: column;
     gap: 5px;
-}
-
-/* League Container */
-#add-league-container {
-    margin-top: 10px;
 }
 
 /* Close Button */

@@ -90,16 +90,41 @@ const getMostViewedArticles = async (req, res) => {
 // 5. Get Article by Category (Lấy bài báo theo danh mục - Xử lý lỗi mới)
 const getArticleByCategory = async (req, res) => {
   try {
-    const articles = await articleService.getArticleByCategory(req.params.categoryId);
-    res.status(200).json(articles);
+    const { categoryId } = req.params;
+    const { page = 1, limit = 10 } = req.query; // Lấy page và limit từ query params
+
+    // Gọi service với categoryId, page, và limit
+    const result = await articleService.getArticleByCategory(
+      categoryId,
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    // Trả về kết quả với cấu trúc mới
+    res.status(200).json({
+      success: true,
+      data: {
+        articles: result.articles,
+        counts: result.counts,
+        totalArticles: result.totalArticles,
+        pagination: {
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages,
+        },
+      },
+    });
   } catch (error) {
     if (error.message === 'Category not found') {
-      return res.status(404).json({ message: error.message });
+      return res.status(404).json({ success: false, message: error.message });
     }
-    res.status(500).json({ message: 'Error fetching articles by category', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching articles by category',
+      error: error.message,
+    });
   }
 };
-
 // 6. Get Article by Author (Lấy bài báo theo author_id - Xử lý lỗi mới)
 const getArticleByAuthor = async (req, res) => {
   try {

@@ -114,6 +114,7 @@ const getMostViewedArticles = async (page = 1, limit = 10) => {
 // 5. Get Article by Category (Lấy bài báo theo danh mục - Hỗ trợ "Giải đấu")
 const getArticleByCategory = async (categoryId, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
+
   // Kiểm tra xem categoryId có phải là danh mục "Giải đấu" không
   const category = await Category.findById(categoryId);
   if (!category) throw new Error('Category not found');
@@ -134,7 +135,32 @@ const getArticleByCategory = async (categoryId, page = 1, limit = 10) => {
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-  return articles;
+
+  // Đếm tổng số bài viết theo từng danh mục hoặc league
+  const counts = await Promise.all(
+    categoryIds.map(async (id) => {
+      const cat = await Category.findById(id);
+      const count = await Article.countDocuments({ CategoryID: id, is_published: true });
+      return {
+        categoryId: id,
+        categoryName: cat.name,
+        type: cat.type,
+        articleCount: count,
+      };
+    })
+  );
+
+  // Đếm tổng số bài viết cho tất cả các danh mục/league trong categoryIds
+  const totalArticles = await Article.countDocuments({ CategoryID: { $in: categoryIds }, is_published: true });
+
+  return {
+    articles,
+    counts, // Số lượng bài viết theo từng danh mục/league
+    totalArticles, // Tổng số bài viết trong tất cả danh mục/league
+    page,
+    limit,
+    totalPages: Math.ceil(totalArticles / limit),
+  };
 };
 
 // 6. Get Article by Author (Lấy bài báo theo author_id - Kiểm tra role)

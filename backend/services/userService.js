@@ -220,31 +220,86 @@ const updateAvatar = async (userId, file) => {
   };
 };
 
-// Hàm thống kê số lượng người dùng mới
+// Hàm thống kê số lượng người dùng mới theo ngày trong 15 ngày qua
 const getNewUsersStatistics = async () => {
-  const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const fifteenDaysAgo = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
 
-  const count = await User.countDocuments({
-    role: 'user',
-    created_at: {
-      $gte: fifteenDaysAgo
+  // Aggregate to group users by day
+  const stats = await User.aggregate([
+    {
+      $match: {
+        role: 'user',
+        created_at: { $gte: fifteenDaysAgo, $lte: now }
+      }
     },
-  });
+    {
+      $group: {
+        _id: {
+          $dateToString: { format: "%Y-%m-%d", date: "$created_at" }
+        },
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $sort: { _id: 1 } // Sort by date ascending
+    }
+  ]);
 
-  return { total: count };
+  // Create an array of the last 15 days with 0 counts for days with no data
+  const result = [];
+  for (let i = 0; i < 15; i++) {
+    const date = new Date(now.getTime() - (14 - i) * 24 * 60 * 60 * 1000);
+    const dateStr = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const found = stats.find(stat => stat._id === dateStr);
+    result.push({
+      date: dateStr,
+      count: found ? found.count : 0
+    });
+  }
+
+  return { dailyStats: result, total: result.reduce((sum, day) => sum + day.count, 0) };
 };
 
-// Hàm thống kê số lượng tác giả mới
+// Hàm thống kê số lượng tác giả mới theo ngày trong 15 ngày qua
 const getNewAuthorsStatistics = async () => {
-  const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
-  const count = await User.countDocuments({
-    role: 'author',
-    created_at: {
-      $gte: fifteenDaysAgo
-    },
-  });
+  const now = new Date();
+  const fifteenDaysAgo = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
 
-  return { total: count };
+  // Aggregate to group authors by day
+  const stats = await User.aggregate([
+    {
+      $match: {
+        role: 'author',
+        created_at: { $gte: fifteenDaysAgo, $lte: now }
+      }
+    },
+    {
+      $group: {
+        _id: {
+          $dateToString: { format: "%Y-%m-%d", date: "$created_at" }
+        },
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $sort: { _id: 1 } // Sort by date ascending
+    }
+  ]);
+
+  // Create an array of the last 15 days with 0 counts for days with no data
+  const result = [];
+  for (let i = 0; i < 15; i++) {
+    const date = new Date(now.getTime() - (14 - i) * 24 * 60 * 60 * 1000);
+    const dateStr = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const found = stats.find(stat => stat._id === dateStr);
+    result.push({
+      date: dateStr,
+      count: found ? found.count : 0
+    });
+  }
+
+  return { dailyStats: result, total: result.reduce((sum, day) => sum + day.count, 0) };
 };
 
 // Hàm thống kê tất cả người dùng
@@ -257,6 +312,18 @@ const getAllUsersStatistics = async () => {
 const getAllAuthorsStatistics = async () => {
   const count = await User.countDocuments({ role: 'author' });
   return { count };
+};
+
+const logOut = async (token) => {
+  // In a real application, you might add the token to a blacklist or update a session
+  // For this example, we’ll just return a success response
+  try {
+    // Verify the token to ensure it’s valid before invalidating
+    jwt.verify(token, process.env.JWT_SECRET);
+    return { success: true, message: 'Đăng xuất thành công' };
+  } catch (error) {
+    throw new Error('Token không hợp lệ hoặc đã hết hạn');
+  }
 };
 
 // Xuất các hàm
@@ -275,4 +342,5 @@ module.exports = {
   getNewAuthorsStatistics,
   getAllUsersStatistics,
   getAllAuthorsStatistics,
+  logOut,
 };

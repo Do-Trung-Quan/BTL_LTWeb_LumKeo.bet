@@ -79,18 +79,19 @@
             <li><a href="ADMIN_QLTG.html">Quản lý tác giả</a></li>
             <li class="active"><a href="ADMIN_DASHBOARD.html">Chức năng thống kê</a></li>
             <li><a href="ADMIN_TTCN.html">Thông tin cá nhân</a></li>
-            <li><a href="../Hi-Tech/Login.html">Đăng xuất</a></li>
+            <li><a href="#" id="logout-link">Đăng xuất</a></li>
         </ul>
     </aside>
     
     <main class="content">
-        <div class="admin-info">
-            <div class="admin-text">
-                <h2>Đỗ Trung Quân</h2>
-                <p>ADMIN ID: AD190804</p>
+        <!-- Admin Information -->
+        <div class="user-info">
+            <div class="user-text">
+                <h3 id="user-name">Loading...</h3>
+                <p id="user-role">Loading...</p>
             </div>
-            <div class="admin-avatar">
-                <img id="profile-pic-upper" src="img/cat.jpg" alt="Avatar" class="avatar">
+            <div class="user-avatar">
+                <img id="profile-pic-upper" src= "" alt= "" class="avatar">
                 <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
             </div>
         </div>
@@ -100,35 +101,34 @@
             <div class="stats-cards">
                 <div class="card" data-type="baibao">
                     <h3>Tổng số bài báo</h3>
-                    <p>150</p>
+                    <p id="total-articles">Đang tải...</p>
                 </div>
                 <div class="card" data-type="nguoidung">
                     <h3>Số người dùng</h3>
-                    <p>342</p>
+                    <p id="total-users">Đang tải...</p>
                 </div>
                 <div class="card" data-type="tacgia">
                     <h3>Số tác giả</h3>
-                    <p>24</p>
+                    <p id="total-authors">Đang tải...</p>
                 </div>
                 <div class="card" data-type="binhluan">
                     <h3>Lượt bình luận</h3>
-                    <p>1249</p>
+                    <p id="total-comments">Đang tải...</p>
                 </div>
             </div>
-        
+    
             <!-- Vị trí biểu đồ -->
-            <div id="chart-container" style="display:none; margin-top:30px;">
-                <h3 id="chart-title"></h3>
+            <div id="chart-container">
+                <h3 id="chart-title">Thống kê 15 ngày gần nhất</h3>
                 <canvas id="myChart"></canvas>
             </div>
-        </div>        
-        
- 
+        </div>
     </main>
 </div>
 
 <!-- Thêm Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>   
 <script src="./js/chart.js"></script>
+<script src="./js/logout.js"></script>
 </body>
 </html>

@@ -10,6 +10,7 @@ const upload = require('../middlewares/fileUpload');
 router.post('/register/', UserController.register);
 router.post('/login/', UserController.login);
 router.post('/reset-password/', UserController.resetPassword);
+router.post('/logout/', UserController.logOut);
 
 // Các API yêu cầu quyền admin
 router.get('/users/', authMiddleware(['admin']), UserController.getUsers);

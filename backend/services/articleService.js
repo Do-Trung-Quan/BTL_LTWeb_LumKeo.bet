@@ -195,12 +195,43 @@ const getArticleByPublishedState = async (publishedState, page = 1, limit = 10) 
 
 // 8. Get New Published Articles Statistics (Lấy số lượng bài báo mới trong 15 ngày)
 const getNewPublishedArticlesStats = async () => {
-  const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
-  const count = await Article.countDocuments({
-    is_published: true,
-    published_date: { $gte: fifteenDaysAgo }
-  });
-  return { total: count };
+  const now = new Date();
+  const fifteenDaysAgo = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
+
+  // Aggregate to group articles by day
+  const stats = await Article.aggregate([
+    {
+      $match: {
+        is_published: true,
+        published_date: { $gte: fifteenDaysAgo, $lte: now }
+      }
+    },
+    {
+      $group: {
+        _id: {
+          $dateToString: { format: "%Y-%m-%d", date: "$published_date" }
+        },
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $sort: { _id: 1 } // Sort by date ascending
+    }
+  ]);
+
+  // Create an array of the last 15 days with 0 counts for days with no data
+  const result = [];
+  for (let i = 0; i < 15; i++) {
+    const date = new Date(now.getTime() - (14 - i) * 24 * 60 * 60 * 1000);
+    const dateStr = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const found = stats.find(stat => stat._id === dateStr);
+    result.push({
+      date: dateStr,
+      count: found ? found.count : 0
+    });
+  }
+
+  return { dailyStats: result, total: result.reduce((sum, day) => sum + day.count, 0) };
 };
 
 // 9. Get All Viewed Articles by User (Lấy danh sách bài báo đã đọc của người dùng)

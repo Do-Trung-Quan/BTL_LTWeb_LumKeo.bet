@@ -90,166 +90,89 @@
             </ul>
         </aside>
         <main class="content">
-            <div class="admin-info">
-                <div class="admin-text">
-                    <h2>Đỗ Trung Quân</h2>
-                    <p>ADMIN ID: AD190804</p>
+            <!-- Admin Information -->
+            <div class="user-info">
+                <div class="user-text">
+                    <h3 id="user-name">Loading...</h3>
+                    <p id="user-role">Loading...</p>
                 </div>
-                <div class="admin-avatar">
-                    <img id="profile-pic-upper" src="img/cat.jpg" alt="Avatar" class="avatar">
+                <div class="user-avatar">
+                    <img id="profile-pic-upper" src= "" alt= "" class="avatar">
                     <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
                 </div>
             </div>
 
+            <!-- Function Bar -->
             <div class="functionBar">
-                <div class="dropdown_two">
-                    <button class="custom-button">THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i> </button>
+                 <!-- Category Dropdown -->
+                 <div class="dropdown_two">
+                    <button class="custom-button">
+                        THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </button>
                     <ul class="dropdown-menu" id="theLoai-menu">
                         <li><a href="#" data-category="Tất cả">Tất cả</a></li>
-                        <li><a href="#" data-category="Bóng đá Việt Nam">Bóng đá Việt Nam</a></li>
-                        <li><a href="#" data-category="Bóng đá thế giới">Bóng đá thế giới</a></li>
-                        <li><a href="#" data-category="Premier League">Premier League</a></li>
-                        <li><a href="#" data-category="V.League 1">V.League 1</a></li>
-                        <li><a href="#" data-category="Ligue 1">Ligue 1</a></li>
-                        <li><a href="#" data-category="Bundesliga">Bundesliga</a></li>
-                        <li><a href="#" data-category="Serie A">Serie A</a></li>
-                        <li><a href="#" data-category="La Liga">La Liga</a></li>
                     </ul>
                 </div>
+                <!-- Search Box -->
                 <input type="text" class="search-box" placeholder="Tìm kiếm...">
             </div>
             <div class="status-buttons">
-                <button class="active_btn">Đã duyệt</button>
-                <button>Chờ duyệt</button>
-            </div>            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tiêu đề</th>
-                        <th>Ảnh</th>
-                        <th>Thể loại</th>
-                        <th>Ngày đăng</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <tr>
+                <button id="published-btn" class="active_btn">Đã duyệt</button>
+                <button id="unpublished-btn">Chờ duyệt</button>
+            </div>          
+            <div class="table-container" id="published-table">
+                <table>
+                    <thead>
                         <tr>
-                            <td>Lịch thể thao mới nhất hôm nay ngày 11/3 và rạng sáng 12/3</td>
-                            <td><img src="img\AnhBaiBao1.png" alt="Ảnh bài báo"></td>
-                            <td>Bóng đá quốc tế</td>
-                            <td>01/03/2025</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <i class="fa-solid fa-trash-can"></i></td>
+                            <th>Tiêu đề</th>
+                            <th>Ảnh</th>
+                            <th>Thể loại</th>
+                            <th>Ngày đăng</th>
+                            <th>Hành động</th>
                         </tr>
+                    </thead>
+                    <tbody id="published-body"></tbody>
+                </table>
+            </div>
+            <div class="table-container" id="unpublished-table" style="display: none;">
+                <table>
+                    <thead>
                         <tr>
-                            <td>HLV Amorim bảo vệ lối chơi thực dụng của MU: 'Chúng tôi cần điểm số'</td>
-                            <td><img src="img\AnhBaiBao2.png" alt="Ảnh bài báo"></td>
-                            <td>Premier League</td>
-                            <td>01/03/2025</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <i class="fa-solid fa-trash-can"></i></td>
+                            <th>Tiêu đề</th>
+                            <th>Ảnh</th>
+                            <th>Thể loại</th>
+                            <th>Ngày đăng</th>
+                            <th>Hành động</th>
                         </tr>
-                        <tr>
-                            <td>Cục Cảnh sát hình sự đề nghị VFF xem xét công tác tổ trọng tài bị 'treo còi'</td>
-                            <td><img src="img\AnhBaiBao3.png" alt="Ảnh bài báo"></td>
-                            <td>V.League 1</td>
-                            <td>03/03/2025</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <i class="fa-solid fa-trash-can"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Cảnh ngược đời của trung vệ Duy Mạnh</td>
-                            <td><img src="img\AnhBaiBao4.png" alt="Ảnh bài báo"></td>
-                            <td>Bóng đá Việt Nam</td>
-                            <td>04/03/2025</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Di Maria bền bỉ đáng kinh ngạc</td>
-                            <td><img src="img\AnhBaiBao5.png" alt="Ảnh bài báo"></td>
-                            <td>Premier League</td>
-                            <td>03/03/2025</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>MU đề xuất đổi Hojlund kèm tiền mặt để lấy tiền đạo của Napoli.</td>
-                            <td><img src="img\AnhBaiBao6.png" alt="Ảnh bài báo"></td>
-                            <td>Bóng đá Việt Nam</td>
-                            <td>10/03/2025</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <button class="edit-btn" onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                    </tr>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="unpublished-body"></tbody>
+                </table>
+            </div>
         </main>
     </div>
-    <!-- Modal Chỉnh Sửa Bài Viết -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeEditModal()">&times;</span>
-        <h2>Chỉnh sửa bài viết</h2>
-        
-        <form id="edit-content-form">
-            <label for="edit-content-name">Tên bài viết:</label>
-            <input type="text" id="edit-content-name" placeholder="Nhập tiêu đề" required>
-
-            <label for="edit-category">Chọn thể loại:</label>
-            <select id="edit-category">
-                <option>Bóng đá Việt Nam</option>
-                <option>Bóng đá Quốc tế</option>
-                <option>Premier League</option>
-                <option>V. League 1</option>
-                <option>Ligue 1</option>
-                <option>Bundesliga</option>
-                <option>Serie A</option>
-                <option>La Liga</option>
-            </select>
-
-            <label for="edit-date">Ngày đăng:</label>
-            <input type="date" id="edit-date" required>
-
-            <div class="file-upload">
-                <label for="edit-logo"><strong>Ảnh bài báo:</strong></label>
-                <input type="file" id="edit-logo" name="edit-logo">
+    <!-- Modal for article details -->
+    <div id="article-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-modal">Đóng</button>
+            <nav class="breadcrumb">
+                <ul>
+                    <li><a href="#" id="modal-breadcrumb-link">Trang chủ</a></li>
+                    <li><span class="separator">/</span></li>
+                    <li><a href="#" id="modal-breadcrumb-category"></a></li>
+                </ul>
+            </nav>
+            <h1 id="modal-title"></h1>
+            <div class="highlight-box">
+                <h2 id="modal-summary"></h2>
             </div>
-        
-            <!-- Button Group -->
-            <div class="modal-buttons">
-                <button type="button" class="submit-btn" onclick="saveEdit()">Lưu thay đổi</button>
-                <button type="button" class="cancel-btn" onclick="closeEditModal()">Hủy</button>
+            <div class="img-container">
+                <img id="modal-image" class="main-img" src="" alt="Ảnh bài báo">
             </div>
-        </form>
+            <p id="modal-content"></p>
+            <h3 class="kyten" id="modal-author-signature"></h3>
+        </div>
     </div>
-</div>
+
     <div class="pagination">
         <button class="prev" disabled>← Previous</button>
         <button class="page active">1</button>
@@ -261,10 +184,8 @@
         <button class="next">Next →</button>
     </div>   
     <script src="./js/pagination.js"></script> 
-    <script src="./js/editButton.js"></script>
     <script src="./js/searchBar1.js"></script>
     <script src="./js/filterCategory.js"></script>
-    <script src="./js/delete.js"></script>
-    <script src="./js/AUTHOR_TTCN.js"></script>
+    <script src="./js/ADMIN_QLBB.js"></script>
 </body>
 </html>

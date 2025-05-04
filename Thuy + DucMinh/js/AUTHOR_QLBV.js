@@ -632,9 +632,11 @@ function populateTable(news) {
             <td>${displayName}</td>
             <td>${item.is_published && item.published_date ? new Date(item.published_date).toLocaleDateString('vi-VN') : 'Chờ duyệt'}</td>
             <td>
-                <a href="../Quang/baichitiet/html/baichitiet.html" class="icon-btn">
-                    <i class="fa-regular fa-eye"></i>
-                </a>
+                ${item.is_published ? 
+                    `<a href="../Quang/baichitiet/html/baichitiet.html?articleId=${item._id}">
+                        <i class="fa-regular fa-eye"></i>
+                    </a>` : 
+                    `<i class="fa-regular fa-eye view-btn" data-article-id="${item._id}"></i>`}
                 <button onclick="openEditModal(this); this.closest('tr').classList.add('editing')">
                     <i class="fa-solid fa-pen"></i>
                 </button>
@@ -645,7 +647,58 @@ function populateTable(news) {
         `;
         tbody.appendChild(row);
     });
+
+    // Add event listeners for unpublished articles
+    document.querySelectorAll('.view-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const articleId = button.getAttribute('data-article-id'); // Use button directly to avoid e.target issues
+            console.log('Clicked articleId:', articleId); // Debug the articleId
+            if (!articleId || typeof articleId !== 'string') {
+                console.error('Invalid articleId:', articleId);
+                alert('Không thể mở bài báo: ID không hợp lệ!');
+                return;
+            }
+            await openModal(articleId);
+        });
+    });
 }
+
+// Open modal with article details (view-only)
+async function openModal(articleId) {
+    const modal = document.getElementById('article-modal');
+    const token = getCookie('token');
+
+    try {
+        const res = await fetch(`http://localhost:3000/api/articles/${articleId}/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        const article = await res.json();
+        console.log('Fetched article:', article);
+
+        document.getElementById('modal-breadcrumb-link').textContent = 'Trang chủ';
+        document.getElementById('modal-breadcrumb-link').href = '#';
+        document.getElementById('modal-breadcrumb-category').textContent = article.CategoryID?.name;
+        document.getElementById('modal-breadcrumb-category').href = '#';
+        document.getElementById('modal-title').textContent = article.title || 'N/A';
+        document.getElementById('modal-summary').textContent = article.summary;
+        document.getElementById('modal-image').src = article.thumbnail;
+        document.getElementById('modal-content').textContent = article.content;
+        document.getElementById('modal-author-signature').textContent = `Tác giả: ${article.UserID?.username}`;
+        modal.style.display = 'block';
+    } catch (error) {
+        console.error('Error fetching article details:', error);
+        alert('Lỗi khi tải chi tiết bài báo!');
+    }
+
+    document.getElementById('close-modal').onclick = () => {
+        modal.style.display = 'none';
+    };
+}
+
 async function deleteNews(postId) {
     const confirmDelete = confirm("Bạn có chắc muốn xóa bài viết này?");
     if (!confirmDelete) return;

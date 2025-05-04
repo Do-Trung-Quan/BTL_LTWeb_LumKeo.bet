@@ -305,6 +305,21 @@ const recordArticleView = async (req, res) => {
   }
 };
 
+const countPublishedArticlesByAuthor = async (req, res) => {
+  try {
+    const { userId } = req.params; // Expect userId from URL parameter
+    if (!userId) {
+      return res.status(400).json({ message: 'Invalid or missing userId' });
+    }
+
+    const count = await articleService.countPublishedArticlesByAuthor(userId);
+    res.status(200).json({ success: true, count });
+  } catch (error) {
+    console.error('Error in controller:', error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 module.exports = {
   createArticle,
@@ -321,5 +336,6 @@ module.exports = {
   updateArticle,
   deleteArticle,
   publishArticle,
-  recordArticleView
+  recordArticleView,
+  countPublishedArticlesByAuthor 
 };

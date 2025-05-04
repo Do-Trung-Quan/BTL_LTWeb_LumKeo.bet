@@ -407,6 +407,20 @@ const recordArticleView = async (userId, articleId) => {
   await Article.findByIdAndUpdate(articleId, { $inc: { views: 1 } });
 };
 
+// 16. Count published articles by Author ID
+const countPublishedArticlesByAuthor = async (userId) => {
+  try {
+    const count = await Article.countDocuments({
+      UserID: userId,
+      is_published: true
+    });
+    return count;
+  } catch (error) {
+    console.error('Error counting published articles:', error);
+    throw new Error('Failed to count published articles');
+  }
+};
+
 module.exports = {
   createArticle,
   getAllPostArticles,
@@ -423,5 +437,6 @@ module.exports = {
   deleteArticle,
   publishArticle,
   recordArticleView, 
-  initWebSocket
+  initWebSocket,
+  countPublishedArticlesByAuthor
 };

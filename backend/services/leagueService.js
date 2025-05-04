@@ -45,13 +45,15 @@ const createLeague = async (leagueData, file) => {
 
   // Populate để trả về thông tin đầy đủ
   return await Category.findById(league._id)
-    .populate('parentCategory', 'name slug');
+    .populate('parentCategory', 'name slug')
+    .select('name slug type logo_url parentCategory season_time created_at');
 };
 
 // 2. Get All Leagues (Lấy tất cả giải đấu, filter theo type = League)
 const getAllLeagues = async () => {
   const leagues = await Category.find({ type: 'League' })
-    .populate('parentCategory', 'name slug');
+    .populate('parentCategory', 'name slug')
+    .select('name slug type logo_url parentCategory season_time created_at');
   return leagues;
 };
 

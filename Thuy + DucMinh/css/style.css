@@ -606,6 +606,121 @@ table {
     background-color: #b52b3a;
 }
 
+/* Modal Styling */
+#article-modal .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+#article-modal .modal-content {
+    background-color: #fff;
+    margin: 20px auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 900px;
+    border-radius: 8px;
+    position: relative;
+    overflow-y: auto;
+    max-height: 90vh;
+}
+/* Close Button */
+#article-modal .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #dc3545;
+    color: white;
+    font-size: 16px;
+}
+#article-modal .close-btn:hover {
+    background-color: #c82333;
+}
+/* Breadcrumb */
+#article-modal .breadcrumb ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+#article-modal .breadcrumb li {
+    display: flex;
+    align-items: center;
+}
+#article-modal .breadcrumb a {
+    text-decoration: none;
+    font-size: 16px;
+    color: #0074B2;
+    font-weight: bold;
+}
+#article-modal .breadcrumb .separator {
+    font-size: 16px;
+    color: #666;
+}
+#article-modal .breadcrumb i {
+    font-size: 12px;
+    color: #666;
+    margin-left: 5px;
+}
+/* Main Heading */
+#article-modal .h1 {
+    font-size: 28px;
+    color: #1a3d7c;
+    margin-bottom: 10px;
+}
+
+/* Highlight Box */
+#article-modal .highlight-box {
+    background-color: #eef5ff;
+    padding: 15px;
+    border-left: 5px solid #1a3d7c;
+    margin: 20px 0;
+}
+#article-modal .highlight-box h2 {
+    font-size: 22px;
+    color: #1a3d7c;
+    margin: 0;
+    text-align: left;
+}
+/* Paragraphs */
+#article-modal .p {
+    font-size: 16px;
+    text-align: justify;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+/* Image Container */
+#article-modal .img-container {
+    text-align: center;
+    margin: 20px 0;
+}
+#article-modal .main-img {
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+/* Author Signature */
+#article-modal .kyten {
+    font-weight: bold;
+    font-size: 18px;
+    color: #1a3d7c;
+    margin-top: 30px;
+    text-align: right;
+}
+
 /* Responsive Design */
 @media (max-width: 600px) {
     .modal-content {

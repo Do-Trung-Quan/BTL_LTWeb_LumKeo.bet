@@ -40,10 +40,32 @@ async function populateTheLoaiDropdown(categories, leagues) {
     }
 }
 
+// Function to determine the currently visible table body
+function getCurrentTableBody() {
+    const publishedTable = document.getElementById('published-table');
+    const unpublishedTable = document.getElementById('unpublished-table');
+    const singleTableBody = document.getElementById('table-body');
+
+    if (publishedTable && publishedTable.style.display !== 'none') {
+        return document.getElementById('published-body');
+    } else if (unpublishedTable && unpublishedTable.style.display !== 'none') {
+        return document.getElementById('unpublished-body');
+    } else if (singleTableBody) {
+        return singleTableBody; // Fallback to table-body if it exists
+    }
+    return null; // Fallback if no table body is found
+}
+
 function filterTableByCategory(category) {
-    const rows = document.querySelectorAll("#table-body tr");
+    const tableBody = getCurrentTableBody();
+    if (!tableBody) {
+        console.warn('No visible table body found to filter');
+        return;
+    }
+
+    const rows = tableBody.querySelectorAll('tr');
     if (!rows.length) {
-        console.warn('No rows found in #table-body to filter');
+        console.warn('No rows found in the current table body to filter');
         return;
     }
 
@@ -58,7 +80,7 @@ function filterTableByCategory(category) {
     const selectedCategory = category.toLowerCase().trim();
 
     rows.forEach(row => {
-        // Assuming "Thể loại" is the third column (index 2)
+        // "Thể loại" is the third column (index 2)
         const categoryValue = row.children[2]?.textContent.trim().toLowerCase();
         if (!categoryValue) {
             console.warn('Category value not found in row:', row);
@@ -71,7 +93,13 @@ function filterTableByCategory(category) {
 }
 
 function resetTable() {
-    const rows = document.querySelectorAll("#table-body tr");
+    const tableBody = getCurrentTableBody();
+    if (!tableBody) {
+        console.warn('No visible table body found to reset');
+        return;
+    }
+
+    const rows = tableBody.querySelectorAll('tr');
     rows.forEach(row => {
         row.style.display = "table-row";
     });

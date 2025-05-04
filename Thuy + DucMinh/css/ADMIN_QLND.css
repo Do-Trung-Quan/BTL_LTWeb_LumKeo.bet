@@ -90,8 +90,8 @@ body {
 .sidebar ul::-webkit-scrollbar {
     display: none; /* Chrome, Edge, Safari */
 }
-/* Admin Info */
-.admin-info {
+/* User Info */
+.user-info {
     position: relative;
     left: 0px;
     display: flex;
@@ -100,17 +100,17 @@ body {
     background: #e0e0e0;
     padding: 15px 20px;
     border-radius: 10px;
-    width: 1000px;
+    width: 1060px;
     max-width: 200%;
     height: 150px;
     box-sizing: border-box;
     z-index: 1;
 }
-.admin-text {
+.user-text {
     margin-left: 20px;
 }
 
-.admin-text h3 {
+.user-text h3 {
     font-size: 32px;
     font-weight: bold;
     margin: 0;
@@ -118,13 +118,13 @@ body {
     color: black;
 }
 
-.admin-text p {
+.user-text p {
     font-size: 20px;
     color: #333;
     margin: 5px 0 0;
 }
 
-.admin-avatar img {
+.user-avatar img {
     width: 100px;
     height: 100px;
     border: 3px solid darkblue; 
@@ -156,64 +156,40 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 0px;
-}
-
-thead {
-    background-color: lightgrey;
-    font-weight: bold;
-}
-
-table {
-    width: 1000px;
-    border-collapse: collapse;
-    margin-top: 50px;
-}
-
-.table-header {
-    position: relative;
-    width: 100%;
-    height: 50px; /* Adjust height as needed */
-    padding: 10px;
-    margin-bottom: 20px;
+    margin-top: 20px;
 }
 .table-container {
     width: 100%;
     background: #ffffff;
-    padding: 15px;
+    padding: 30px; /* Increased padding for more space around the table */
     border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-th, td {
-    padding: 30px 60px;
-    text-align: center;
-    border-bottom: 1px solid lightgrey;
-    min-width: 240px;
-    max-width: 240px;
-}
-
-th {
+thead {
     background-color: lightgray;
+    font-weight: bold;
 }
-
+th, td {
+    padding: 20px 30px; /* Increased padding for wider spacing inside cells */
+    text-align: center;
+    border-bottom: 1px solid lightgray;
+    min-width: 200px; /* Increased min-width for wider columns */
+}
+th {
+    background-color: lightgray; /* Consistent with thead */
+}
 td {
-
-    white-space: nowrap; /* Prevents text from wrapping */
-
-    min-width: 200px;
-    text-align: center; /* Căn giữa nội dung trong ô */
-    vertical-align: middle; /* Căn giữa theo chiều dọc */
-
+    white-space: nowrap; /* Prevent line breaks */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Add ellipsis for overflow */
 }
-
+/* Icon hành động */
 td i {
     cursor: pointer;
-    margin: 0 10px; /* Điều chỉnh khoảng cách */
-    font-size: 20px; /* Tăng kích thước nếu cần */
+    margin: 0 15px; /* Increased margin for more spacing between icons */
+    font-size: 18px;
     color: gray;
-    display: inline-block; /* Giữ các icon cùng trên một hàng */
 }
-
 td i:hover {
     color: black;
 }

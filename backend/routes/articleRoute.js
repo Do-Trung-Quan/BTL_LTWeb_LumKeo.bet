@@ -24,6 +24,6 @@ router.get('/articles/', articleController.getAllPostArticles);
 router.get('/articles/most-viewed/', articleController.getMostViewedArticles);
 router.get('/articles/:id/', articleController.getArticleById);
 router.get('/articles/category/:categoryId/', articleController.getArticleByCategory);
-
+router.get('/articles/published-count/:userId/', articleController.countPublishedArticlesByAuthor);
 
 module.exports = router;

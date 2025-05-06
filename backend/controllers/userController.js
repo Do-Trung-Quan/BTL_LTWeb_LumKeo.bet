@@ -185,18 +185,24 @@ const logOut = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Không tìm thấy token' });
     }
 
-    await UserService.logOut(token);
+    // Call the service to handle logout (e.g., blacklist token)
+    const serviceResponse = await UserService.logOut(token);
+    if (!serviceResponse.success) {
+      return res.status(500).json({ success: false, message: serviceResponse.message });
+    }
 
     // Clear the token cookie on the client side
     res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      sameSite: 'strict',
+      path: '/' // Ensure cookie is cleared for the entire domain
     });
 
     res.status(200).json({ success: true, message: 'Đăng xuất thành công' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('Logout controller error:', error.message);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi đăng xuất' });
   }
 };
 

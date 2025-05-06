@@ -140,8 +140,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (res.status === 403) {
                         console.warn('Permission denied for /api/users/:id/, using token data');
                         return userData;
-                    } else {
-                        throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                    } else if (res.status === 401) {
+                        const errorData = JSON.parse(errorText);
+                        if (errorData.error === "jwt expired") {
+                            // Token expired, trigger logout via logout.js
+                            const logoutLink = document.querySelector('li a#logout-link');
+                            if (logoutLink) {
+                                console.log('Token expired, triggering logout...');
+                                logoutLink.click(); // Simulate click to trigger logout.js logic
+                                return null; // Exit function to prevent further execution
+                            } else {
+                                console.error('Logout link not found, redirecting to login manually');
+                                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                                return null;
+                            }
+                        } else {
+                            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                        }
                     }
                 }
 
@@ -290,15 +305,13 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const token = getCookie("token");
             if (!token) {
-                alert('Vui lòng đăng nhập để xem thông tin cá nhân!');
-                document.getElementById('user-name').textContent = 'Chưa đăng nhập';
-                document.getElementById('user-role').textContent = 'Unknown';
-                document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Vui lòng đăng nhập để xem lịch sử bài báo đã xem.</td></tr>';
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html'; // Redirect to login without alert
                 return;
             }
 
-            // Fetch user data
             const user = await getCurrentUser();
+            if (!user) return; // Exit if user is null (due to logout redirect)
+
             updateAdminInfo(user);
 
             // Fetch and display viewed articles
@@ -306,10 +319,14 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('Viewed Articles before passing to populateViewedArticlesTable:', viewedArticles);
             populateViewedArticlesTable(viewedArticles);
         } catch (error) {
-            alert('Lỗi: ' + error.message);
-            document.getElementById('user-name').textContent = 'Lỗi tải dữ liệu';
-            document.getElementById('user-role').textContent = 'Unknown';
-            document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Lỗi tải dữ liệu lịch sử xem.</td></tr>';
+            console.error('Initialize error:', error.message);
+            if (!getCookie("token")) {
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html'; // Redirect if no token after error
+            } else {
+                document.getElementById('user-name').textContent = 'Lỗi tải dữ liệu';
+                document.getElementById('user-role').textContent = 'Unknown';
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Lỗi tải dữ liệu người dùng.</td></tr>';
+            }
         }
     }
 

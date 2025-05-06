@@ -74,8 +74,23 @@ async function getCurrentUser() {
                 if (res.status === 403) {
                     console.warn('Permission denied for /api/users/:id, using token data');
                     return userData;
-                } else {
-                    throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                } else if (res.status === 401) {
+                    const errorData = JSON.parse(errorText);
+                    if (errorData.error === "jwt expired") {
+                        // Token expired, trigger logout via logout.js
+                        const logoutLink = document.querySelector('li a#logout-link');
+                        if (logoutLink) {
+                            console.log('Token expired, triggering logout...');
+                            logoutLink.click(); // Simulate click to trigger logout.js logic
+                            return null; // Exit function to prevent further execution
+                        } else {
+                            console.error('Logout link not found, redirecting to login manually');
+                            window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                            return null;
+                        }
+                    } else {
+                        throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                    }
                 }
             }
 
@@ -85,6 +100,7 @@ async function getCurrentUser() {
             }
 
             const data = await res.json();
+            console.log('User API Response:', data);
             const user = data.user || data;
             userData = {
                 id,
@@ -187,14 +203,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        window.currentAuthorId = user.id;
+        window.currentUserId = user.id;
         window.currentUser = user;
-        updateAdminInfo(user);
+        updateAdminInfo(user); // Assuming updateAdminInfo is defined
 
         const token = getCookie('token');
         await fetchUsers(token);
     } catch (error) {
-        console.error("Lỗi khi tải thông tin người dùng:", error);
-        window.location.href = "../../Hi-Tech/Login.html";
+        console.error('User initialization error:', error.message);
+        if (!getCookie("token")) {
+            window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+        }
     }
 });

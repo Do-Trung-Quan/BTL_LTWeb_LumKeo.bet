@@ -1,3 +1,159 @@
+// Helper: Get cookie
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+// Helper: Decode JWT
+function decodeJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error('Error decoding JWT:', error);
+        return null;
+    }
+}
+
+// Fetch current user data
+async function getCurrentUser() {
+    try {
+        const token = getCookie("token");
+        console.log('Token:', token);
+        if (!token) {
+            throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
+        }
+
+        const payload = decodeJwt(token);
+        if (!payload) {
+            throw new Error("Token không hợp lệ!");
+        }
+
+        const { id, username, role, avatar } = payload;
+        console.log('User ID:', id);
+        console.log('User Name:', username);
+        console.log('User Role:', role);
+        console.log('Full Payload:', payload);
+
+        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+            throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
+        }
+
+        let userData = { id, username, role, avatar };
+        try {
+            const res = await fetch(`http://localhost:3000/api/users/${id}?_t=${Date.now()}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token.trim()}`
+                }
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.warn('API Error:', errorText);
+                if (res.status === 403) {
+                    console.warn('Permission denied for /api/users/:id, using token data');
+                    return userData;
+                } else if (res.status === 401) {
+                    const errorData = JSON.parse(errorText);
+                    if (errorData.error === "jwt expired") {
+                        const logoutLink = document.querySelector('li a#logout-link');
+                        if (logoutLink) {
+                            console.log('Token expired, triggering logout...');
+                            logoutLink.click();
+                            return null;
+                        } else {
+                            console.error('Logout link not found, redirecting to login manually');
+                            window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                            return null;
+                        }
+                    } else {
+                        throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                    }
+                }
+            }
+
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Response is not JSON');
+            }
+
+            const data = await res.json();
+            console.log('User API Response:', data);
+            const user = data.user || data;
+            userData = {
+                id,
+                username: user.username !== undefined ? user.username : username,
+                role: user.role !== undefined ? user.role : role,
+                avatar: user.avatar !== undefined ? user.avatar : avatar
+            };
+        } catch (apiError) {
+            console.warn('Falling back to token data due to API error:', apiError);
+            return userData;
+        }
+
+        return userData;
+    } catch (error) {
+        console.error('getCurrentUser Error:', error);
+        throw error;
+    }
+}
+
+// Update account buttons in both main navbar and search-header
+document.addEventListener('DOMContentLoaded', async () => {
+    const accountButtons = document.querySelectorAll('.account-button');
+
+    try {
+        const user = await getCurrentUser();
+        if (!user || !user.id) {
+            accountButtons.forEach(button => {
+                button.href = '../../../Hi-Tech/Login.html';
+            });
+            return;
+        }
+
+        console.log('Logged-in user:', user);
+
+        let redirectUrl;
+        switch (user.role) {
+            case 'admin':
+                redirectUrl = '../../../Thuy + DucMinh/ADMIN_QLBB.html';
+                break;
+            case 'author':
+                redirectUrl = '../../../Thuy + DucMinh/AUTHOR_QLBV.html';
+                break;
+            case 'user':
+                redirectUrl = '../../../Thuy + DucMinh/USER_BBDL.html';
+                break;
+            default:
+                redirectUrl = '../../../Hi-Tech/Login.html';
+        }
+
+        accountButtons.forEach(button => {
+            button.href = redirectUrl;
+            button.addEventListener('click', () => {
+                localStorage.setItem('userInfo', JSON.stringify(user));
+            });
+        });
+    } catch (error) {
+        console.error('User not logged in or error:', error.message);
+        if (!getCookie("token")) {
+            window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+            return;
+        }
+        accountButtons.forEach(button => {
+            button.href = '../../../Hi-Tech/Login.html';
+        });
+    }
+});
+
+// Second code (unchanged)
 document.addEventListener('DOMContentLoaded', async () => {
     // Helper: Get cookie
     function getCookie(name) {
@@ -303,4 +459,4 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('related-articles').innerHTML = '<p>Lỗi khi tải tin liên quan</p>';
       document.getElementById('other-articles').innerHTML = '<p>Lỗi khi tải tin khác</p>';
     }
-  });
+});

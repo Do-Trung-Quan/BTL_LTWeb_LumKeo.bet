@@ -315,14 +315,28 @@ const getAllAuthorsStatistics = async () => {
 };
 
 const logOut = async (token) => {
-  // In a real application, you might add the token to a blacklist or update a session
-  // For this example, we’ll just return a success response
   try {
-    // Verify the token to ensure it’s valid before invalidating
-    jwt.verify(token, process.env.JWT_SECRET);
+    // Optional: Decode token without verifying expiration for logging
+    let payload = null;
+    try {
+      payload = jwt.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
+      console.log('Token payload (decoded):', payload);
+    } catch (verifyError) {
+      console.warn('Token verification failed (possibly expired):', verifyError.message);
+      // Proceed with logout even if token is invalid or expired
+    }
+
+    // Simulate adding token to a blacklist (in-memory for this example)
+    // In a real app, use a database (e.g., MongoDB) or Redis
+    if (!global.blacklist) {
+      global.blacklist = new Set();
+    }
+    global.blacklist.add(token);
+
     return { success: true, message: 'Đăng xuất thành công' };
   } catch (error) {
-    throw new Error('Token không hợp lệ hoặc đã hết hạn');
+    console.error('Logout service error:', error.message);
+    return { success: false, message: 'Lỗi khi xử lý đăng xuất' };
   }
 };
 

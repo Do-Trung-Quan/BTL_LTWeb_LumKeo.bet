@@ -109,8 +109,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (res.status === 403) {
                         console.warn('Permission denied for /api/users/:id/, using token data');
                         return userData;
-                    } else {
-                        throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                    } else if (res.status === 401) {
+                        const errorData = JSON.parse(errorText);
+                        if (errorData.error === "jwt expired") {
+                            // Token expired, trigger logout via logout.js
+                            const logoutLink = document.querySelector('li a#logout-link');
+                            if (logoutLink) {
+                                console.log('Token expired, triggering logout...');
+                                logoutLink.click(); // Simulate click to trigger logout.js logic
+                                return null; // Exit function to prevent further execution
+                            } else {
+                                console.error('Logout link not found, redirecting to login manually');
+                                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                                return null;
+                            }
+                        } else {
+                            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                        }
                     }
                 }
 
@@ -233,18 +248,22 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const token = getCookie("token");
             if (!token) {
-                alert('Vui lòng đăng nhập để xem thông tin cá nhân!');
-                userNameDisplay.textContent = 'Chưa đăng nhập';
-                userRoleDisplay.textContent = 'Unknown';
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html'; // Redirect to login without alert
                 return;
             }
 
             currentUser = await getCurrentUser();
+            if (!currentUser) return; // Exit if user is null (due to logout redirect)
+
             updateAdminInfo(currentUser);
         } catch (error) {
-            alert('Lỗi: ' + error.message);
-            userNameDisplay.textContent = 'Lỗi tải dữ liệu';
-            userRoleDisplay.textContent = 'Unknown';
+            console.error('Initialize error:', error.message);
+            if (!getCookie("token")) {
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html'; // Redirect if no token after error
+            } else {
+                userNameDisplay.textContent = 'Lỗi tải dữ liệu';
+                userRoleDisplay.textContent = 'Unknown';
+            }
         }
     }
 

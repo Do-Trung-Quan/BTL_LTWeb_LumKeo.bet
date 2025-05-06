@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         const user = await getCurrentUser();
         if (!user || !user.id) {
-            alert("Vui lòng đăng nhập để quản lý bài viết!");
+            // Redirect to login without alert if no user or invalid user
             window.location.href = "../../Hi-Tech/Login.html";
             return;
         }
@@ -183,82 +183,96 @@ document.addEventListener("DOMContentLoaded", async () => {
         populateLeagueDropdown(addLeagueSelect, window.leagues);
         fetchNews();
     } catch (error) {
-        console.error("Lỗi khi tải thông tin người dùng:", error);
-        alert("Lỗi: " + error.message);
-        window.location.href = "../../Hi-Tech/Login.html";
+        console.error('DOMContentLoaded error:', error.message);
+        // Redirect already handled in getCurrentUser for token expiration
+        if (!getCookie("token")) {
+            window.location.href = "../../Hi-Tech/Login.html";
+        }
     }
 });
 
-    // Fetch current user data
-    async function getCurrentUser() {
+ // Fetch current user data
+async function getCurrentUser() {
+    try {
+        const token = getCookie("token");
+        console.log('Token:', token);
+        if (!token) {
+            throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
+        }
+
+        const payload = decodeJwt(token);
+        if (!payload) {
+            throw new Error("Token không hợp lệ!");
+        }
+
+        const { id, username, role, avatar } = payload;
+        console.log('User ID:', id);
+        console.log('User Name:', username);
+        console.log('User Role:', role);
+        console.log('Full Payload:', payload);
+
+        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+            throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
+        }
+
+        let userData = { id, username, role, avatar };
         try {
-            const token = getCookie("token");
-            console.log('Token:', token);
-            if (!token) {
-                throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
-            }
+            const res = await fetch(`http://localhost:3000/api/users/${id}?_t=${Date.now()}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token.trim()}`
+                }
+            });
 
-            const payload = decodeJwt(token);
-            if (!payload) {
-                throw new Error("Token không hợp lệ!");
-            }
-
-            const { id, username, role, avatar } = payload;
-            console.log('User ID:', id);
-            console.log('User Name:', username);
-            console.log('User Role:', role);
-            console.log('Full Payload:', payload);
-
-            if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-                throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
-            }
-
-            let userData = { id, username, role, avatar };
-            try {
-                const res = await fetch(`http://localhost:3000/api/users/${id}?_t=${Date.now()}`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${token.trim()}`
-                    }
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    console.warn('API Error:', errorText);
-                    if (res.status === 403) {
-                        console.warn('Permission denied for /api/users/:id, using token data');
-                        // Fallback to token data only if API fails
-                        return userData;
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.warn('API Error:', errorText);
+                if (res.status === 403) {
+                    console.warn('Permission denied for /api/users/:id, using token data');
+                    return userData;
+                } else if (res.status === 401) {
+                    const errorData = JSON.parse(errorText);
+                    if (errorData.error === "jwt expired") {
+                        // Token expired, trigger logout via logout.js
+                        const logoutLink = document.querySelector('li a#logout-link');
+                        if (logoutLink) {
+                            console.log('Token expired, triggering logout...');
+                            logoutLink.click(); // Simulate click to trigger logout.js logic
+                            return null; // Exit function to prevent further execution
+                        } else {
+                            throw new Error('Logout link not found, cannot handle token expiration');
+                        }
                     } else {
                         throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
                     }
                 }
-
-                const contentType = res.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Response is not JSON');
-                }
-
-                const data = await res.json();
-                const user = data.user || data;
-                // Use API data exclusively if available, otherwise fall back to token data
-                userData = {
-                    id,
-                    username: user.username !== undefined ? user.username : username,
-                    role: user.role !== undefined ? user.role : role,
-                    avatar: user.avatar !== undefined ? user.avatar : avatar
-                };
-            } catch (apiError) {
-                console.warn('Falling back to token data due to API error:', apiError);
-                return userData;
             }
 
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Response is not JSON');
+            }
+
+            const data = await res.json();
+            console.log('API Response:', data);
+            const user = data.user || data;
+            userData = {
+                id,
+                username: user.username !== undefined ? user.username : username,
+                role: user.role !== undefined ? user.role : role,
+                avatar: user.avatar !== undefined ? user.avatar : avatar
+            };
+        } catch (apiError) {
+            console.warn('Falling back to token data due to API error:', apiError);
             return userData;
-        } catch (error) {
-            console.error('getCurrentUser Error:', error);
-            throw error;
         }
+
+        return userData;
+    } catch (error) {
+        console.error('getCurrentUser Error:', error);
+        throw error;
     }
+}
 
 async function openEditModal(button) {
     const row = button.closest('tr');

@@ -101,7 +101,6 @@ document.addEventListener("DOMContentLoaded", function () {
         profilePic.alt = `${user.username || 'User'}'s Avatar`;
     }
 
-    // Fetch current user data
     async function getCurrentUser() {
         try {
             const token = getCookie("token");
@@ -109,23 +108,23 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!token) {
                 throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
             }
-
+    
             const payload = decodeJwt(token);
             if (!payload) {
                 throw new Error("Token không hợp lệ!");
             }
-
+    
             const { id, username, role, avatar } = payload;
             console.log('User ID:', id);
             console.log('User Name:', username);
             console.log('User Role:', role);
             console.log('User Avatar:', avatar);
             console.log('Full Payload:', payload);
-
+    
             if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
                 throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
             }
-
+    
             let userData = { id, username, role, avatar };
             try {
                 const res = await fetch(`${API_BASE_URL}/api/users/${id}/?_t=${Date.now()}`, {
@@ -134,23 +133,38 @@ document.addEventListener("DOMContentLoaded", function () {
                         'Authorization': `Bearer ${token.trim()}`
                     }
                 });
-
+    
                 if (!res.ok) {
                     const errorText = await res.text();
                     console.warn('API Error:', errorText);
                     if (res.status === 403) {
                         console.warn('Permission denied for /api/users/:id/, using token data');
                         return userData;
-                    } else {
-                        throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                    } else if (res.status === 401) {
+                        const errorData = JSON.parse(errorText);
+                        if (errorData.error === "jwt expired") {
+                            // Token expired, trigger logout via logout.js
+                            const logoutLink = document.querySelector('li a#logout-link');
+                            if (logoutLink) {
+                                console.log('Token expired, triggering logout...');
+                                logoutLink.click(); // Simulate click to trigger logout.js logic
+                                return null; // Exit function to prevent further execution
+                            } else {
+                                console.error('Logout link not found, redirecting to login manually');
+                                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                                return null;
+                            }
+                        } else {
+                            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                        }
                     }
                 }
-
+    
                 const contentType = res.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
                     throw new Error('Response is not JSON');
                 }
-
+    
                 const data = await res.json();
                 console.log('User API Response:', data);
                 const user = data.user || data;
@@ -164,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.warn('Falling back to token data due to API error:', apiError);
                 return userData;
             }
-
+    
             return userData;
         } catch (error) {
             console.error('getCurrentUser Error:', error);
@@ -288,18 +302,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Initialize: Fetch user data and bookmarks
     async function initialize() {
-        try {
-            const token = getCookie("token");
+            try {
+                const token = getCookie("token");
             if (!token) {
-                alert('Vui lòng đăng nhập để xem thông tin cá nhân!');
-                document.getElementById('user-name').textContent = 'Chưa đăng nhập';
-                document.getElementById('user-role').textContent = 'Unknown';
-                document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Vui lòng đăng nhập để xem danh sách bài báo đã lưu.</td></tr>';
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html'; // Redirect to login without alert
                 return;
             }
 
-            // Fetch user data
             const user = await getCurrentUser();
+            if (!user) return; // Exit if user is null (due to logout redirect)
+
             updateAdminInfo(user);
 
             // Fetch and display bookmarks
@@ -307,10 +319,14 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('Bookmarks before passing to populateBookmarksTable:', bookmarks);
             populateBookmarksTable(bookmarks);
         } catch (error) {
-            alert('Lỗi: ' + error.message);
-            document.getElementById('user-name').textContent = 'Lỗi tải dữ liệu';
-            document.getElementById('user-role').textContent = 'Unknown';
-            document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Lỗi tải dữ liệu bài báo.</td></tr>';
+            console.error('Initialize error:', error.message);
+            if (!getCookie("token")) {
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html'; // Redirect if no token after error
+            } else {
+                document.getElementById('user-name').textContent = 'Lỗi tải dữ liệu';
+                document.getElementById('user-role').textContent = 'Unknown';
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Lỗi tải dữ liệu bài báo.</td></tr>';
+            }
         }
     }
 

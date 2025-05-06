@@ -92,10 +92,8 @@ body {
     display: none; /* Chrome, Edge, Safari */
 }
 
-
-
-/* Admin Info */
-.admin-info {
+/* User Info */
+.user-info {
     position: relative;
     left: 0px;
     display: flex;
@@ -104,17 +102,17 @@ body {
     background: #e0e0e0;
     padding: 15px 20px;
     border-radius: 10px;
-    width: 1000px;
+    width: 1060px;
     max-width: 200%;
     height: 150px;
     box-sizing: border-box;
     z-index: 1;
 }
-.admin-text {
+.user-text {
     margin-left: 20px;
 }
 
-.admin-text h3 {
+.user-text h3 {
     font-size: 32px;
     font-weight: bold;
     margin: 0;
@@ -122,13 +120,13 @@ body {
     color: black;
 }
 
-.admin-text p {
+.user-text p {
     font-size: 20px;
     color: #333;
     margin: 5px 0 0;
 }
 
-.admin-avatar img {
+.user-avatar img {
     width: 100px;
     height: 100px;
     border: 3px solid darkblue; 

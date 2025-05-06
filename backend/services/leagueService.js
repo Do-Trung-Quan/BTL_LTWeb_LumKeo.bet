@@ -1,5 +1,9 @@
 const Category = require('../models/Category');
 const Article = require('../models/Article');
+const Comment = require('../models/Comment');
+const Bookmark = require('../models/Bookmark');
+const ViewHistory = require('../models/viewHistory');
+const Notification = require('../models/Notification');
 const cloudinary = require('cloudinary').v2; // Đảm bảo Cloudinary đã được cấu hình
 
 // 1. Create League (Tạo giải đấu: V.League, Ligue 1, La Liga, Bundesliga, Premier League, Serie A)
@@ -41,13 +45,15 @@ const createLeague = async (leagueData, file) => {
 
   // Populate để trả về thông tin đầy đủ
   return await Category.findById(league._id)
-    .populate('parentCategory', 'name slug');
+    .populate('parentCategory', 'name slug')
+    .select('name slug type logo_url parentCategory season_time created_at');
 };
 
 // 2. Get All Leagues (Lấy tất cả giải đấu, filter theo type = League)
 const getAllLeagues = async () => {
   const leagues = await Category.find({ type: 'League' })
-    .populate('parentCategory', 'name slug');
+    .populate('parentCategory', 'name slug')
+    .select('name slug type logo_url parentCategory season_time created_at');
   return leagues;
 };
 
@@ -100,9 +106,21 @@ const deleteLeague = async (leagueId) => {
   if (!league) throw new Error('League not found');
   if (league.type !== 'League') throw new Error('Not a league');
 
+  const articles = await Article.find({ CategoryID: leagueId });
+  const articleIds = articles.map(a => a._id);
+
+  await Promise.all([
+    Comment.deleteMany({ ArticleID: { $in: articleIds } }),
+    Bookmark.deleteMany({ ArticleID: { $in: articleIds } }),
+    ViewHistory.deleteMany({ ArticleID: { $in: articleIds } }),
+    Notification.deleteMany({ noti_entity_ID: { $in: articleIds }, noti_entity_type: 'Article' }),
+    Article.deleteMany({ CategoryID: leagueId }),
+  ]);
+
   await Category.findByIdAndDelete(leagueId);
   return { message: 'League deleted successfully' };
 };
+
 
 // 6. Get Most Viewed Articles in Each League (Lấy bài báo có lượt xem cao nhất trong từng giải đấu)
 const getMostViewedArticlesInEachLeague = async () => {
@@ -111,7 +129,7 @@ const getMostViewedArticlesInEachLeague = async () => {
   const result = [];
 
   for (const league of leagues) {
-    const mostViewedArticle = await Article.findOne({
+    const mostViewedArticle = await Article.find({
       CategoryID: league._id,
       is_published: true
     })

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - QLBB</title>
+    <title>Admin - QLND</title>
     <link rel="stylesheet" href="./css/ADMIN_QLND.css">
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="./css/pagination.css">
@@ -34,8 +34,8 @@
                   </ul>
                 </li>
 
-                <li><a href="#">Bóng đá Việt Nam</a></li>
-                <li><a href="#">Bóng đá thế giới</a></li>
+                <li><a href="../Quang/giaidau/html/bongdaVN.html">Bóng đá Việt Nam</a></li>
+                <li><a href="../Quang/giaidau/html/bongdaTG.html">Bóng đá thế giới</a></li>
             </ul>
         </nav>
         <div class="nav-icons">
@@ -83,17 +83,18 @@
                 <li><a href="ADMIN_QLTG.html">Quản lý tác giả</a></li>
                 <li><a href="ADMIN_DASHBOARD.html">Chức năng thống kê</a></li>
                 <li><a href="ADMIN_TTCN.html">Thông tin cá nhân</a></li>
-                <li><a href="../Hi-Tech/Login.html">Đăng xuất</a></li>
+                <li><a href="#" id="logout-link">Đăng xuất</a></li>
             </ul>
         </aside>
         <main class="content">
-            <div class="admin-info">
-                <div class="admin-text">
-                    <h2>Đỗ Trung Quân</h2>
-                    <p>ADMIN ID: AD190804</p>
+             <!-- Admin Information -->
+             <div class="user-info">
+                <div class="user-text">
+                    <h3 id="user-name">Loading...</h3>
+                    <p id="user-role">Loading...</p>
                 </div>
-                <div class="admin-avatar">
-                    <img id="profile-pic-upper" src="img/cat.jpg" alt="Avatar" class="avatar">
+                <div class="user-avatar">
+                    <img id="profile-pic-upper" src= "" alt= "" class="avatar">
                     <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
                 </div>
             </div>
@@ -109,60 +110,7 @@
                         <th>Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <tr>
-                            <td>US021104</td>
-                            <td>minhtran12</td>
-                            <td>04/03/2025</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>US283742</td>
-                            <td>nguyenvanb</td>
-                            <td>03/02/2025</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>US827364</td>
-                            <td>phamthithao_99</td>
-                            <td>25/01/2025</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-trash-can"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>US987651</td>
-                            <td>hoanganh_dev</td>
-                            <td>10/12/2024</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>US562738</td>
-                            <td>ngoclan_87</td>
-                            <td>21/11/2024</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                        <tr>
-                            <td>US998273</td>
-                            <td>ducmanh_football</td>
-                            <td>05/09/2024</td>
-                            <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                                &nbsp; 
-                                <i class="fa-solid fa-trash-can"></i></td>
-                        </tr>
-                    </tr>
-                </tbody>
+                <tbody></tbody>
             </table>
         </main>
     </div>
@@ -177,8 +125,8 @@
         <button class="next">Next →</button>
     </div>   
     <script src="./js/pagination.js"></script> 
-    <script src="./js/searchBar1.js"></script>
-    <script src="./js/delete.js"></script>
-    <script src="./js/AUTHOR_TTCN.js"></script>
+    <script src="./js/searchBar2.js"></script>
+    <script src="./js/ADMIN_QLND.js"></script>
+    <script src="./js/logout.js"></script>
 </body>
 </html>

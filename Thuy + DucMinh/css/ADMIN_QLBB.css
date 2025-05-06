@@ -91,8 +91,8 @@ body {
     display: none; /* Chrome, Edge, Safari */
 }
 
-/* Admin Info */
-.admin-info {
+/* User Info */
+.user-info {
     position: relative;
     left: 0px;
     display: flex;
@@ -101,17 +101,17 @@ body {
     background: #e0e0e0;
     padding: 15px 20px;
     border-radius: 10px;
-    width: 1000px;
+    width: 1060px;
     max-width: 200%;
     height: 150px;
     box-sizing: border-box;
     z-index: 1;
 }
-.admin-text {
+.user-text {
     margin-left: 20px;
 }
 
-.admin-text h3 {
+.user-text h3 {
     font-size: 32px;
     font-weight: bold;
     margin: 0;
@@ -119,13 +119,13 @@ body {
     color: black;
 }
 
-.admin-text p {
+.user-text p {
     font-size: 20px;
     color: #333;
     margin: 5px 0 0;
 }
 
-.admin-avatar img {
+.user-avatar img {
     width: 100px;
     height: 100px;
     border: 3px solid darkblue; 
@@ -134,8 +134,10 @@ body {
     object-fit: cover;
 }
 
+
 .functionBar {
     margin-left: 30px;
+    margin-top: 15px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -294,119 +296,116 @@ td i:hover {
     color: black;
 }
 
-.edit-btn {
-    background: none;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 5px;
-}
-
-.edit-btn:focus, 
-.edit-btn:hover {
-    border: none;
-    outline: none;
-}
-
-/* Modal Background */
+/* Modal Styling */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
+    z-index: 1000;
 }
-
-/* Modal Content */
 .modal-content {
-    background: white;
-    padding: 30px;
-    width: 60%;
-    max-width: 800px;
-    border-radius: 10px;
-    text-align: left;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+    margin: 20px auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 900px;
+    border-radius: 8px;
     position: relative;
+    overflow-y: auto;
+    max-height: 90vh;
 }
-
-/* Modal Title */
-.modal-content h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* Form Layout */
-.modal-content form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-/* Input Fields */
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* Align File Input */
-.modal-content input[type="file"] {
-    padding: 5px;
-}
-
-/* Submit Button */
-.submit-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
-    width: 100%;
-    font-size: 16px;
-}
-
-.submit-btn:hover {
-    background-color: #0056b3;
-}
-
 /* Close Button */
-.close {
+.close-btn {
     position: absolute;
-    right: 20px;
     top: 10px;
-    font-size: 24px;
+    right: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-}
-
-/* Modal Buttons */
-.modal-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-/* Cancel Button */
-.cancel-btn {
     background-color: #dc3545;
     color: white;
-    border: none;
-    padding: 14px;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
     font-size: 16px;
-    width: 100%;
-    text-align: center;
+}
+.close-btn:hover {
+    background-color: #c82333;
+}
+/* Breadcrumb */
+.breadcrumb ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+.breadcrumb li {
+    display: flex;
+    align-items: center;
+}
+.breadcrumb a {
+    text-decoration: none;
+    font-size: 16px;
+    color: #0074B2;
+    font-weight: bold;
+}
+.breadcrumb .separator {
+    font-size: 16px;
+    color: #666;
+}
+.breadcrumb i {
+    font-size: 12px;
+    color: #666;
+    margin-left: 5px;
+}
+/* Main Heading */
+.h1 {
+    font-size: 28px;
+    color: #1a3d7c;
+    margin-bottom: 10px;
 }
 
-.cancel-btn:hover {
-    background-color: #b52b3a;
+/* Highlight Box */
+.highlight-box {
+    background-color: #eef5ff;
+    padding: 15px;
+    border-left: 5px solid #1a3d7c;
+    margin: 20px 0;
+}
+.highlight-box h2 {
+    font-size: 22px;
+    color: #1a3d7c;
+    margin: 0;
+}
+/* Paragraphs */
+.p {
+    font-size: 16px;
+    text-align: justify;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+/* Image Container */
+.img-container {
+    text-align: center;
+    margin: 20px 0;
+}
+.main-img {
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+/* Author Signature */
+.kyten {
+    font-weight: bold;
+    font-size: 18px;
+    color: #1a3d7c;
+    margin-top: 30px;
+    text-align: right;
 }

@@ -1,7 +1,5 @@
 const jwt = require('jsonwebtoken');
-
-// Lấy JWT_SECRET từ biến môi trường
-const JWT_SECRET = 'Thuy123@'; 
+require('dotenv').config(); 
 
 const authMiddleware = (allowedRoles) => {
   return (req, res, next) => {
@@ -23,7 +21,7 @@ const authMiddleware = (allowedRoles) => {
 
     try {
       // Giải mã token
-      const decoded = jwt.verify(token, JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       
       // Kiểm tra payload có _id không
       if (!decoded._id && !decoded.id) {

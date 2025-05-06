@@ -1,6 +1,9 @@
 const Article = require('../models/Article');
 const ViewHistory = require('../models/viewHistory');
 const Category = require('../models/Category'); 
+const Comment = require('../models/Comment');
+const Bookmark = require('../models/Bookmark');
+const Notification = require('../models/Notification');
 const notificationService = require('../services/notificationService');
 const User = require('../models/User'); 
 const cloudinary = require('../config/cloudinary');
@@ -111,6 +114,7 @@ const getMostViewedArticles = async (page = 1, limit = 10) => {
 // 5. Get Article by Category (Lấy bài báo theo danh mục - Hỗ trợ "Giải đấu")
 const getArticleByCategory = async (categoryId, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
+
   // Kiểm tra xem categoryId có phải là danh mục "Giải đấu" không
   const category = await Category.findById(categoryId);
   if (!category) throw new Error('Category not found');
@@ -131,7 +135,32 @@ const getArticleByCategory = async (categoryId, page = 1, limit = 10) => {
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-  return articles;
+
+  // Đếm tổng số bài viết theo từng danh mục hoặc league
+  const counts = await Promise.all(
+    categoryIds.map(async (id) => {
+      const cat = await Category.findById(id);
+      const count = await Article.countDocuments({ CategoryID: id, is_published: true });
+      return {
+        categoryId: id,
+        categoryName: cat.name,
+        type: cat.type,
+        articleCount: count,
+      };
+    })
+  );
+
+  // Đếm tổng số bài viết cho tất cả các danh mục/league trong categoryIds
+  const totalArticles = await Article.countDocuments({ CategoryID: { $in: categoryIds }, is_published: true });
+
+  return {
+    articles,
+    counts, // Số lượng bài viết theo từng danh mục/league
+    totalArticles, // Tổng số bài viết trong tất cả danh mục/league
+    page,
+    limit,
+    totalPages: Math.ceil(totalArticles / limit),
+  };
 };
 
 // 6. Get Article by Author (Lấy bài báo theo author_id - Kiểm tra role)
@@ -166,38 +195,95 @@ const getArticleByPublishedState = async (publishedState, page = 1, limit = 10) 
 
 // 8. Get New Published Articles Statistics (Lấy số lượng bài báo mới trong 15 ngày)
 const getNewPublishedArticlesStats = async () => {
-  const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
-  const count = await Article.countDocuments({
-    is_published: true,
-    published_date: { $gte: fifteenDaysAgo }
-  });
-  return { total: count };
+  const now = new Date();
+  const fifteenDaysAgo = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
+
+  // Aggregate to group articles by day
+  const stats = await Article.aggregate([
+    {
+      $match: {
+        is_published: true,
+        published_date: { $gte: fifteenDaysAgo, $lte: now }
+      }
+    },
+    {
+      $group: {
+        _id: {
+          $dateToString: { format: "%Y-%m-%d", date: "$published_date" }
+        },
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $sort: { _id: 1 } // Sort by date ascending
+    }
+  ]);
+
+  // Create an array of the last 15 days with 0 counts for days with no data
+  const result = [];
+  for (let i = 0; i < 15; i++) {
+    const date = new Date(now.getTime() - (14 - i) * 24 * 60 * 60 * 1000);
+    const dateStr = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const found = stats.find(stat => stat._id === dateStr);
+    result.push({
+      date: dateStr,
+      count: found ? found.count : 0
+    });
+  }
+
+  return { dailyStats: result, total: result.reduce((sum, day) => sum + day.count, 0) };
 };
 
 // 9. Get All Viewed Articles by User (Lấy danh sách bài báo đã đọc của người dùng)
 const getAllViewedArticlesByUser = async (userId, page = 1, limit = 10) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error('Invalid UserID format');
+  }
   const skip = (page - 1) * limit;
   const viewedArticles = await ViewHistory.find({ UserID: userId })
-    .sort({ viewed_at: -1 })
     .skip(skip)
     .limit(limit)
+    .populate('UserID', 'username avatar') // Populate user fields
     .populate({
       path: 'ArticleID',
-      populate: [
-        { path: 'UserID', select: 'username avatar' },
-        { path: 'CategoryID', select: 'name slug type' }
-      ]
-    });
-  return viewedArticles;
+      select: 'title thumbnail created_at', // Select fields from Article
+      populate: {
+        path: 'CategoryID', // Populate CategoryID within ArticleID
+        select: 'name' // Only select the 'name' field from Category
+      }
+    })
+    .sort({ viewed_at: -1 }); // Sắp xếp theo thời gian xem, mới nhất trước
+
+  const total = await ViewHistory.countDocuments({ UserID: userId });
+  return {
+    data: viewedArticles,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  }};
+
+// 10. Delete a View History Record (Xóa một lịch sử xem bài báo)
+const deleteViewHistory = async (historyId, userId) => {
+  const history = await ViewHistory.findOneAndDelete({
+    _id: historyId,
+    UserID: userId // Ensure the history belongs to the user
+  });
+
+  if (!history) {
+    throw new Error('Lịch sử xem không tồn tại hoặc bạn không có quyền xóa.');
+  }
+
+  return { success: true, message: 'Xóa lịch sử xem thành công!' };
 };
 
-// 10. Get All Post Articles Statistics (Lấy tổng số lượng bài báo đã đăng)
+// 11. Get All Post Articles Statistics (Lấy tổng số lượng bài báo đã đăng)
 const getAllPostArticlesStats = async () => {
   const count = await Article.countDocuments({ is_published: true });
   return { total: count };
 };
 
-// 11. Update Article (Chỉnh sửa bài viết - Chỉ author của bài viết được phép)
+// 12. Update Article (Chỉnh sửa bài viết - Chỉ author của bài viết được phép)
 const updateArticle = async (articleId, articleData, user, file) => {
   // Tìm bài viết theo ID
   const article = await Article.findById(articleId);
@@ -248,21 +334,29 @@ const updateArticle = async (articleId, articleData, user, file) => {
   return updatedArticle;
 };
 
-  // 12. Delete Article (Xóa bài viết - Author hoặc Admin được phép)
-const deleteArticle = async (articleId, user) => {
+  // 13. Delete Article (Xóa bài viết - Author hoặc Admin được phép)
+  const deleteArticle = async (articleId, user) => {
     const article = await Article.findById(articleId);
     if (!article) throw new Error('Article not found');
   
-    // Kiểm tra quyền: Chỉ author của bài viết hoặc admin được phép xóa
-    if (article.UserID.toString() !== user._id && user.role !== 'admin') {
+    if (article.UserID.toString() !== user._id.toString() && user.role !== 'admin') {
       throw new Error('Access denied. You are not the author or an admin.');
     }
+  
+    // Xóa liên quan
+    await Promise.all([
+      Comment.deleteMany({ ArticleID: articleId }),
+      Bookmark.deleteMany({ ArticleID: articleId }),
+      ViewHistory.deleteMany({ ArticleID: articleId }),
+      Notification.deleteMany({ noti_entity_ID: articleId, noti_entity_type: 'Article' }),
+    ]);
   
     await Article.findByIdAndDelete(articleId);
     return { message: 'Article deleted successfully' };
   };
+  
 
-// 13. Publish Article (Duyệt bài viết - Chỉ Admin được phép)
+// 14. Publish Article (Duyệt bài viết - Chỉ Admin được phép)
 const publishArticle = async (articleId) => {
   const article = await Article.findById(articleId);
   if (!article) throw new Error('Article not found');
@@ -306,7 +400,7 @@ const publishArticle = async (articleId) => {
   return updatedArticle;
 };
 
-// Ghi lại lịch sử xem bài viết
+// 15. Ghi lại lịch sử xem bài viết
 const recordArticleView = async (userId, articleId) => {
   // Kiểm tra userId và articleId hợp lệ
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -344,6 +438,20 @@ const recordArticleView = async (userId, articleId) => {
   await Article.findByIdAndUpdate(articleId, { $inc: { views: 1 } });
 };
 
+// 16. Count published articles by Author ID
+const countPublishedArticlesByAuthor = async (userId) => {
+  try {
+    const count = await Article.countDocuments({
+      UserID: userId,
+      is_published: true
+    });
+    return count;
+  } catch (error) {
+    console.error('Error counting published articles:', error);
+    throw new Error('Failed to count published articles');
+  }
+};
+
 module.exports = {
   createArticle,
   getAllPostArticles,
@@ -354,10 +462,12 @@ module.exports = {
   getArticleByPublishedState, 
   getNewPublishedArticlesStats,
   getAllViewedArticlesByUser,
+  deleteViewHistory,
   getAllPostArticlesStats,
   updateArticle,
   deleteArticle,
   publishArticle,
   recordArticleView, 
-  initWebSocket
+  initWebSocket,
+  countPublishedArticlesByAuthor
 };

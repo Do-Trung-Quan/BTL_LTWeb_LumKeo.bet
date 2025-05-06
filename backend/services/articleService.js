@@ -103,7 +103,7 @@ const getArticleById = async (articleId) => {
 const getMostViewedArticles = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
   const articles = await Article.find({ is_published: true })
-    .sort({ views: -1 })
+    .sort({ views: -1, published_date: -1 }) // Sort by views and then by published date
     .skip(skip)
     .limit(limit)
     .populate('UserID', 'username avatar')

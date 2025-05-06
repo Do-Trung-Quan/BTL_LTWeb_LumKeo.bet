@@ -74,7 +74,7 @@ const getMostViewedArticlesInEachCategory = async (page = 1, limit = 10) => {
   const result = [];
 
   for (const category of categories) {
-    const mostViewedArticle = await Article.findOne({
+    const mostViewedArticle = await Article.find({
       CategoryID: category._id, // Chỉ tìm bài viết trực tiếp thuộc danh mục này
       is_published: true
     })

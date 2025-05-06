@@ -5,36 +5,31 @@ const User = require('../models/User');
 // 1. Create Article (Thêm bài viết)
 const createArticle = async (req, res) => {
   try {
-    // Lấy file thumbnail từ multer
-    const file = req.files && req.files.thumbnails ? req.files.thumbnails[0] : null;
+    const file = req.files?.thumbnails?.[0] || null;
 
-    // Kiểm tra file có tồn tại không
     if (!file) {
       return res.status(400).json({ message: 'No thumbnail uploaded' });
     }
 
-    // Kiểm tra file có hợp lệ không (rỗng, lỗi khi upload)
     if (!file.buffer || file.size === 0) {
       return res.status(400).json({ message: 'Thumbnail file is empty or corrupted' });
     }
 
     // Lấy dữ liệu từ request body
-    const { title, slug, summary, content, CategoryName } = req.body;
-    console.log(req.body);
+    const { title, slug, summary, content, CategoryID, league_id } = req.body;
+    console.log(req.body); // debug
 
-    // Kiểm tra UserID từ token
-    if (!req.user || !req.user._id) {
+    // Kiểm tra xác thực người dùng
+    if (!req.user._id) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
 
-    // Kiểm tra UserID có tồn tại không
     const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Tìm kiếm Category theo tên
-    const category = await Category.findOne({ name: CategoryName.trim() });
+    const category = await Category.findById(CategoryID);
     if (!category) {
       return res.status(400).json({ message: 'Category not found' });
     }
@@ -46,6 +41,7 @@ const createArticle = async (req, res) => {
       content,
       CategoryID: category._id,
       UserID: req.user._id,
+      league_id: league_id || undefined,
     };
 
     const article = await articleService.createArticle(articleData, file);
@@ -94,16 +90,41 @@ const getMostViewedArticles = async (req, res) => {
 // 5. Get Article by Category (Lấy bài báo theo danh mục - Xử lý lỗi mới)
 const getArticleByCategory = async (req, res) => {
   try {
-    const articles = await articleService.getArticleByCategory(req.params.categoryId);
-    res.status(200).json(articles);
+    const { categoryId } = req.params;
+    const { page = 1, limit = 10 } = req.query; // Lấy page và limit từ query params
+
+    // Gọi service với categoryId, page, và limit
+    const result = await articleService.getArticleByCategory(
+      categoryId,
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    // Trả về kết quả với cấu trúc mới
+    res.status(200).json({
+      success: true,
+      data: {
+        articles: result.articles,
+        counts: result.counts,
+        totalArticles: result.totalArticles,
+        pagination: {
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages,
+        },
+      },
+    });
   } catch (error) {
     if (error.message === 'Category not found') {
-      return res.status(404).json({ message: error.message });
+      return res.status(404).json({ success: false, message: error.message });
     }
-    res.status(500).json({ message: 'Error fetching articles by category', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching articles by category',
+      error: error.message,
+    });
   }
 };
-
 // 6. Get Article by Author (Lấy bài báo theo author_id - Xử lý lỗi mới)
 const getArticleByAuthor = async (req, res) => {
   try {
@@ -140,14 +161,39 @@ const getNewPublishedArticlesStats = async (req, res) => {
 // 9. Get All Viewed Articles by User (Lấy danh sách bài báo đã đọc của người dùng)
 const getAllViewedArticlesByUser = async (req, res) => {
   try {
-    const viewedArticles = await articleService.getAllViewedArticlesByUser(req.params.userId);
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    const userId = req.params.userId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    // Kiểm tra xem user có quyền xem danh sách bookmark không
+    if (req.user._id.toString() !== userId.toString()) {
+      return res.status(403).json({ message: 'You can only view your own histories' });
+    }
+    const viewedArticles = await articleService.getAllViewedArticlesByUser(userId, page, limit);
     res.status(200).json(viewedArticles);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching viewed articles', error: error.message });
   }
 };
 
-// 10. Get All Post Articles Statistics (Lấy tổng số lượng bài báo đã đăng)
+// 10. Delete a View History Record (Xóa một lịch sử xem bài báo)
+const deleteViewHistory = async (req, res) => {
+  try {
+    const { historyId } = req.params;
+    const userId = req.user.id; // Assuming authMiddleware adds the user to req.user
+    const result = await articleService.deleteViewHistory(historyId, userId);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+
+// 11. Get All Post Articles Statistics (Lấy tổng số lượng bài báo đã đăng)
 const getAllPostArticlesStats = async (req, res) => {
   try {
     const stats = await articleService.getAllPostArticlesStats();
@@ -157,20 +203,26 @@ const getAllPostArticlesStats = async (req, res) => {
   }
 };
 
-// 11. Update Article (Chỉnh sửa bài viết - Chỉ author được phép)
+// 12. Update Article (Chỉnh sửa bài viết - Chỉ author được phép)
 const updateArticle = async (req, res) => {
   try {
     // Lấy dữ liệu từ request
-    const { title, slug, summary, content, CategoryName } = req.body;
+    const { title, slug, summary, content, CategoryID } = req.body;
     const articleData = { title, slug, summary, content };
 
-    // Nếu có CategoryName, tìm CategoryID tương ứng
-    if (CategoryName) {
-      const category = await Category.findOne({ name: CategoryName.trim() });
-      if (!category) {
-        return res.status(404).json({ message: 'Category not found' });
-      }
-      articleData.CategoryID = category._id;
+    // Kiểm tra xác thực người dùng
+    if (!req.user?._id) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Thêm CategoryID vào articleData nếu có
+    if (CategoryID) {
+      articleData.CategoryID = CategoryID;
     }
 
     // Lấy file (thumbnail) từ multer
@@ -194,7 +246,7 @@ const updateArticle = async (req, res) => {
   }
 };
 
-  // 12. Delete Article (Xóa bài viết)
+  // 13. Delete Article (Xóa bài viết)
   const deleteArticle = async (req, res) => {
     try {
       const result = await articleService.deleteArticle(req.params.id, req.user);
@@ -208,7 +260,7 @@ const updateArticle = async (req, res) => {
     }
   };
   
-  // 13. Publish Article (Duyệt bài viết)
+  // 14. Publish Article (Duyệt bài viết)
   const publishArticle = async (req, res) => {
     try {
       // Kiểm tra quyền admin
@@ -226,7 +278,7 @@ const updateArticle = async (req, res) => {
     }
   };
 
-  // Ghi lại lịch sử xem bài viết
+  // 15. Ghi lại lịch sử xem bài viết
 const recordArticleView = async (req, res) => {
   try {
     // Kiểm tra req.user (được gán bởi authMiddleware)
@@ -253,6 +305,21 @@ const recordArticleView = async (req, res) => {
   }
 };
 
+const countPublishedArticlesByAuthor = async (req, res) => {
+  try {
+    const { userId } = req.params; // Expect userId from URL parameter
+    if (!userId) {
+      return res.status(400).json({ message: 'Invalid or missing userId' });
+    }
+
+    const count = await articleService.countPublishedArticlesByAuthor(userId);
+    res.status(200).json({ success: true, count });
+  } catch (error) {
+    console.error('Error in controller:', error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 module.exports = {
   createArticle,
@@ -264,9 +331,11 @@ module.exports = {
   getArticleByPublishedState,
   getNewPublishedArticlesStats,
   getAllViewedArticlesByUser,
+  deleteViewHistory,
   getAllPostArticlesStats,
   updateArticle,
   deleteArticle,
   publishArticle,
-  recordArticleView
+  recordArticleView,
+  countPublishedArticlesByAuthor 
 };

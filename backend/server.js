@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config();  
 const http = require('http');
 const articleService = require('./services/articleService');
 const commentService = require('./services/commentService');
@@ -12,7 +13,13 @@ const server = http.createServer(app);
 const port = 3000; // Đồng bộ với cổng 3000 mà front-end đang gọi
 
 // Middleware
-app.use(cors());
+// Configure CORS to allow credentials from http://127.0.0.1:5500
+app.use(cors({
+  origin: 'http://127.0.0.1:5500', // Specify the exact origin
+  credentials: true, // Allow cookies/credentials to be sent
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'], // Allow necessary methods
+  allowedHeaders: ['Authorization', 'Content-Type'] // Allow relevant headers
+}));
 app.use(express.json());
 
 // Initialize WebSocket
@@ -24,15 +31,20 @@ commentService.initWebSocket(websocket);
 notificationService.initWebSocket(websocket);
 
 // Kết nối MongoDB
-mongoose.connect('mongodb+srv://thuyptit2004:Thuy2004@cluster0.b2b9od0.mongodb.net/websiteDB?retryWrites=true&w=majority&appName=Cluster0')
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+const mongoURI = process.env.MONGO_URI;
+
+mongoose.connect(mongoURI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => console.log('Error connecting to MongoDB:', error));
 
 // Middleware xử lý lỗi toàn cục
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
     res.status(500).json({ message: 'Đã có lỗi xảy ra trên server!' });
 });
+
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 // Routes
 const userRoutes = require('./routes/userRoute');

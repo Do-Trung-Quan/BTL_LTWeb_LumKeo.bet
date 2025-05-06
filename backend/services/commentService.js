@@ -1,4 +1,5 @@
 const Comment = require('../models/Comment');
+const Notification = require('../models/Notification');
 const notificationService = require('../services/notificationService');
 const mongoose = require('mongoose');
 
@@ -113,8 +114,15 @@ const CommentService = {
       throw new Error('Bạn không có quyền xóa bình luận này');
     }
 
-    await Comment.deleteMany({ CommentID: commentId }); // Xóa các comment con
-    await Comment.findByIdAndDelete(commentId); // Xóa chính nó
+    // Xóa các bình luận con và thông báo liên quan nếu có
+    await Promise.all([
+      Comment.deleteMany({ CommentID: commentId }),
+      Notification.deleteMany({ noti_entity_ID: commentId, noti_entity_type: 'Comment' }),
+    ]);
+
+    await Comment.findByIdAndDelete(commentId);
+
+    return { message: 'Xóa bình luận thành công' };
   },
 
   // Thống kê tất cả bình luận + 15 ngày gần nhất
@@ -131,12 +139,40 @@ const CommentService = {
 
     const latestComment = await Comment.findOne().sort({ created_at: -1 });
 
-    const fifteenDaysAgo = new Date();
-    fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+    const now = new Date();
+    const fifteenDaysAgo = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
 
-    const newComments = await Comment.countDocuments({
-      created_at: { $gte: fifteenDaysAgo },
-    });
+    // Aggregate to group comments by day
+    const newCommentsStats = await Comment.aggregate([
+      {
+        $match: {
+          created_at: { $gte: fifteenDaysAgo, $lte: now }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$created_at" }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 } // Sort by date ascending
+      }
+    ]);
+
+    // Create an array of the last 15 days with 0 counts for days with no data
+    const dailyStats = [];
+    for (let i = 0; i < 15; i++) {
+      const date = new Date(now.getTime() - (14 - i) * 24 * 60 * 60 * 1000);
+      const dateStr = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      const found = newCommentsStats.find(stat => stat._id === dateStr);
+      dailyStats.push({
+        date: dateStr,
+        count: found ? found.count : 0
+      });
+    }
 
     return {
       totalComments: total,
@@ -146,8 +182,9 @@ const CommentService = {
       latestComment,
       newCommentsLast15Days: {
         from: fifteenDaysAgo.toISOString(),
-        to: new Date().toISOString(),
-        count: newComments,
+        to: now.toISOString(),
+        dailyStats: dailyStats,
+        count: dailyStats.reduce((sum, day) => sum + day.count, 0)
       },
     };
   },

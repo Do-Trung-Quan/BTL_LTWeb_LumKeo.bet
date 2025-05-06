@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { hashPassword, comparePassword } = require('../utils/bcrypt');
+const { cascadeDeleteUser } = require('../utils/cascade');
 
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
@@ -10,25 +11,20 @@ const userSchema = new mongoose.Schema({
   last_login: { type: Date, default: null },
 });
 
-// Middleware để mã hóa mật khẩu trước khi lưu
-userSchema.pre('save', async function(next) {
-  try {
-    // Chỉ mã hóa mật khẩu nếu nó đã bị thay đổi (hoặc là user mới)
-    if (!this.isModified('password')) {
-      return next();
-    }
-
-    // Mã hóa mật khẩu bằng hàm hashPassword từ utils/bcrypt
-    this.password = await hashPassword(this.password);
-    next();
-  } catch (error) {
-    next(error);
-  }
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await hashPassword(this.password);
+  next();
 });
 
-// Phương thức để so sánh mật khẩu khi đăng nhập
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return await comparePassword(candidatePassword, this.password);
 };
+
+userSchema.pre('findOneAndDelete', async function (next) {
+  const doc = await this.model.findOne(this.getFilter());
+  if (doc) await cascadeDeleteUser(doc._id);
+  next();
+});
 
 module.exports = mongoose.model('User', userSchema);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - QLBB</title>
+    <title>Admin - QLGD</title>
     <link rel="stylesheet" href="./css/ADMIN_QLGD.css">
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="./css/pagination.css">
@@ -34,8 +34,8 @@
                   </ul>
                 </li>
 
-                <li><a href="#">Bóng đá Việt Nam</a></li>
-                <li><a href="#">Bóng đá thế giới</a></li>
+                <li><a href="../Quang/giaidau/html/bongdaVN.html">Bóng đá Việt Nam</a></li>
+                <li><a href="../Quang/giaidau/html/bongdaTG.html">Bóng đá thế giới</a></li>
             </ul>
         </nav>
         <div class="nav-icons">
@@ -83,24 +83,27 @@
                 <li><a href="ADMIN_QLTG.html">Quản lý tác giả</a></li>
                 <li><a href="ADMIN_DASHBOARD.html">Chức năng thống kê</a></li>
                 <li><a href="ADMIN_TTCN.html">Thông tin cá nhân</a></li>
-                <li><a href="../Hi-Tech/Login.html">Đăng xuất</a></li>
+                <li><a href="#" id="logout-link">Đăng xuất</a></li>
             </ul>
         </aside>
         <main class="content">
-            <div class="admin-info">
-                <div class="admin-text">
-                    <h2>Đỗ Trung Quân</h2>
-                    <p>ADMIN ID: AD190804</p>
+            <!-- Admin Information -->
+            <div class="user-info">
+                <div class="user-text">
+                    <h3 id="user-name">Loading...</h3>
+                    <p id="user-role">Loading...</p>
                 </div>
-                <div class="admin-avatar">
-                    <img id="profile-pic-upper" src="img/cat.jpg" alt="Avatar" class="avatar">
+                <div class="user-avatar">
+                    <img id="profile-pic-upper" src= "" alt= "" class="avatar">
                     <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
                 </div>
             </div>
             <div class="functionBar">
-                <input type="text" class="search-box" placeholder="Tìm kiếm...">               
+                <input type="text" class="search-box" placeholder="Tìm kiếm...">            
             </div>
-            <table id="table-body">
+            <!-- Container for error messages -->
+            <div id="error-message" style="color: red; margin: 10px 0;"></div>
+            <table id="league-table">
                 <thead>
                     <tr>
                         <th>Tên giải đấu</th>
@@ -110,67 +113,11 @@
                         <th>Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <tr>
-                            <td>V League</td>
-                            <td><img src="img\Logo VLeague.png" alt="V League"></td>
-                            <td>20</td>
-                            <td>24 - 25</td>
-                            <td><a href= "../Quang/giaidau/html/giaidau-vleague.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Ligue 1</td>
-                            <td><img src="img\Logo Ligue.png" alt="Ligue 1"></td>
-                            <td>20</td>
-                            <td>24 - 25</td>
-                            <td><a href= "../Quang/giaidau/html/giaidau-l1.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Bundesliga</td>
-                            <td><img src="img\Logo Bundesliga.png" alt="Bundesliga"></td>
-                            <td>20</td>
-                            <td>24 - 25</td>
-                            <td><a href= "../Quang/giaidau/html/giaidau-bundes.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Series A</td>
-                            <td><img src="img\Logo serie A.png" alt="Serie A"></td>
-                            <td>20</td>
-                            <td>24 - 25</td>
-                            <td><a href= "../Quang/giaidau/html/giaidau-seria.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>La Liga</td>
-                            <td><img src="img\Logo La Liga.png" alt="La Liga"></td>
-                            <td>20</td>
-                            <td>24 - 25</td>
-                            <td><a href= "../Quang/giaidau/html/giaidau-LaLiga.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Premier League</td>
-                            <td><img src="img\Logo Premier League.png" alt="Premier League"></td>
-                            <td>20</td>
-                            <td>24 - 25</td>
-                            <td><a href= "../Quang/giaidau/html/giaidau-EPL.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                            </td>
-                        </tr>
-                    </tr>
+                <tbody id="table-body">
+                    <!-- Rows will be populated dynamically -->
                 </tbody>
             </table>
         </main>
-    </div>
     <div class="pagination">
         <button class="prev" disabled>← Previous</button>
         <button class="page active">1</button>
@@ -183,6 +130,7 @@
     </div>   
     <script src="./js/pagination.js"></script> 
     <script src="./js/searchBar1.js"></script>
-    <script src="./js/AUTHOR_TTCN.js"></script>
+    <script src="./js/ADMIN_QLGD.js"></script>
+    <script src="./js/logout.js"></script>
 </body>
 </html>

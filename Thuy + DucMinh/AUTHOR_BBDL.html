@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>AUTHOR_BBDL</title>
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/pagination.css">
@@ -37,8 +37,8 @@
                   </ul>
                 </li>
 
-                <li><a href="#">Bóng đá Việt Nam</a></li>
-                <li><a href="#">Bóng đá thế giới</a></li>
+                <li><a href="../Quang/giaidau/html/bongdaVN.html">Bóng đá Việt Nam</a></li>
+                <li><a href="../Quang/giaidau/html/bongdaTG.html">Bóng đá thế giới</a></li>
             </ul>
         </nav>
         <div class="nav-icons">
@@ -75,45 +75,38 @@
         </div>
     </div>
     <div class="dark-overlay"></div>
-    
-    
-    <div class="container">
 
-        
+    <div class="container">
         <div class="sidebar">
             <ul>
                 <li ><a href="AUTHOR_QLBV.html">Quản lý bài viết</a></li>
                 <li class="active"><a href="AUTHOR_BBDL.html">Bài báo đã lưu</a></li>
                 <li><a href="AUTHOR_BDGD.html">Bài đọc gần đây</a></li>
                 <li><a href="AUTHOR_TTCN.html">Thông tin cá nhân</a></li>
-                <li><a href="../Hi-Tech/Login.html">Đăng xuất</a></li>
+                <li><a href="#" id="logout-link">Đăng xuất</a></li>
             </ul>
         </div>
         <main class="content">
-            <div class="admin-info">
-                <div class="admin-text">
-                    <h3>Nguyễn Đức Minh</h3>
-                    <p>AUTHOR ID: AU221104</p>
+            <!-- Admin Information -->
+            <div class="user-info">
+                <div class="user-text">
+                    <h3 id="user-name">Loading...</h3>
+                    <p id="user-role">Loading...</p>
                 </div>
-                <div class="admin-avatar">
-                    <img id="profile-pic-upper" src="img\amongUs.jpg" alt="Avatar" class="avatar">
+                <div class="user-avatar">
+                    <img id="profile-pic-upper" src="" alt="User's Avatar" class="avatar">
                     <input type="file" id="profile-pic-input" accept="image/*" style="display: none">
                 </div>
             </div>
-
+    
             <div class="functionBar">
+                <!-- Category Dropdown -->
                 <div class="dropdown_two">
-                    <button class="custom-button">THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i> </button>
+                    <button class="custom-button">
+                        THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </button>
                     <ul class="dropdown-menu" id="theLoai-menu">
                         <li><a href="#" data-category="Tất cả">Tất cả</a></li>
-                        <li><a href="#" data-category="Bóng đá Việt Nam">Bóng đá Việt Nam</a></li>
-                        <li><a href="#" data-category="Bóng đá thế giới">Bóng đá thế giới</a></li>
-                        <li><a href="#" data-category="Premier League">Premier League</a></li>
-                        <li><a href="#" data-category="V.League 1">V.League 1</a></li>
-                        <li><a href="#" data-category="Ligue 1">Ligue 1</a></li>
-                        <li><a href="#" data-category="Bundesliga">Bundesliga</a></li>
-                        <li><a href="#" data-category="Serie A">Serie A</a></li>
-                        <li><a href="#" data-category="La Liga">La Liga</a></li>
                     </ul>
                 </div>
                 <input type="text" class="search-box" placeholder="Tìm kiếm...">
@@ -130,70 +123,12 @@
                     </tr>
                 </thead>
                 <tbody id="table-body">
+                    <!-- Placeholder while loading -->
                     <tr>
-                        <td>Đề xuất tăng ngoại binh cho V.League</td>
-                        <td><img src="img\AnhBaiBao7.png" alt="Ảnh bài báo"></td>
-                        <td>V.League 1</td>
-                        <td>10/03/2025</td>
-                        <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
-                            <i class="fa-solid fa-trash-can"></i></td>
-                    </tr>
-                    <tr>
-                        <td>VFF kết luận gì về tổ trọng tài bị treo còi khiến Cục cảnh sát hình sự vào cuộc?</td>
-                        <td><img src="img\AnhBaiBao8.png" alt="Ảnh bài báo"></td>
-                        <td>Bóng đá Việt Nam</td>
-                        <td>02/03/2025</td>
-                        <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
-                            <i class="fa-solid fa-trash-can"></i></td>
-                    </tr>
-                    <tr>
-                        <td>Messi gửi lời chia buồn đến các nạn nhân lũ lụt tại Bahia Blanca</td>
-                        <td><img src="img\AnhBaiBao9.png" alt="Ảnh bài báo"></td>
-                        <td>Bóng đá quốc tế</td>
-                        <td>09/03/2025</td>
-                        <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-                            <i></i>
-                            <i class="fa-solid fa-trash-can"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Trận hòa 1-1 phơi bày vấn đề chung của MU và Arsenal</td>
-                        <td><img src="img\AnhBaiBao10.png" alt="Ảnh bài báo"></td>
-                        <td>Premier League</td>
-                        <td>07/03/2025</td>
-                        <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
-                            <i class="fa-solid fa-trash-can"></i></td>
-                    </tr>
-                    <tr>
-                        <td>Neymar lại chấn thương</td>
-                        <td><img src="img\AnhBaiBao11.png" alt="Ảnh bài báo"></td>
-                        <td>Bóng đá quốc tế</td>
-                        <td>08/03/2025</td>
-                        <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
-                            <i class="fa-solid fa-trash-can"></i></td>
-                    </tr>
-                    <tr>
-                        <td>Không có bằng chứng Arsenal vô địch Premier League</td>
-                        <td><img src="img\AnhBaiBao12.png" alt="Premier League"></td>
-                        <td>Premier League</td>
-                        <td>10/03/2025</td>
-                        <td><a href= "../Quang/baichitiet/html/baichitiet.html">
-                                <i class="fa-regular fa-eye"></i></a>
-<i></i>
-                            <i class="fa-solid fa-trash-can"></i></td>
+                        <td colspan="5">Đang tải dữ liệu...</td>
                     </tr>
                 </tbody>
             </table>
-            
         </main>
     </div>
    
@@ -209,10 +144,9 @@
         <button class="next">Next →</button>
     </div>   
     <script src="./js/AUTHOR_BBDL.js"></script>
-    <script src="./js/AUTHOR_TTCN.js"></script>
     <script src="./js/pagination.js"></script>
     <script src="./js/filterCategory.js"></script>
     <script src="./js/searchBar1.js"></script>
-    <script src="./js/delete.js"></script>
+    <script src="./js/logout.js"></script>
 </body>
 </html>

@@ -30,7 +30,6 @@ async function fetchLeagues() {
         const data = await res.json();
         console.log('Leagues API response:', data);
         const leagues = Array.isArray(data) ? data : Array.isArray(data.leagues) ? data.leagues : [];
-        // Preserve all fields, ensure _id and name are present
         const normalizedLeagues = leagues.map(league => ({
             _id: league._id || league.id,
             name: league.name || 'Unknown League',
@@ -40,7 +39,7 @@ async function fetchLeagues() {
             logo_url: league.logo_url || ''
         }));
         console.log('Normalized leagues:', normalizedLeagues);
-        window.leagues = normalizedLeagues; // Assign to window.leagues
+        window.leagues = normalizedLeagues;
         return normalizedLeagues;
     } catch (error) {
         console.error('Error fetching leagues:', error);
@@ -49,7 +48,6 @@ async function fetchLeagues() {
     }
 }
 
-// Function to get cookie
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -57,7 +55,6 @@ function getCookie(name) {
     return null;
 }
 
-// Helper: Decode JWT token
 function decodeJwt(token) {
     try {
         const base64Url = token.split('.')[1];
@@ -77,7 +74,6 @@ function decodeJwt(token) {
     }
 }
 
-// Update admin info in the UI
 function updateAdminInfo(user) {
     document.getElementById('user-name').textContent = user.username || 'Unknown';
     document.getElementById('user-role').textContent = user.role.toUpperCase() || 'Unknown';
@@ -86,7 +82,6 @@ function updateAdminInfo(user) {
     profilePic.alt = `${user.username}'s Avatar`;
 }
 
-// Fetch current user data
 async function getCurrentUser() {
     try {
         const token = getCookie("token");
@@ -128,12 +123,11 @@ async function getCurrentUser() {
                 } else if (res.status === 401) {
                     const errorData = JSON.parse(errorText);
                     if (errorData.error === "jwt expired") {
-                        // Token expired, trigger logout via logout.js
                         const logoutLink = document.querySelector('li a#logout-link');
                         if (logoutLink) {
                             console.log('Token expired, triggering logout...');
-                            logoutLink.click(); // Simulate click to trigger logout.js logic
-                            return null; // Exit function to prevent further execution
+                            logoutLink.click();
+                            return null;
                         } else {
                             console.error('Logout link not found, redirecting to login manually');
                             window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
@@ -171,10 +165,9 @@ async function getCurrentUser() {
     }
 }
 
-// Fetch articles by published state
-async function fetchArticles(publishedState, token) {
+async function fetchArticles(publishedState, token, page = 1, limit = 6) {
     try {
-        const res = await fetch(`http://localhost:3000/api/articles/published/${publishedState}/`, {
+        const res = await fetch(`http://localhost:3000/api/articles/published/${publishedState}/?page=${page}&limit=${limit}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json',
@@ -183,26 +176,40 @@ async function fetchArticles(publishedState, token) {
         if (!res.ok) {
             throw new Error(`HTTP error! Status: ${res.status}`);
         }
-        const articles = await res.json();
-        return Array.isArray(articles) ? articles : articles.articles || [];
+        const data = await res.json();
+        console.log(`API response for ${publishedState} articles:`, data);
+        return {
+            articles: Array.isArray(data.data?.articles) ? data.data.articles : [],
+            total: data.data?.pagination?.total || 0,
+            page: data.data?.pagination?.page || page,
+            limit: data.data?.pagination?.limit || limit
+        };
     } catch (error) {
         console.error(`Error fetching ${publishedState} articles:`, error);
-        return [];
+        return { articles: [], total: 0, page: 1, limit: 6 };
     }
 }
 
-// Populate table with articles
-function populateTable(articles, tableBodyId, isPublished) {
+function populateTable(articles, tableBodyId, isPublished, currentPage) {
     const tableBody = document.getElementById(tableBodyId);
+    if (!tableBody) {
+        console.error(`Table body not found for ID: ${tableBodyId}`);
+        return;
+    }
     tableBody.innerHTML = ''; // Clear existing rows
+
+    if (articles.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5">Không có bài báo nào.</td></tr>';
+        return;
+    }
 
     articles.forEach(article => {
         console.log('Article data:', article);
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${article.title}</td>
-            <td><img src="${article.thumbnail}" alt="Ảnh bài báo"></td>
-            <td>${article.CategoryID?.name}</td>
+            <td>${article.title || 'N/A'}</td>
+            <td><img src="${article.thumbnail || ''}" alt="Ảnh bài báo" style="max-width: 100px;"></td>
+            <td>${article.CategoryID?.name || 'N/A'}</td>
             <td>${article.published_date ? new Date(article.published_date).toLocaleDateString('vi-VN') : 'Chờ duyệt'}</td>
             <td>
                 ${isPublished ? 
@@ -222,8 +229,8 @@ function populateTable(articles, tableBodyId, isPublished) {
     if (!isPublished) {
         document.querySelectorAll('.view-btn').forEach(button => {
             button.addEventListener('click', async (e) => {
-                const articleId = button.getAttribute('data-article-id'); // Use button directly to avoid e.target issues
-                console.log('Clicked articleId:', articleId); // Debug the articleId
+                const articleId = button.getAttribute('data-article-id');
+                console.log('Clicked articleId:', articleId);
                 if (!articleId || typeof articleId !== 'string') {
                     console.error('Invalid articleId:', articleId);
                     alert('Không thể mở bài báo: ID không hợp lệ!');
@@ -247,7 +254,7 @@ function populateTable(articles, tableBodyId, isPublished) {
                     });
                     if (res.ok) {
                         alert('Bài báo đã được duyệt thành công!');
-                        initializeTables(); // Refresh both tables
+                        initializeTables(currentPage); // Refresh with current page
                     } else {
                         const errorText = await res.text();
                         alert(`Lỗi: ${errorText}`);
@@ -275,7 +282,7 @@ function populateTable(articles, tableBodyId, isPublished) {
                     });
                     if (res.ok) {
                         alert('Bài báo đã được xóa thành công!');
-                        initializeTables(); // Refresh both tables
+                        initializeTables(currentPage); // Refresh with current page
                     } else {
                         const errorText = await res.text();
                         alert(`Lỗi: ${errorText}`);
@@ -289,7 +296,6 @@ function populateTable(articles, tableBodyId, isPublished) {
     });
 }
 
-// Open modal with article details (view-only)
 async function openModal(articleId) {
     const modal = document.getElementById('article-modal');
     const token = getCookie('token');
@@ -307,13 +313,13 @@ async function openModal(articleId) {
 
         document.getElementById('modal-breadcrumb-link').textContent = 'Trang chủ';
         document.getElementById('modal-breadcrumb-link').href = '#';
-        document.getElementById('modal-breadcrumb-category').textContent = article.CategoryID?.name;
+        document.getElementById('modal-breadcrumb-category').textContent = article.data?.CategoryID?.name || 'N/A';
         document.getElementById('modal-breadcrumb-category').href = '#';
-        document.getElementById('modal-title').textContent = article.title || 'N/A';
-        document.getElementById('modal-summary').textContent = article.summary;
-        document.getElementById('modal-image').src = article.thumbnail;
-        document.getElementById('modal-content').textContent = article.content;
-        document.getElementById('modal-author-signature').textContent = `Tác giả: ${article.UserID?.username}`;
+        document.getElementById('modal-title').textContent = article.data?.title || 'N/A';
+        document.getElementById('modal-summary').textContent = article.data?.summary || 'N/A';
+        document.getElementById('modal-image').src = article.data?.thumbnail || '';
+        document.getElementById('modal-content').textContent = article.data?.content || 'N/A';
+        document.getElementById('modal-author-signature').textContent = `Tác giả: ${article.data?.UserID?.username || 'N/A'}`;
         modal.style.display = 'block';
     } catch (error) {
         console.error('Error fetching article details:', error);
@@ -325,17 +331,45 @@ async function openModal(articleId) {
     };
 }
 
-// Initialize tables
-async function initializeTables() {
-    const token = getCookie('token');
-    const publishedArticles = await fetchArticles('published', token);
-    const unpublishedArticles = await fetchArticles('unpublished', token);
+let publishedPagination, unpublishedPagination;
 
-    populateTable(publishedArticles, 'published-body', true);
-    populateTable(unpublishedArticles, 'unpublished-body', false);
+async function initializeTables(page = 1) {
+    const token = getCookie('token');
+    const publishedData = await fetchArticles('published', token, page, 6);
+    const unpublishedData = await fetchArticles('unpublished', token, page, 6);
+
+    console.log('Published data:', publishedData);
+    console.log('Unpublished data:', unpublishedData);
+    console.log('Pagination constructor available:', typeof Pagination !== 'undefined');
+
+    populateTable(publishedData.articles, 'published-body', true, page);
+    populateTable(unpublishedData.articles, 'unpublished-body', false, page);
+
+    // Initialize or update pagination for published articles
+    if (!publishedPagination) {
+        publishedPagination = new Pagination('#published-table .pagination', publishedData.total, 6, (newPage) => {
+            initializeTables(newPage);
+        });
+        console.log('Initialized publishedPagination:', publishedPagination);
+    } else {
+        publishedPagination.updateTotalItems(publishedData.total);
+        publishedPagination.setPage(page);
+        console.log('Updated publishedPagination:', publishedPagination);
+    }
+
+    // Initialize or update pagination for unpublished articles
+    if (!unpublishedPagination) {
+        unpublishedPagination = new Pagination('#unpublished-table .pagination', unpublishedData.total, 6, (newPage) => {
+            initializeTables(newPage);
+        });
+        console.log('Initialized unpublishedPagination:', unpublishedPagination);
+    } else {
+        unpublishedPagination.updateTotalItems(unpublishedData.total);
+        unpublishedPagination.setPage(page);
+        console.log('Updated unpublishedPagination:', unpublishedPagination);
+    }
 }
 
-// Toggle between tables
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const user = await getCurrentUser();
@@ -351,7 +385,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         window.currentUserId = user.id;
         window.currentUser = user;
-        updateAdminInfo(user); // Assuming updateAdminInfo is defined
+        updateAdminInfo(user);
 
         await fetchCategories();
         await fetchLeagues();
@@ -366,6 +400,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             unpublishedBtn.classList.remove('active_btn');
             publishedTable.style.display = 'block';
             unpublishedTable.style.display = 'none';
+            initializeTables(1); // Reset to first page
         });
 
         unpublishedBtn.addEventListener('click', () => {
@@ -373,9 +408,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             publishedBtn.classList.remove('active_btn');
             unpublishedTable.style.display = 'block';
             publishedTable.style.display = 'none';
+            initializeTables(1); // Reset to first page
         });
 
-        initializeTables();
+        initializeTables(1);
     } catch (error) {
         console.error('User initialization error:', error.message);
         if (!getCookie("token")) {

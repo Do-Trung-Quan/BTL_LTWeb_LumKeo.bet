@@ -65,7 +65,6 @@ async function fetchLeagues() {
         const data = await res.json();
         console.log('Leagues API response:', data);
         const leagues = Array.isArray(data) ? data : Array.isArray(data.leagues) ? data.leagues : [];
-        // Preserve all fields, ensure _id and name are present
         const normalizedLeagues = leagues.map(league => ({
             _id: league._id || league.id,
             name: league.name || 'Unknown League',
@@ -75,7 +74,7 @@ async function fetchLeagues() {
             logo_url: league.logo_url || ''
         }));
         console.log('Normalized leagues:', normalizedLeagues);
-        window.leagues = normalizedLeagues; // Assign to window.leagues
+        window.leagues = normalizedLeagues;
         return normalizedLeagues;
     } catch (error) {
         console.error('Error fetching leagues:', error);
@@ -150,8 +149,7 @@ function openAddModal() {
     toggleLeagueSelect('add');
     document.getElementById('addModal').style.display = 'block';
 
-    // Add event listener for category change
-    addCategorySelect.removeEventListener('change', handleCategoryChange); // Prevent duplicate listeners
+    addCategorySelect.removeEventListener('change', handleCategoryChange);
     addCategorySelect.addEventListener('change', handleCategoryChange);
 }
 
@@ -163,7 +161,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         const user = await getCurrentUser();
         if (!user || !user.id) {
-            // Redirect to login without alert if no user or invalid user
             window.location.href = "../../Hi-Tech/Login.html";
             return;
         }
@@ -184,14 +181,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         fetchNews();
     } catch (error) {
         console.error('DOMContentLoaded error:', error.message);
-        // Redirect already handled in getCurrentUser for token expiration
         if (!getCookie("token")) {
             window.location.href = "../../Hi-Tech/Login.html";
         }
     }
 });
 
- // Fetch current user data
 async function getCurrentUser() {
     try {
         const token = getCookie("token");
@@ -233,12 +228,11 @@ async function getCurrentUser() {
                 } else if (res.status === 401) {
                     const errorData = JSON.parse(errorText);
                     if (errorData.error === "jwt expired") {
-                        // Token expired, trigger logout via logout.js
                         const logoutLink = document.querySelector('li a#logout-link');
                         if (logoutLink) {
                             console.log('Token expired, triggering logout...');
-                            logoutLink.click(); // Simulate click to trigger logout.js logic
-                            return null; // Exit function to prevent further execution
+                            logoutLink.click();
+                            return null;
                         } else {
                             throw new Error('Logout link not found, cannot handle token expiration');
                         }
@@ -418,7 +412,6 @@ async function saveEdit() {
 
         let res;
         if (fileInput.files[0]) {
-            // Use FormData if there's a file
             const formData = new FormData();
             formData.append('title', title);
             formData.append('slug', slug);
@@ -435,7 +428,6 @@ async function saveEdit() {
                 body: formData
             });
         } else {
-            // Use JSON payload if no file
             const updateData = {
                 title,
                 slug,
@@ -465,7 +457,7 @@ async function saveEdit() {
 
         alert('Cập nhật bài viết thành công!');
         closeEditModal();
-        fetchNews();
+        fetchNews(articlesPagination?.currentPage || 1, 10);
     } catch (error) {
         console.error('Error saving edit:', error);
         alert('Lỗi: ' + error.message);
@@ -554,14 +546,16 @@ async function addNewPost() {
 
         alert('Thêm bài viết thành công!');
         closeAddModal();
-        fetchNews();
+        fetchNews(articlesPagination?.currentPage || 1, 10);
     } catch (error) {
         console.error('Error adding post:', error);
         alert('Lỗi: ' + error.message);
     }
 }
 
-async function fetchNews() {
+let articlesPagination;
+
+async function fetchNews(page = 1, limit = 10) {
     try {
         const token = getCookie("token");
         console.log('Token for fetchNews:', token);
@@ -575,7 +569,7 @@ async function fetchNews() {
             throw new Error("Không tìm thấy userID, vui lòng đăng nhập!");
         }
 
-        const res = await fetch(`http://localhost:3000/api/articles/author/${authorId}`, {
+        const res = await fetch(`http://localhost:3000/api/articles/author/${authorId}?page=${page}&limit=${limit}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${token.trim()}`
@@ -585,6 +579,10 @@ async function fetchNews() {
         if (!res.ok) {
             const errorText = await res.text();
             console.error('API Error:', errorText);
+            if (res.status === 404) {
+                alert(errorText);
+                return;
+            }
             throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
         }
 
@@ -595,21 +593,42 @@ async function fetchNews() {
 
         const data = await res.json();
         console.log('API Response:', data);
-        populateTable(data);
+
+        if (!data.success) {
+            alert(data.message || 'Lỗi khi tải bài viết');
+            return;
+        }
+
+        const articles = data.data.articles || [];
+        const pagination = data.data.pagination || { total: 0, page: 1, limit: 10, totalPages: 1 };
+
+        populateTable(articles);
+
+        // Initialize or update pagination
+        if (!articlesPagination) {
+            articlesPagination = new Pagination('.pagination', pagination.total, limit, (newPage) => {
+                fetchNews(newPage, limit);
+            });
+            console.log('Initialized articlesPagination:', articlesPagination);
+        } else {
+            articlesPagination.updateTotalItems(pagination.total);
+            articlesPagination.setPage(page);
+            console.log('Updated articlesPagination:', articlesPagination);
+        }
     } catch (error) {
         console.error('fetchNews Error:', error);
         alert("Lỗi mạng: " + error.message);
     }
 }
 
-function populateTable(news) {
+function populateTable(articles) {
     const tbody = document.getElementById("table-body");
     tbody.innerHTML = "";
 
     console.log('Stored categories:', window.categories);
     console.log('Stored leagues:', window.leagues);
 
-    news.forEach(item => {
+    articles.forEach(item => {
         const row = document.createElement("tr");
         row.dataset.id = item._id;
 
@@ -662,11 +681,10 @@ function populateTable(news) {
         tbody.appendChild(row);
     });
 
-    // Add event listeners for unpublished articles
     document.querySelectorAll('.view-btn').forEach(button => {
         button.addEventListener('click', async (e) => {
-            const articleId = button.getAttribute('data-article-id'); // Use button directly to avoid e.target issues
-            console.log('Clicked articleId:', articleId); // Debug the articleId
+            const articleId = button.getAttribute('data-article-id');
+            console.log('Clicked articleId:', articleId);
             if (!articleId || typeof articleId !== 'string') {
                 console.error('Invalid articleId:', articleId);
                 alert('Không thể mở bài báo: ID không hợp lệ!');
@@ -677,7 +695,6 @@ function populateTable(news) {
     });
 }
 
-// Open modal with article details (view-only)
 async function openModal(articleId) {
     const modal = document.getElementById('article-modal');
     const token = getCookie('token');
@@ -738,7 +755,7 @@ async function deleteNews(postId) {
         }
 
         alert("Xóa bài viết thành công!");
-        fetchNews();
+        fetchNews(articlesPagination?.currentPage || 1, 10);
     } catch (error) {
         console.error("Lỗi khi xóa bài viết:", error);
         alert("Lỗi: " + error.message);

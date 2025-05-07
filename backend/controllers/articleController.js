@@ -53,14 +53,28 @@ const createArticle = async (req, res) => {
   }
 };
 
-
 // 2. Get All Post Articles (Lấy tất cả bài đăng đã duyệt)
 const getAllPostArticles = async (req, res) => {
   try {
-    const articles = await articleService.getAllPostArticles();
-    res.status(200).json(articles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
+
+    const result = await articleService.getAllPostArticles(page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        articles: result.articles,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        }
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching articles', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching articles', error: error.message });
   }
 };
 
@@ -68,20 +82,32 @@ const getAllPostArticles = async (req, res) => {
 const getArticleById = async (req, res) => {
   try {
     const article = await articleService.getArticleById(req.params.id);
-    res.status(200).json(article);
+    res.status(200).json({ success: true, data: article });
   } catch (error) {
     if (error.message === 'Article not found') {
-      return res.status(404).json({ message: error.message });
+      return res.status(404).json({ success: false, message: error.message });
     }
-    res.status(500).json({ message: 'Error fetching article', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching article', error: error.message });
   }
 };
 
 // 4. Get Most Viewed Articles (Tin nóng)
 const getMostViewedArticles = async (req, res) => {
   try {
-    const articles = await articleService.getMostViewedArticles();
-    res.status(200).json(articles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
+
+    const result = await articleService.getMostViewedArticles(page, limit);
+
+    res.status(200).json({
+      mostViewedArticle: result.articles,
+      pagination: {
+        total: result.total,
+        page: result.page,
+        limit: result.limit,
+        totalPages: result.totalPages
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching most viewed articles', error: error.message });
   }
@@ -91,14 +117,11 @@ const getMostViewedArticles = async (req, res) => {
 const getArticleByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
-    const { page = 1, limit = 10 } = req.query; // Lấy page và limit từ query params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
 
     // Gọi service với categoryId, page, và limit
-    const result = await articleService.getArticleByCategory(
-      categoryId,
-      parseInt(page),
-      parseInt(limit)
-    );
+    const result = await articleService.getArticleByCategory(categoryId, page, limit);
 
     // Trả về kết quả với cấu trúc mới
     res.status(200).json({
@@ -125,26 +148,57 @@ const getArticleByCategory = async (req, res) => {
     });
   }
 };
+
 // 6. Get Article by Author (Lấy bài báo theo author_id - Xử lý lỗi mới)
 const getArticleByAuthor = async (req, res) => {
   try {
-    const articles = await articleService.getArticleByAuthor(req.params.authorId);
-    res.status(200).json(articles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
+
+    const result = await articleService.getArticleByAuthor(req.params.authorId, page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        articles: result.articles,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        }
+      }
+    });
   } catch (error) {
     if (error.message === 'User not found' || error.message === 'User is not an author') {
-      return res.status(404).json({ message: error.message });
+      return res.status(404).json({ success: false, message: error.message });
     }
-    res.status(500).json({ message: 'Error fetching articles by author', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching articles by author', error: error.message });
   }
 };
 
 // 7. Get Article by Published State (Lấy bài báo theo trạng thái duyệt)
 const getArticleByPublishedState = async (req, res) => {
   try {
-    const articles = await articleService.getArticleByPublishedState(req.params.publishedState);
-    res.status(200).json(articles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6; // Default to 6 for admin panel
+
+    const result = await articleService.getArticleByPublishedState(req.params.publishedState, page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        articles: result.articles,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        }
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching articles by published state', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching articles by published state', error: error.message });
   }
 };
 
@@ -152,9 +206,9 @@ const getArticleByPublishedState = async (req, res) => {
 const getNewPublishedArticlesStats = async (req, res) => {
   try {
     const stats = await articleService.getNewPublishedArticlesStats();
-    res.status(200).json(stats);
+    res.status(200).json({ success: true, data: stats });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching new articles stats', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching new articles stats', error: error.message });
   }
 };
 
@@ -162,25 +216,38 @@ const getNewPublishedArticlesStats = async (req, res) => {
 const getAllViewedArticlesByUser = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({ message: 'User not authenticated' });
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
     }
 
     const userId = req.params.userId;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
 
     // Kiểm tra xem user có quyền xem danh sách bookmark không
     if (req.user._id.toString() !== userId.toString()) {
-      return res.status(403).json({ message: 'You can only view your own histories' });
+      return res.status(403).json({ success: false, message: 'You can only view your own histories' });
     }
-    const viewedArticles = await articleService.getAllViewedArticlesByUser(userId, page, limit);
-    res.status(200).json(viewedArticles);
+
+    const result = await articleService.getAllViewedArticlesByUser(userId, page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        viewedArticles: result.data,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        }
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching viewed articles', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching viewed articles', error: error.message });
   }
 };
 
-// 10. Delete a View History Record (Xóa một lịch sử xem bài báo)
+// 10. Delete a View History Record (Xóa một lịch sử xem bài báo) 
 const deleteViewHistory = async (req, res) => {
   try {
     const { historyId } = req.params;
@@ -192,18 +259,17 @@ const deleteViewHistory = async (req, res) => {
   }
 };
 
-
 // 11. Get All Post Articles Statistics (Lấy tổng số lượng bài báo đã đăng)
 const getAllPostArticlesStats = async (req, res) => {
   try {
     const stats = await articleService.getAllPostArticlesStats();
-    res.status(200).json(stats);
+    res.status(200).json({ success: true, data: stats });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching articles stats', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching articles stats', error: error.message });
   }
 };
 
-// 12. Update Article (Chỉnh sửa bài viết - Chỉ author được phép)
+// 12. Update Article (Chỉnh sửa bài viết - Chỉ author được phép) 
 const updateArticle = async (req, res) => {
   try {
     // Lấy dữ liệu từ request
@@ -246,39 +312,39 @@ const updateArticle = async (req, res) => {
   }
 };
 
-  // 13. Delete Article (Xóa bài viết)
-  const deleteArticle = async (req, res) => {
-    try {
-      const result = await articleService.deleteArticle(req.params.id, req.user);
-      res.status(200).json(result);
-    } catch (error) {
-      if (error.message === 'Article not found' || 
-          error.message === 'Access denied. You are not the author or an admin.') {
-        return res.status(403).json({ message: error.message });
-      }
-      res.status(500).json({ message: 'Error deleting article', error: error.message });
+// 13. Delete Article (Xóa bài viết) 
+const deleteArticle = async (req, res) => {
+  try {
+    const result = await articleService.deleteArticle(req.params.id, req.user);
+    res.status(200).json(result);
+  } catch (error) {
+    if (error.message === 'Article not found' || 
+        error.message === 'Access denied. You are not the author or an admin.') {
+      return res.status(403).json({ message: error.message });
     }
-  };
-  
-  // 14. Publish Article (Duyệt bài viết)
-  const publishArticle = async (req, res) => {
-    try {
-      // Kiểm tra quyền admin
-      if (!req.user || req.user.role !== 'admin') {
-        return res.status(403).json({ message: 'Access denied. Admin role required.' });
-      }
-  
-      const updatedArticle = await articleService.publishArticle(req.params.id);
-      res.status(200).json({ message: 'Article published successfully', article: updatedArticle });
-    } catch (error) {
-      if (error.message === 'Article not found' || error.message === 'Article is already published') {
-        return res.status(400).json({ message: error.message });
-      }
-      res.status(500).json({ message: 'Error publishing article', error: error.message });
-    }
-  };
+    res.status(500).json({ message: 'Error deleting article', error: error.message });
+  }
+};
 
-  // 15. Ghi lại lịch sử xem bài viết
+// 14. Publish Article (Duyệt bài viết) 
+const publishArticle = async (req, res) => {
+  try {
+    // Kiểm tra quyền admin
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admin role required.' });
+    }
+
+    const updatedArticle = await articleService.publishArticle(req.params.id);
+    res.status(200).json({ message: 'Article published successfully', article: updatedArticle });
+  } catch (error) {
+    if (error.message === 'Article not found' || error.message === 'Article is already published') {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Error publishing article', error: error.message });
+  }
+};
+
+// 15. Ghi lại lịch sử xem bài viết 
 const recordArticleView = async (req, res) => {
   try {
     // Kiểm tra req.user (được gán bởi authMiddleware)
@@ -305,21 +371,21 @@ const recordArticleView = async (req, res) => {
   }
 };
 
+// 16. Count Published Articles by Author
 const countPublishedArticlesByAuthor = async (req, res) => {
   try {
     const { userId } = req.params; // Expect userId from URL parameter
     if (!userId) {
-      return res.status(400).json({ message: 'Invalid or missing userId' });
+      return res.status(400).json({ success: false, message: 'Invalid or missing userId' });
     }
 
     const count = await articleService.countPublishedArticlesByAuthor(userId);
-    res.status(200).json({ success: true, count });
+    res.status(200).json({ success: true, data: { count } });
   } catch (error) {
     console.error('Error in controller:', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 module.exports = {
   createArticle,

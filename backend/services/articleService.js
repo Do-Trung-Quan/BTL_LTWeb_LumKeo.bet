@@ -16,8 +16,7 @@ const initWebSocket = (ws) => {
   websocket = ws;
 };
 
-// 1. Create Article (Thêm bài viết)
-
+// 1. Create Article (Thêm bài viết) - No change (POST)
 const createArticle = async (articleData, file) => {
   // Kiểm tra UserID
   const { UserID, CategoryID } = articleData;
@@ -78,8 +77,9 @@ const createArticle = async (articleData, file) => {
 
   return populatedArticle;
 };
+
 // 2. Get All Post Articles (Lấy tất cả bài đăng đã duyệt, sắp xếp theo ngày đăng DESC)
-const getAllPostArticles = async (page = 1, limit = 10) => {
+const getAllPostArticles = async (page, limit) => {
   const skip = (page - 1) * limit;
   const articles = await Article.find({ is_published: true })
     .sort({ published_date: -1 })
@@ -87,7 +87,16 @@ const getAllPostArticles = async (page = 1, limit = 10) => {
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-  return articles;
+
+  const total = await Article.countDocuments({ is_published: true });
+
+  return {
+    articles,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 };
 
 // 3. Get Article by ID (Lấy thông tin bài báo theo ID)
@@ -100,19 +109,28 @@ const getArticleById = async (articleId) => {
 };
 
 // 4. Get Most Viewed Articles (Tin nóng)
-const getMostViewedArticles = async (page = 1, limit = 10) => {
+const getMostViewedArticles = async (page, limit) => {
   const skip = (page - 1) * limit;
   const articles = await Article.find({ is_published: true })
-    .sort({ views: -1, published_date: -1 }) // Sort by views and then by published date
+    .sort({ views: -1, published_date: -1 })
     .skip(skip)
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-  return articles;
+
+  const total = await Article.countDocuments({ is_published: true });
+
+  return {
+    articles,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 };
 
 // 5. Get Article by Category (Lấy bài báo theo danh mục - Hỗ trợ "Giải đấu")
-const getArticleByCategory = async (categoryId, page = 1, limit = 10) => {
+const getArticleByCategory = async (categoryId, page, limit) => {
   const skip = (page - 1) * limit;
 
   // Kiểm tra xem categoryId có phải là danh mục "Giải đấu" không
@@ -164,7 +182,7 @@ const getArticleByCategory = async (categoryId, page = 1, limit = 10) => {
 };
 
 // 6. Get Article by Author (Lấy bài báo theo author_id - Kiểm tra role)
-const getArticleByAuthor = async (authorId, page = 1, limit = 10) => {
+const getArticleByAuthor = async (authorId, page, limit) => {
   const skip = (page - 1) * limit;
   // Kiểm tra role của UserID (giả định role là 'author')
   const user = await User.findById(authorId);
@@ -177,11 +195,20 @@ const getArticleByAuthor = async (authorId, page = 1, limit = 10) => {
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-  return articles;
+
+  const total = await Article.countDocuments({ UserID: authorId });
+
+  return {
+    articles,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 };
 
 // 7. Get Article by Published State (Lấy bài báo theo trạng thái duyệt)
-const getArticleByPublishedState = async (publishedState, page = 1, limit = 10) => {
+const getArticleByPublishedState = async (publishedState, page, limit) => {
   const skip = (page - 1) * limit;
   const isPublished = publishedState === 'published' ? true : false;
   const articles = await Article.find({ is_published: isPublished })
@@ -190,7 +217,16 @@ const getArticleByPublishedState = async (publishedState, page = 1, limit = 10) 
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-  return articles;
+
+  const total = await Article.countDocuments({ is_published: isPublished });
+
+  return {
+    articles,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 };
 
 // 8. Get New Published Articles Statistics (Lấy số lượng bài báo mới trong 15 ngày)
@@ -235,7 +271,7 @@ const getNewPublishedArticlesStats = async () => {
 };
 
 // 9. Get All Viewed Articles by User (Lấy danh sách bài báo đã đọc của người dùng)
-const getAllViewedArticlesByUser = async (userId, page = 1, limit = 10) => {
+const getAllViewedArticlesByUser = async (userId, page, limit) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid UserID format');
   }
@@ -261,9 +297,10 @@ const getAllViewedArticlesByUser = async (userId, page = 1, limit = 10) => {
     page,
     limit,
     totalPages: Math.ceil(total / limit),
-  }};
+  };
+};
 
-// 10. Delete a View History Record (Xóa một lịch sử xem bài báo)
+// 10. Delete a View History Record (Xóa một lịch sử xem bài báo) - No change (DELETE)
 const deleteViewHistory = async (historyId, userId) => {
   const history = await ViewHistory.findOneAndDelete({
     _id: historyId,
@@ -283,7 +320,7 @@ const getAllPostArticlesStats = async () => {
   return { total: count };
 };
 
-// 12. Update Article (Chỉnh sửa bài viết - Chỉ author của bài viết được phép)
+// 12. Update Article (Chỉnh sửa bài viết - Chỉ author của bài viết được phép) - No change (PUT)
 const updateArticle = async (articleId, articleData, user, file) => {
   // Tìm bài viết theo ID
   const article = await Article.findById(articleId);
@@ -334,29 +371,28 @@ const updateArticle = async (articleId, articleData, user, file) => {
   return updatedArticle;
 };
 
-  // 13. Delete Article (Xóa bài viết - Author hoặc Admin được phép)
-  const deleteArticle = async (articleId, user) => {
-    const article = await Article.findById(articleId);
-    if (!article) throw new Error('Article not found');
-  
-    if (article.UserID.toString() !== user._id.toString() && user.role !== 'admin') {
-      throw new Error('Access denied. You are not the author or an admin.');
-    }
-  
-    // Xóa liên quan
-    await Promise.all([
-      Comment.deleteMany({ ArticleID: articleId }),
-      Bookmark.deleteMany({ ArticleID: articleId }),
-      ViewHistory.deleteMany({ ArticleID: articleId }),
-      Notification.deleteMany({ noti_entity_ID: articleId, noti_entity_type: 'Article' }),
-    ]);
-  
-    await Article.findByIdAndDelete(articleId);
-    return { message: 'Article deleted successfully' };
-  };
-  
+// 13. Delete Article (Xóa bài viết - Author hoặc Admin được phép) - No change (DELETE)
+const deleteArticle = async (articleId, user) => {
+  const article = await Article.findById(articleId);
+  if (!article) throw new Error('Article not found');
 
-// 14. Publish Article (Duyệt bài viết - Chỉ Admin được phép)
+  if (article.UserID.toString() !== user._id.toString() && user.role !== 'admin') {
+    throw new Error('Access denied. You are not the author or an admin.');
+  }
+
+  // Xóa liên quan
+  await Promise.all([
+    Comment.deleteMany({ ArticleID: articleId }),
+    Bookmark.deleteMany({ ArticleID: articleId }),
+    ViewHistory.deleteMany({ ArticleID: articleId }),
+    Notification.deleteMany({ noti_entity_ID: articleId, noti_entity_type: 'Article' }),
+  ]);
+
+  await Article.findByIdAndDelete(articleId);
+  return { message: 'Article deleted successfully' };
+};
+
+// 14. Publish Article (Duyệt bài viết - Chỉ Admin được phép) - No change (PUT)
 const publishArticle = async (articleId) => {
   const article = await Article.findById(articleId);
   if (!article) throw new Error('Article not found');
@@ -400,7 +436,7 @@ const publishArticle = async (articleId) => {
   return updatedArticle;
 };
 
-// 15. Ghi lại lịch sử xem bài viết
+// 15. Ghi lại lịch sử xem bài viết - No change (POST)
 const recordArticleView = async (userId, articleId) => {
   // Kiểm tra userId và articleId hợp lệ
   if (!mongoose.Types.ObjectId.isValid(userId)) {

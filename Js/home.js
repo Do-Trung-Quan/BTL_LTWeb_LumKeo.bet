@@ -21,18 +21,19 @@ function decodeJwt(token) {
     }
 }
 
-// Fetch current user data
+// Fetch current user data (non-blocking for public content)
 async function getCurrentUser() {
     try {
         const token = getCookie("token");
-        console.log('Token:', token);
         if (!token) {
-            throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
+            console.log('No token found, user is unauthenticated');
+            return null;
         }
 
         const payload = decodeJwt(token);
         if (!payload) {
-            throw new Error("Token không hợp lệ!");
+            console.log('Invalid token, treating as unauthenticated');
+            return null;
         }
 
         const { id, username, role, avatar } = payload;
@@ -42,7 +43,8 @@ async function getCurrentUser() {
         console.log('Full Payload:', payload);
 
         if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-            throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
+            console.warn('Invalid ID format, treating as unauthenticated');
+            return null;
         }
 
         let userData = { id, username, role, avatar };
@@ -57,26 +59,11 @@ async function getCurrentUser() {
             if (!res.ok) {
                 const errorText = await res.text();
                 console.warn('API Error:', errorText);
-                if (res.status === 403) {
-                    console.warn('Permission denied for /api/users/:id, using token data');
-                    return userData;
-                } else if (res.status === 401) {
-                    const errorData = JSON.parse(errorText);
-                    if (errorData.error === "jwt expired") {
-                        const logoutLink = document.querySelector('li a#logout-link');
-                        if (logoutLink) {
-                            console.log('Token expired, triggering logout...');
-                            logoutLink.click();
-                            return null;
-                        } else {
-                            console.error('Logout link not found, redirecting to login manually');
-                            window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-                            return null;
-                        }
-                    } else {
-                        throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
-                    }
+                if (res.status === 403 || res.status === 401) {
+                    console.warn('Permission or token issue, falling back to token data or unauthenticated');
+                    return userData.id ? userData : null;
                 }
+                throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
             }
 
             const contentType = res.headers.get('content-type');
@@ -95,13 +82,13 @@ async function getCurrentUser() {
             };
         } catch (apiError) {
             console.warn('Falling back to token data due to API error:', apiError);
-            return userData;
+            return userData.id ? userData : null;
         }
 
         return userData;
     } catch (error) {
         console.error('getCurrentUser Error:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -116,20 +103,16 @@ function timeAgo(date) {
     return `${days} ngày trước`;
 }
 
-// Helper: Fetch articles with token expiration handling
+// Helper: Fetch articles (allow unauthenticated access for public endpoints)
 async function fetchArticles(endpoint) {
     const token = getCookie("token");
     const headers = {
         'Accept': 'application/json',
-        'Authorization': `Bearer ${token ? token.trim() : ''}`,
-        'Content-Type': 'application/json'
+        'Authorization': token ? `Bearer ${token.trim()}` : ''
     };
 
     try {
-        const res = await fetch(endpoint, {
-            headers,
-            credentials: 'include'
-        });
+        const res = await fetch(endpoint, { headers, credentials: 'include' });
 
         if (!res.ok) {
             const errorText = await res.text();
@@ -137,18 +120,8 @@ async function fetchArticles(endpoint) {
             if (res.status === 401) {
                 const errorData = JSON.parse(errorText);
                 if (errorData.error === "jwt expired") {
-                    const logoutLink = document.querySelector('li a#logout-link');
-                    if (logoutLink) {
-                        console.log('Token expired, triggering logout...');
-                        logoutLink.click();
-                        return null;
-                    } else {
-                        console.error('Logout link not found, redirecting to login manually');
-                        window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-                        return null;
-                    }
-                } else {
-                    throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                    console.log('Token expired, will handle logout if needed');
+                    return []; // Return empty array for public content
                 }
             }
             throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
@@ -162,15 +135,14 @@ async function fetchArticles(endpoint) {
         const data = await res.json();
         console.log('API Response for', endpoint, ':', data);
 
-        // Handle different response formats
         if (endpoint.includes('/api/articles/most-viewed')) {
-            return Array.isArray(data) ? data : data.articles || [];
+            return data.mostViewedArticle || [];
         } else {
-            return Array.isArray(data) ? data : [{ mostViewedArticle: data.articles || [] }];
+            return Array.isArray(data) ? data : [{ mostViewedArticle: data.mostViewedArticle || [] }];
         }
     } catch (error) {
         console.error('Fetch Articles Error for', endpoint, ':', error);
-        throw error;
+        return [];
     }
 }
 
@@ -221,26 +193,20 @@ async function populateSection(containerSelector, apiEndpoint, sectionType, expe
     try {
         const data = await fetchArticles(apiEndpoint);
 
-        if (!data) {
-            console.log(`No data returned for ${containerSelector}, possibly due to logout`);
+        if (!data || data.length === 0) {
+            console.log(`No data returned for ${containerSelector}`, data);
             container.querySelector('.news-container').innerHTML = '<p>Không thể tải bài viết.</p>';
             return;
         }
 
-        // Handle nested structure for categories/leagues, flat array for "Tin nóng"
         let articles = [];
         if (apiEndpoint.includes('/api/articles/most-viewed')) {
             articles = data;
         } else {
-            // Flatten and filter by expected category/league ID
             const allArticles = data.flatMap(item => item.mostViewedArticle || []);
             console.log(`All articles for ${containerSelector}:`, allArticles);
             articles = expectedId
-                ? allArticles.filter(article => {
-                    const matches = article.CategoryID?._id === expectedId;
-                    console.log(`Article CategoryID: ${article.CategoryID?._id}, Expected: ${expectedId}, Matches: ${matches}`);
-                    return matches;
-                })
+                ? allArticles.filter(article => article.CategoryID?._id === expectedId)
                 : allArticles;
             console.log(`Filtered articles for ${containerSelector} with expectedId ${expectedId}:`, articles);
         }
@@ -261,25 +227,21 @@ async function populateSection(containerSelector, apiEndpoint, sectionType, expe
             return;
         }
 
-        // Clear existing content
         if (mainNewsContainer) mainNewsContainer.remove();
         sideNewsContainer.innerHTML = '';
         if (botNewsContainer) botNewsContainer.innerHTML = '';
 
-        // Populate main news (first article)
         if (articles.length > 0) {
             const mainNewsLink = createNewsItem(articles[0], true);
             container.querySelector('.news-container').prepend(mainNewsLink);
         }
 
-        // Populate side news (next 3 articles)
         const sideArticles = articles.slice(1, Math.min(4, articles.length));
         sideArticles.forEach(article => {
             const newsItem = createNewsItem(article);
             sideNewsContainer.appendChild(newsItem);
         });
 
-        // Populate bot news (next 4 articles) if available
         if (sectionType === 'league' && botNewsContainer) {
             const botArticles = articles.slice(4, Math.min(8, articles.length));
             botArticles.forEach(article => {
@@ -297,31 +259,63 @@ async function populateSection(containerSelector, apiEndpoint, sectionType, expe
     }
 }
 
+// Set user icon behavior based on authentication
+function setUserIconBehavior(user) {
+    const userIcon = document.querySelector('.account-button');
+    if (!userIcon) {
+        console.error('User icon (account-button) not found');
+        return;
+    }
+
+    if (!user) {
+        userIcon.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+        userIcon.addEventListener('click', (e) => {
+            console.log('Redirecting to login page');
+        });
+    } else {
+        let redirectPage;
+        switch (user.role.toLowerCase()) {
+            case 'admin':
+                redirectPage = '../Thuy + DucMinh/ADMIN_QLBB.html';
+                break;
+            case 'author':
+                redirectPage = '../Thuy + DucMinh/AUTHOR_QLBV.html';
+                break;
+            case 'user':
+                redirectPage = '../Thuy + DucMinh/USER_BBDL.html';
+                break;
+            default:
+                redirectPage = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                console.warn('Unknown role:', user.role);
+        }
+        userIcon.href = redirectPage;
+        userIcon.addEventListener('click', (e) => {
+            console.log(`Redirecting to ${redirectPage} for role: ${user.role}`);
+        });
+    }
+}
+
 // Initialize dynamic content loading
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const user = await getCurrentUser();
-        if (!user || !user.id) {
-            window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-            return;
-        }
 
-        // Hotnews sections
-        await populateSection('.Hotnews-general', 'http://localhost:3000/api/articles/most-viewed/?limit=4', 'hotnews'); // Tin nóng
-        await populateSection('.Hotnews-BDVN', 'http://localhost:3000/api/categories/most-viewed-articles?id=6803c9a78b0d39ca1395c4ee&limit=4', 'hotnews', '6803c9a78b0d39ca1395c4ee'); // Bóng đá Việt Nam
-        await populateSection('.Hotnews-BDTG', 'http://localhost:3000/api/categories/most-viewed-articles?id=6803a1679445444c4dc1c61d&limit=4', 'hotnews', '6803a1679445444c4dc1c61d'); // Bóng đá thế giới
+        // Set user icon behavior
+        setUserIconBehavior(user);
+
+        // Hotnews sections (fetch without requiring login)
+        await populateSection('.Hotnews-general', 'http://localhost:3000/api/articles/most-viewed/?limit=4', 'hotnews');
+        await populateSection('.Hotnews-BDVN', 'http://localhost:3000/api/categories/most-viewed-articles?id=6803c9a78b0d39ca1395c4ee&limit=4', 'hotnews', '6803c9a78b0d39ca1395c4ee');
+        await populateSection('.Hotnews-BDTG', 'http://localhost:3000/api/categories/most-viewed-articles?id=6803a1679445444c4dc1c61d&limit=4', 'hotnews', '6803a1679445444c4dc1c61d');
 
         // League sections
-        await populateSection('.League-EPL .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6819a52d3332d1810bdeacd3&limit=8', 'league', '6819a52d3332d1810bdeacd3'); // Premier League
-        await populateSection('.League-LLG .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6817095e8fb809bc70ddb167&limit=8', 'league', '6817095e8fb809bc70ddb167'); // La Liga
-        await populateSection('.League-SerieA .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6819a4ec3332d1810bdeac4b&limit=8', 'league', '6819a4ec3332d1810bdeac4b'); // Serie A
-        await populateSection('.League-Bundes .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6804be9c510d143012ff5363&limit=8', 'league', '6804be9c510d143012ff5363'); // Bundesliga
-        await populateSection('.League-L1 .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6819a4813332d1810bdeac0e&limit=8', 'league', '6819a4813332d1810bdeac0e'); // Ligue 1
-        await populateSection('.League-VL .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6804becf510d143012ff5368&limit=8', 'league', '6804becf510d143012ff5368'); // V.League 1
+        await populateSection('.League-EPL .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6819a52d3332d1810bdeacd3&limit=8', 'league', '6819a52d3332d1810bdeacd3');
+        await populateSection('.League-LLG .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6817095e8fb809bc70ddb167&limit=8', 'league', '6817095e8fb809bc70ddb167');
+        await populateSection('.League-SerieA .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6819a4ec3332d1810bdeac4b&limit=8', 'league', '6819a4ec3332d1810bdeac4b');
+        await populateSection('.League-Bundes .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6804be9c510d143012ff5363&limit=8', 'league', '6804be9c510d143012ff5363');
+        await populateSection('.League-L1 .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6819a4813332d1810bdeac0e&limit=8', 'league', '6819a4813332d1810bdeac0e');
+        await populateSection('.League-VL .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6804becf510d143012ff5368&limit=8', 'league', '6804becf510d143012ff5368');
     } catch (error) {
         console.error('Initialization error:', error.message);
-        if (!getCookie("token")) {
-            window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-        }
     }
 });

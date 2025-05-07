@@ -16,7 +16,8 @@ const initWebSocket = (ws) => {
   websocket = ws;
 };
 
-// 1. Create Article (Thêm bài viết) - No change (POST)
+// 1. Create Article (Thêm bài viết)
+
 const createArticle = async (articleData, file) => {
   // Kiểm tra UserID
   const { UserID, CategoryID } = articleData;
@@ -80,23 +81,36 @@ const createArticle = async (articleData, file) => {
 
 // 2. Get All Post Articles (Lấy tất cả bài đăng đã duyệt, sắp xếp theo ngày đăng DESC)
 const getAllPostArticles = async (page, limit) => {
-  const skip = (page - 1) * limit;
-  const articles = await Article.find({ is_published: true })
-    .sort({ published_date: -1 })
-    .skip(skip)
-    .limit(limit)
-    .populate('UserID', 'username avatar')
-    .populate('CategoryID', 'name slug type');
+  try {
+    const query = { is_published: true }; // Use consistent field name
+    const options = {
+      sort: { published_date: -1 },
+      populate: [
+        { path: 'UserID', select: 'username avatar' },
+        { path: 'CategoryID', select: 'name slug type' }
+      ]
+    };
 
-  const total = await Article.countDocuments({ is_published: true });
+    let articles, total;
+    if (limit === 0) {
+      articles = await Article.find(query, null, options).lean();
+      total = articles.length;
+    } else {
+      const skip = (page - 1) * limit;
+      articles = await Article.find(query, null, { ...options, skip, limit }).lean();
+      total = await Article.countDocuments(query);
+    }
 
-  return {
-    articles,
-    total,
-    page,
-    limit,
-    totalPages: Math.ceil(total / limit)
-  };
+    return {
+      articles,
+      total,
+      page,
+      limit,
+      totalPages: limit > 0 ? Math.ceil(total / limit) : 1
+    };
+  } catch (error) {
+    throw new Error(`Error fetching articles: ${error.message}`);
+  }
 };
 
 // 3. Get Article by ID (Lấy thông tin bài báo theo ID)
@@ -128,6 +142,7 @@ const getMostViewedArticles = async (page, limit) => {
     totalPages: Math.ceil(total / limit)
   };
 };
+
 
 // 5. Get Article by Category (Lấy bài báo theo danh mục - Hỗ trợ "Giải đấu")
 const getArticleByCategory = async (categoryId, page, limit) => {
@@ -206,6 +221,7 @@ const getArticleByAuthor = async (authorId, page, limit) => {
     totalPages: Math.ceil(total / limit)
   };
 };
+
 
 // 7. Get Article by Published State (Lấy bài báo theo trạng thái duyệt)
 const getArticleByPublishedState = async (publishedState, page, limit) => {
@@ -300,7 +316,8 @@ const getAllViewedArticlesByUser = async (userId, page, limit) => {
   };
 };
 
-// 10. Delete a View History Record (Xóa một lịch sử xem bài báo) - No change (DELETE)
+
+// 10. Delete a View History Record (Xóa một lịch sử xem bài báo)
 const deleteViewHistory = async (historyId, userId) => {
   const history = await ViewHistory.findOneAndDelete({
     _id: historyId,
@@ -320,7 +337,7 @@ const getAllPostArticlesStats = async () => {
   return { total: count };
 };
 
-// 12. Update Article (Chỉnh sửa bài viết - Chỉ author của bài viết được phép) - No change (PUT)
+// 12. Update Article (Chỉnh sửa bài viết - Chỉ author của bài viết được phép)
 const updateArticle = async (articleId, articleData, user, file) => {
   // Tìm bài viết theo ID
   const article = await Article.findById(articleId);
@@ -371,28 +388,29 @@ const updateArticle = async (articleId, articleData, user, file) => {
   return updatedArticle;
 };
 
-// 13. Delete Article (Xóa bài viết - Author hoặc Admin được phép) - No change (DELETE)
-const deleteArticle = async (articleId, user) => {
-  const article = await Article.findById(articleId);
-  if (!article) throw new Error('Article not found');
+  // 13. Delete Article (Xóa bài viết - Author hoặc Admin được phép)
+  const deleteArticle = async (articleId, user) => {
+    const article = await Article.findById(articleId);
+    if (!article) throw new Error('Article not found');
+  
+    if (article.UserID.toString() !== user._id.toString() && user.role !== 'admin') {
+      throw new Error('Access denied. You are not the author or an admin.');
+    }
+  
+    // Xóa liên quan
+    await Promise.all([
+      Comment.deleteMany({ ArticleID: articleId }),
+      Bookmark.deleteMany({ ArticleID: articleId }),
+      ViewHistory.deleteMany({ ArticleID: articleId }),
+      Notification.deleteMany({ noti_entity_ID: articleId, noti_entity_type: 'Article' }),
+    ]);
+  
+    await Article.findByIdAndDelete(articleId);
+    return { message: 'Article deleted successfully' };
+  };
+  
 
-  if (article.UserID.toString() !== user._id.toString() && user.role !== 'admin') {
-    throw new Error('Access denied. You are not the author or an admin.');
-  }
-
-  // Xóa liên quan
-  await Promise.all([
-    Comment.deleteMany({ ArticleID: articleId }),
-    Bookmark.deleteMany({ ArticleID: articleId }),
-    ViewHistory.deleteMany({ ArticleID: articleId }),
-    Notification.deleteMany({ noti_entity_ID: articleId, noti_entity_type: 'Article' }),
-  ]);
-
-  await Article.findByIdAndDelete(articleId);
-  return { message: 'Article deleted successfully' };
-};
-
-// 14. Publish Article (Duyệt bài viết - Chỉ Admin được phép) - No change (PUT)
+// 14. Publish Article (Duyệt bài viết - Chỉ Admin được phép)
 const publishArticle = async (articleId) => {
   const article = await Article.findById(articleId);
   if (!article) throw new Error('Article not found');
@@ -436,7 +454,7 @@ const publishArticle = async (articleId) => {
   return updatedArticle;
 };
 
-// 15. Ghi lại lịch sử xem bài viết - No change (POST)
+// 15. Ghi lại lịch sử xem bài viết
 const recordArticleView = async (userId, articleId) => {
   // Kiểm tra userId và articleId hợp lệ
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -488,6 +506,20 @@ const countPublishedArticlesByAuthor = async (userId) => {
   }
 };
 
+// 17. Get article ID by slug
+const getArticleIdBySlug = async (slug) => {
+  try {
+    const article = await Article.findOne({ slug, is_published: true }).select('_id');
+    if (!article) {
+      throw new Error('Article not found');
+    }
+    return article._id;
+  } catch (error) {
+    console.error('Error fetching article ID:', error);
+    throw new Error('Failed to fetch article ID');
+  }
+};
+
 module.exports = {
   createArticle,
   getAllPostArticles,
@@ -505,5 +537,6 @@ module.exports = {
   publishArticle,
   recordArticleView, 
   initWebSocket,
-  countPublishedArticlesByAuthor
+  countPublishedArticlesByAuthor,
+  getArticleIdBySlug
 };

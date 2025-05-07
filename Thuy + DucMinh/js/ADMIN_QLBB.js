@@ -174,6 +174,8 @@ async function fetchArticles(publishedState, token, page = 1, limit = 6) {
             },
         });
         if (!res.ok) {
+            const errorText = await res.text();
+            console.error(`Fetch articles error (${publishedState}):`, errorText);
             throw new Error(`HTTP error! Status: ${res.status}`);
         }
         const data = await res.json();
@@ -205,6 +207,8 @@ function populateTable(articles, tableBodyId, isPublished, currentPage) {
 
     articles.forEach(article => {
         console.log('Article data:', article);
+        const generatedUrl = `http://127.0.0.1:5500/Quang/baichitiet/html/baichitiet.html?slug=${article.slug}`;
+        console.log('Generated URL for article:', generatedUrl);
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${article.title || 'N/A'}</td>
@@ -213,7 +217,7 @@ function populateTable(articles, tableBodyId, isPublished, currentPage) {
             <td>${article.published_date ? new Date(article.published_date).toLocaleDateString('vi-VN') : 'Chờ duyệt'}</td>
             <td>
                 ${isPublished ? 
-                    `<a href="../Quang/baichitiet/html/baichitiet.html?articleId=${article._id}">
+                    `<a href="${generatedUrl}">
                         <i class="fa-regular fa-eye"></i>
                     </a>` : 
                     `<i class="fa-regular fa-eye view-btn" data-article-id="${article._id}"></i>`}
@@ -301,6 +305,21 @@ async function openModal(articleId) {
     const token = getCookie('token');
 
     try {
+        // Fetch article ID by slug (if needed in future, but here we use ID directly)
+        const slugToIdResponse = await fetch(`http://localhost:3000/api/articles/slug-to-id/${articleId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+        if (!slugToIdResponse.ok) {
+            console.warn('Slug to ID fetch failed, falling back to ID fetch:', await slugToIdResponse.text());
+        } else {
+            const slugData = await slugToIdResponse.json();
+            articleId = slugData.articleId || articleId; // Use ID from slug if valid
+        }
+
+        // Fetch article by ID
         const res = await fetch(`http://localhost:3000/api/articles/${articleId}/`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -309,17 +328,22 @@ async function openModal(articleId) {
         });
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         const article = await res.json();
-        console.log('Fetched article:', article);
+        const slug = article.slug;
+        if (slug) {
+            window.location.href = `http://127.0.0.1:5500/Quang/baichitiet/html/baichitiet.html?slug=${slug}`;
+            return;
+        }
 
+        // Fallback to display modal with article data if slug is unavailable
         document.getElementById('modal-breadcrumb-link').textContent = 'Trang chủ';
         document.getElementById('modal-breadcrumb-link').href = '#';
-        document.getElementById('modal-breadcrumb-category').textContent = article.data?.CategoryID?.name || 'N/A';
+        document.getElementById('modal-breadcrumb-category').textContent = article.CategoryID?.name || 'N/A';
         document.getElementById('modal-breadcrumb-category').href = '#';
-        document.getElementById('modal-title').textContent = article.data?.title || 'N/A';
-        document.getElementById('modal-summary').textContent = article.data?.summary || 'N/A';
-        document.getElementById('modal-image').src = article.data?.thumbnail || '';
-        document.getElementById('modal-content').textContent = article.data?.content || 'N/A';
-        document.getElementById('modal-author-signature').textContent = `Tác giả: ${article.data?.UserID?.username || 'N/A'}`;
+        document.getElementById('modal-title').textContent = article.title || 'N/A';
+        document.getElementById('modal-summary').textContent = article.summary || 'N/A';
+        document.getElementById('modal-image').src = article.thumbnail || '';
+        document.getElementById('modal-content').textContent = article.content || 'N/A';
+        document.getElementById('modal-author-signature').textContent = `Tác giả: ${article.UserID?.username || 'N/A'}`;
         modal.style.display = 'block';
     } catch (error) {
         console.error('Error fetching article details:', error);

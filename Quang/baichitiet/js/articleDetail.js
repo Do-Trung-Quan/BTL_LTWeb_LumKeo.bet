@@ -38,33 +38,104 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Helper: Get current user
   async function getCurrentUser() {
     try {
-      const token = getCookie('token');
-      console.log('Token:', token);
-      if (!token) {
-        console.warn('No token found, user not authenticated');
-        return null;
-      }
+        const token = getCookie("token");
+        console.log('getCurrentUser - Token from cookie:', token);
 
-      const payload = decodeJwt(token);
-      if (!payload) {
-        throw new Error('Token không hợp lệ!');
-      }
+        if (!token) {
+            console.log('No token found, user is unauthenticated');
+            return null;
+        }
 
-      const { id, username, role, avatar } = payload;
-      console.log('User ID:', id);
-      console.log('User Name:', username);
-      console.log('User Role:', role);
+        const payload = decodeJwt(token);
+        console.log('getCurrentUser - Decoded payload:', payload);
 
-      let userData = { id, username, role, avatar };
-      return userData;
+        if (!payload) {
+            console.log('Invalid token, treating as unauthenticated');
+            return null;
+        }
+
+        const { id, username, role, avatar } = payload;
+        console.log('Token payload:', { id, username, role, avatar });
+
+        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+            console.warn('Invalid ID format, treating as unauthenticated');
+            return null;
+        }
+
+        const validationRes = await fetch('http://localhost:3000/api/validate-token', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token.trim()}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token })
+        });
+
+        console.log('getCurrentUser - Validation response status:', validationRes.status);
+
+        if (!validationRes.ok) {
+            const errorText = await validationRes.json();
+            console.warn('Token validation failed:', errorText);
+            if (validationRes.status === 401 || validationRes.status === 403) {
+                console.log('Token blacklisted or invalid, treating as unauthenticated');
+                return null;
+            }
+            throw new Error(`Token validation error: ${JSON.stringify(errorText)}`);
+        }
+
+        const validationData = await validationRes.json();
+        if (!validationData.success) {
+            console.log('Server rejected token, treating as unauthenticated');
+            return null;
+        }
+
+        let userData = { id, username, role, avatar };
+        try {
+            const res = await fetch(`http://localhost:3000/api/users/${id}?_t=${Date.now()}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token.trim()}`
+                }
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.warn('API Error:', errorText);
+                if (res.status === 403 || res.status === 401) {
+                    console.warn('Permission or token issue, treating as unauthenticated');
+                    return null;
+                }
+                throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+            }
+
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Response is not JSON');
+            }
+
+            const data = await res.json();
+            console.log('User API Response:', data);
+            const user = data.user || data;
+            userData = {
+                id,
+                username: user.username !== undefined ? user.username : username,
+                role: user.role !== undefined ? user.role : role,
+                avatar: user.avatar !== undefined ? user.avatar : avatar
+            };
+        } catch (apiError) {
+            console.warn('Falling back to token data due to API error:', apiError);
+            return userData.id ? userData : null;
+        }
+
+        return userData;
     } catch (error) {
-      console.error('getCurrentUser Error:', error);
-      return null;
+        console.error('getCurrentUser Error:', error);
+        return null;
     }
-  }
+}
 
   // Set user icon behavior based on authentication
   function setUserIconBehavior(user) {
@@ -126,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Hash:', window.location.hash);
 
   // Get slug or articleId from URL
-  let slug;
+  let slugOrId ;
   const urlParams = new URLSearchParams(window.location.search);
   slugOrId = urlParams.get('slug');
 
@@ -218,7 +289,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const categoryLink = document.getElementById('category-link');
     categoryLink.innerHTML = `${article.CategoryID?.name || 'Danh mục'}<i class="fas fa-chevron-right"></i>`;
 
-    const categorySlug = article.CategoryID?.slug || 'default';
+    const categorySlug = article.CategoryID?.slug;
     let pageFileName;
     if (article.CategoryID?.type === 'League') {
       pageFileName = leaguePageMap[categorySlug] || `giaidau-${categorySlug}`;
@@ -243,14 +314,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const bookmarkButton = document.createElement('button');
     bookmarkButton.innerHTML = '<i class="fas fa-bookmark"></i>';
     bookmarkButton.className = 'bookmark-btn';
-    bookmarkButton.style.marginLeft = '10px';
-    bookmarkButton.style.border = 'none';
-    bookmarkButton.style.background = 'none';
-    bookmarkButton.style.cursor = 'pointer';
-    bookmarkButton.style.fontSize = '20px';
     bookmarkButton.addEventListener('click', async () => {
+      const user = await getCurrentUser();
+      if (!user || !user.id) {
+        alert('Bạn phải đăng nhập để thực hiện chức năng này');
+        return;
+      }
       if (!articleId || !token) {
-        alert('Vui lòng đăng nhập để thêm bookmark.');
+        alert('Lỗi: Không tìm thấy bài viết hoặc token.');
         return;
       }
       try {
@@ -277,149 +348,164 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('article-meta').innerHTML = `<strong>${article.UserID?.username || 'Tác giả'}</strong> - ${timeAgo(article.updated_at)}`;
     document.getElementById('article-highlight').textContent = article.summary || 'Không có nội dung nổi bật';
 
-    // Record view history
-    if (articleId && token) {
-      try {
+  // Record view history
+  if (articleId && token) {
+    try {
+      const user = await getCurrentUser(); // Fetch fresh user data
+      console.log('Current user from token:', user); // Debug current user
+      if (!user || !user.id) {
+        console.warn('User ID not found in token, skipping view history.');
+      } else {
         await fetch(`http://localhost:3000/api/articles/${articleId}/view/`, {
           method: 'POST',
-          headers,
-          credentials: 'include'
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({ articleId, userId: user.id })
         });
-        console.log('View history recorded successfully.');
-      } catch (error) {
-        console.error('Lỗi khi ghi lịch sử xem:', error);
+        console.log('View history recorded successfully for user:', user.id);
       }
+    } catch (error) {
+      console.error('Lỗi khi ghi lịch sử xem:', error);
+    }
+  } else if (!token) {
+    console.log('No token found, view history not recorded.');
+  }
+
+  // Split content into sections using both \r\n\r\n and \n\n
+  const sections = article.content?.split(/(\r\n\r\n|\n\n)/).filter(section => section.trim().length > 0);
+  const contentContainer = document.getElementById('article-content');
+  contentContainer.innerHTML = '';
+
+  if (sections.length > 2) {
+    // First two sections
+    for (let index = 0; index < 2; index++) {
+      const section = sections[index];
+      const sectionElement = document.createElement('div');
+      sectionElement.className = 'dynamic-section';
+
+      const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+      if (lines.length > 1 && lines[0].length < 100) {
+        const heading = document.createElement('h3');
+        heading.textContent = lines[0];
+        sectionElement.appendChild(heading);
+
+        lines.slice(1).forEach(line => {
+          if (line.trim()) {
+            const para = document.createElement('p');
+            para.textContent = line;
+            sectionElement.appendChild(para);
+          }
+        });
+      } else {
+        lines.forEach(line => {
+          if (line.trim()) {
+            const para = document.createElement('p');
+            para.textContent = line;
+            sectionElement.appendChild(para);
+          }
+        });
+      }
+
+      contentContainer.appendChild(sectionElement);
     }
 
-    // Split content into sections using \n\n
-    const sections = article.content?.split('\n\n') || ['Nội dung không khả dụng'];
-    const contentContainer = document.getElementById('article-content');
-    contentContainer.innerHTML = '';
+    // Insert thumbnail after the second section (single instance)
+    const thumbnailContainer = document.createElement('div');
+    thumbnailContainer.className = 'article-thumbnail';
+    const thumbnailImg = document.createElement('img');
+    thumbnailImg.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
+    thumbnailImg.alt = 'Article Thumbnail';
+    thumbnailImg.style.maxWidth = '100%';
+    thumbnailContainer.appendChild(thumbnailImg);
+    contentContainer.appendChild(thumbnailContainer);
 
-    if (sections.length > 2) {
-      // First two sections
-      for (let index = 0; index < 2; index++) {
-        const section = sections[index];
-        const sectionElement = document.createElement('div');
-        sectionElement.className = 'dynamic-section';
+    // Hide default image container to avoid duplication
+    const imgContainer = document.querySelector('.img-container');
+    if (imgContainer) imgContainer.style.display = 'none';
 
-        const lines = section.split('\n');
-        if (lines.length > 1 && lines[0].length < 100) {
-          const heading = document.createElement('h3');
-          heading.textContent = lines[0];
-          sectionElement.appendChild(heading);
+    // Remaining sections
+    for (let index = 2; index < sections.length; index++) {
+      const section = sections[index];
+      const sectionElement = document.createElement('div');
+      sectionElement.className = 'dynamic-section';
 
-          lines.slice(1).forEach(line => {
-            if (line.trim()) {
-              const para = document.createElement('p');
-              para.textContent = line;
-              sectionElement.appendChild(para);
-            }
-          });
-        } else {
-          lines.forEach(line => {
-            if (line.trim()) {
-              const para = document.createElement('p');
-              para.textContent = line;
-              sectionElement.appendChild(para);
-            }
-          });
-        }
+      const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+      if (lines.length > 1 && lines[0].length < 100) {
+        const heading = document.createElement('h3');
+        heading.textContent = lines[0];
+        sectionElement.appendChild(heading);
 
-        if (index === 0) {
-          contentContainer.appendChild(sectionElement);
-          const imgContainer = document.querySelector('.img-container');
-          imgContainer.style.display = 'block';
-        } else {
-          contentContainer.appendChild(sectionElement);
-        }
+        lines.slice(1).forEach(line => {
+          if (line.trim()) {
+            const para = document.createElement('p');
+            para.textContent = line;
+            sectionElement.appendChild(para);
+          }
+        });
+      } else {
+        lines.forEach(line => {
+          if (line.trim()) {
+            const para = document.createElement('p');
+            para.textContent = line;
+            sectionElement.appendChild(para);
+          }
+        });
       }
 
-      // Insert thumbnail after the second section
-      const thumbnailContainer = document.createElement('div');
-      thumbnailContainer.className = 'article-thumbnail';
-      const thumbnailImg = document.createElement('img');
-      thumbnailImg.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
-      thumbnailImg.alt = 'Article Thumbnail';
-      thumbnailImg.style.maxWidth = '100%';
-      thumbnailContainer.appendChild(thumbnailImg);
-      contentContainer.appendChild(thumbnailContainer);
-
-      // Remaining sections
-      for (let index = 2; index < sections.length; index++) {
-        const section = sections[index];
-        const sectionElement = document.createElement('div');
-        sectionElement.className = 'dynamic-section';
-
-        const lines = section.split('\n');
-        if (lines.length > 1 && lines[0].length < 100) {
-          const heading = document.createElement('h3');
-          heading.textContent = lines[0];
-          sectionElement.appendChild(heading);
-
-          lines.slice(1).forEach(line => {
-            if (line.trim()) {
-              const para = document.createElement('p');
-              para.textContent = line;
-              sectionElement.appendChild(para);
-            }
-          });
-        } else {
-          lines.forEach(line => {
-            if (line.trim()) {
-              const para = document.createElement('p');
-              para.textContent = line;
-              sectionElement.appendChild(para);
-            }
-          });
-        }
-
-        contentContainer.appendChild(sectionElement);
-      }
-    } else {
-      // Original logic for 2 or fewer sections
-      sections.forEach((section, index) => {
-        const sectionElement = document.createElement('div');
-        sectionElement.className = 'dynamic-section';
-
-        const lines = section.split('\n');
-        if (lines.length > 1 && lines[0].length < 100) {
-          const heading = document.createElement('h3');
-          heading.textContent = lines[0];
-          sectionElement.appendChild(heading);
-
-          lines.slice(1).forEach(line => {
-            if (line.trim()) {
-              const para = document.createElement('p');
-              para.textContent = line;
-              sectionElement.appendChild(para);
-            }
-          });
-        } else {
-          lines.forEach(line => {
-            if (line.trim()) {
-              const para = document.createElement('p');
-              para.textContent = line;
-              sectionElement.appendChild(para);
-            }
-          });
-        }
-
-        if (index === 0) {
-          contentContainer.appendChild(sectionElement);
-          const imgContainer = document.querySelector('.img-container');
-          imgContainer.style.display = 'block';
-        } else {
-          contentContainer.appendChild(sectionElement);
-        }
-      });
+      contentContainer.appendChild(sectionElement);
     }
+  } else {
+    // Original logic for 2 or fewer sections
+    sections.forEach((section, index) => {
+      const sectionElement = document.createElement('div');
+      sectionElement.className = 'dynamic-section';
 
-    // Update image
-    document.getElementById('main-image').src = article.thumbnail || '../image/img-sidebar/main-pic.png';
-    document.getElementById('main-image').alt = article.title || 'Hình ảnh bài viết';
-    document.getElementById('image-caption').textContent = 'Ảnh minh họa';
-    document.getElementById('author-name').textContent = article.UserID?.username || 'Tác giả';
+      const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+      if (lines.length > 1 && lines[0].length < 100) {
+        const heading = document.createElement('h3');
+        heading.textContent = lines[0];
+        sectionElement.appendChild(heading);
+
+        lines.slice(1).forEach(line => {
+          if (line.trim()) {
+            const para = document.createElement('p');
+            para.textContent = line;
+            sectionElement.appendChild(para);
+          }
+        });
+      } else {
+        lines.forEach(line => {
+          if (line.trim()) {
+            const para = document.createElement('p');
+            para.textContent = line;
+            sectionElement.appendChild(para);
+          }
+        });
+      }
+
+      contentContainer.appendChild(sectionElement);
+      if (index === 0) {
+        const imgContainer = document.querySelector('.img-container');
+        if (imgContainer) imgContainer.style.display = 'block';
+      }
+    });
+
+    // Update main image for 2 or fewer sections
+    const mainImage = document.getElementById('main-image');
+    if (mainImage) {
+      mainImage.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
+      mainImage.alt = article.title || 'Hình ảnh bài viết';
+    }
+  }
+
+  // Update caption and author (no image update here to avoid duplication)
+  const imageCaption = document.getElementById('image-caption');
+  if (imageCaption) imageCaption.textContent = 'Ảnh minh họa';
+  const authorName = document.getElementById('author-name');
+  if (authorName) authorName.textContent = article.UserID?.username || 'Tác giả';
 
     // 2. Fetch related articles (same category)
     const relatedArticlesContainer = document.getElementById('related-articles');
@@ -441,9 +527,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           articleElement.href = `./baichitiet.html?slug=${item.slug}`;
           articleElement.className = 'news-item';
           articleElement.innerHTML = `
-            <img src="${item.thumbnail || '../image/img-sidebar/item1.png'}" alt="${item.title}">
+            <img src="${item.thumbnail}" alt="${item.title}">
             <div class="news-text">
-              <span class="category">${item.CategoryID?.name || 'Danh mục'}</span>
+              <span class="category">${item.CategoryID?.name}</span>
               <p>${item.title}</p>
               <small>${item.UserID?.username || 'Tác giả'} - ${timeAgo(item.updated_at)}</small>
             </div>
@@ -487,9 +573,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           articleElement.href = `./baichitiet.html?slug=${item.slug}`;
           articleElement.className = 'news-item';
           articleElement.innerHTML = `
-            <img src="${item.thumbnail || '../image/img-sidebar/default.png'}" alt="${item.title}">
+            <img src="${item.thumbnail}" alt="${item.title}">
             <div class="news-text">
-              <span class="category">${item.CategoryID?.name || 'Không xác định'}</span>
+              <span class="category">${item.CategoryID?.name}</span>
               <p>${item.title}</p>
               <small>${item.UserID?.username || 'Tác giả'} - ${timeAgo(item.updated_at)}</small>
             </div>

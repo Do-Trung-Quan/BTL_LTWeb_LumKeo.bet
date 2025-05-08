@@ -77,12 +77,11 @@ async function getCurrentUser() {
                 } else if (res.status === 401) {
                     const errorData = JSON.parse(errorText);
                     if (errorData.error === "jwt expired") {
-                        // Token expired, trigger logout via logout.js
                         const logoutLink = document.querySelector('li a#logout-link');
                         if (logoutLink) {
                             console.log('Token expired, triggering logout...');
-                            logoutLink.click(); // Simulate click to trigger logout.js logic
-                            return null; // Exit function to prevent further execution
+                            logoutLink.click();
+                            return null;
                         } else {
                             console.error('Logout link not found, redirecting to login manually');
                             window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
@@ -123,7 +122,10 @@ async function getCurrentUser() {
 // Fetch and populate users
 async function fetchUsers(token) {
     try {
-        const res = await fetch('http://localhost:3000/api/users/', {
+        const page = parseInt(new URLSearchParams(window.location.search).get('page')) || 1;
+        const limit = parseInt(new URLSearchParams(window.location.search).get('limit')) || 10;
+
+        const res = await fetch(`http://localhost:3000/api/users/?page=${page}&limit=${limit}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json',
@@ -133,16 +135,17 @@ async function fetchUsers(token) {
             throw new Error(`HTTP error! Status: ${res.status}`);
         }
 
-        const users = await res.json();
-        const userData = Array.isArray(users) ? users : users.users || [];
+        const data = await res.json();
+        const userData = Array.isArray(data.data) ? data.data : data.data.users || [];
 
         if (!userData.length) {
             console.log('No users found');
+            document.querySelector('#table-body tbody').innerHTML = '<tr><td colspan="4">Không có người dùng nào.</td></tr>';
             return;
         }
 
         const tableBody = document.querySelector('#table-body tbody');
-        tableBody.innerHTML = ''; // Clear existing rows
+        tableBody.innerHTML = '';
 
         for (const user of userData) {
             console.log('User data:', user);
@@ -184,8 +187,19 @@ async function fetchUsers(token) {
                 }
             });
         });
+
+        // Initialize Pagination
+        if (!window.paginationInstance) {
+            window.paginationInstance = new Pagination('.pagination', data.pagination.total, data.pagination.limit, (newPage) => {
+                window.history.pushState({}, '', `?page=${newPage}&limit=${limit}`);
+                fetchUsers(token);
+            });
+        }
+        window.paginationInstance.setPage(page);
+        window.paginationInstance.updateTotalItems(data.pagination.total);
     } catch (error) {
         console.error('Error fetching users:', error);
+        document.querySelector('#table-body tbody').innerHTML = '<tr><td colspan="4">Lỗi tải dữ liệu người dùng.</td></tr>';
     }
 }
 
@@ -205,7 +219,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         window.currentUserId = user.id;
         window.currentUser = user;
-        updateAdminInfo(user); // Assuming updateAdminInfo is defined
+        updateAdminInfo(user);
 
         const token = getCookie('token');
         await fetchUsers(token);

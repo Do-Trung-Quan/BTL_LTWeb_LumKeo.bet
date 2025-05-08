@@ -1,40 +1,53 @@
 document.addEventListener('DOMContentLoaded', () => {
   const logoutLink = document.querySelector('li a#logout-link');
 
-  if (logoutLink) {
-    logoutLink.addEventListener('click', async (event) => {
-      event.preventDefault(); // Prevent default navigation
-
-      console.log('Logout clicked, initiating fetch...');
-
-      try {
-        const response = await fetch('http://localhost:3000/api/logout/', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${getCookie('token')}`,
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include' // Include cookies in the request
-        });
-
-        const data = await response.json();
-        console.log('Logout response:', data);
-
-        if (response.ok && data.success) {
-          alert(data.message);
-          // Use an absolute URL to ensure correct redirection
-          window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-        } else {
-          alert('Đăng xuất thất bại: ' + (data.message || 'Không rõ lỗi'));
-        }
-      } catch (error) {
-        console.error('Lỗi khi đăng xuất:', error);
-        alert('Đăng xuất thất bại do lỗi hệ thống: ' + error.message);
-      }
-    });
+  if (!logoutLink) {
+    console.warn('Logout link (#logout-link) not found in the DOM. Ensure the element exists.');
+    return;
   }
 
-  // Helper function to get cookie
+  logoutLink.addEventListener('click', async (event) => {
+    event.preventDefault();
+
+    console.log('Logout clicked, initiating fetch...');
+
+    try {
+      const token = getCookie('token');
+      if (!token) {
+        console.warn('No token found in cookies, proceeding with client-side cleanup.');
+      }
+
+      const response = await fetch('http://localhost:3000/api/logout/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      console.log('Logout response:', data);
+
+      if (response.ok && data.success) {
+        document.cookie = 'token=; Max-Age=0; path=/; HttpOnly';
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        console.log('Client-side token and storage cleared.');
+
+        await getCurrentUser(); // Refresh user state
+        alert(data.message);
+        window.location.href = 'http://127.0.0.1:5500/index.html';
+      } else {
+        console.error('Logout failed:', data.message);
+        alert('Đăng xuất thất bại: ' + (data.message || 'Không rõ lỗi'));
+      }
+    } catch (error) {
+      console.error('Lỗi khi đăng xuất:', error);
+      alert('Đăng xuất thất bại do lỗi hệ thống: ' + error.message);
+    }
+  });
+
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);

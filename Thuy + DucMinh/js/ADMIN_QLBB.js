@@ -301,24 +301,9 @@ function populateTable(articles, tableBodyId, isPublished, currentPage) {
 }
 
 async function openModal(articleId) {
-    const modal = document.getElementById('article-modal');
+const modal = document.getElementById('article-modal');
     const token = getCookie('token');
-
     try {
-        // Fetch article ID by slug (if needed in future, but here we use ID directly)
-        const slugToIdResponse = await fetch(`http://localhost:3000/api/articles/slug-to-id/${articleId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
-            }
-        });
-        if (!slugToIdResponse.ok) {
-            console.warn('Slug to ID fetch failed, falling back to ID fetch:', await slugToIdResponse.text());
-        } else {
-            const slugData = await slugToIdResponse.json();
-            articleId = slugData.articleId || articleId; // Use ID from slug if valid
-        }
-
         // Fetch article by ID
         const res = await fetch(`http://localhost:3000/api/articles/${articleId}/`, {
             headers: {
@@ -328,22 +313,148 @@ async function openModal(articleId) {
         });
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         const article = await res.json();
-        const slug = article.slug;
-        if (slug) {
-            window.location.href = `http://127.0.0.1:5500/Quang/baichitiet/html/baichitiet.html?slug=${slug}`;
-            return;
-        }
 
-        // Fallback to display modal with article data if slug is unavailable
+        // Populate breadcrumb and basic info
         document.getElementById('modal-breadcrumb-link').textContent = 'Trang chủ';
         document.getElementById('modal-breadcrumb-link').href = '#';
         document.getElementById('modal-breadcrumb-category').textContent = article.CategoryID?.name || 'N/A';
         document.getElementById('modal-breadcrumb-category').href = '#';
         document.getElementById('modal-title').textContent = article.title || 'N/A';
         document.getElementById('modal-summary').textContent = article.summary || 'N/A';
-        document.getElementById('modal-image').src = article.thumbnail || '';
-        document.getElementById('modal-content').textContent = article.content || 'N/A';
         document.getElementById('modal-author-signature').textContent = `Tác giả: ${article.UserID?.username || 'N/A'}`;
+
+        // Split content into sections using both \r\n\r\n and \n\n
+        const sections = article.content?.split(/(\r\n\r\n|\n\n)/).filter(section => section.trim().length > 0);
+        const contentContainer = document.getElementById('modal-content');
+        contentContainer.innerHTML = '';
+
+        if (sections && sections.length > 2) {
+            // First two sections
+            for (let index = 0; index < 2; index++) {
+                const section = sections[index];
+                const sectionElement = document.createElement('div');
+                sectionElement.className = 'dynamic-section';
+
+                const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+                if (lines.length > 1 && lines[0].length < 100) {
+                    const heading = document.createElement('h3');
+                    heading.textContent = lines[0];
+                    sectionElement.appendChild(heading);
+
+                    lines.slice(1).forEach(line => {
+                        if (line.trim()) {
+                            const para = document.createElement('p');
+                            para.textContent = line;
+                            sectionElement.appendChild(para);
+                        }
+                    });
+                } else {
+                    lines.forEach(line => {
+                        if (line.trim()) {
+                            const para = document.createElement('p');
+                            para.textContent = line;
+                            sectionElement.appendChild(para);
+                        }
+                    });
+                }
+
+                contentContainer.appendChild(sectionElement);
+            }
+
+            // Insert thumbnail after the second section (single instance)
+            const thumbnailContainer = document.createElement('div');
+            thumbnailContainer.className = 'article-thumbnail';
+            const thumbnailImg = document.createElement('img');
+            thumbnailImg.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
+            thumbnailImg.alt = 'Article Thumbnail';
+            thumbnailImg.style.maxWidth = '100%';
+            thumbnailContainer.appendChild(thumbnailImg);
+            contentContainer.appendChild(thumbnailContainer);
+
+            // Hide default image container to avoid duplication
+            const imgContainer = document.querySelector('.modal-content .img-container');
+            if (imgContainer) imgContainer.style.display = 'none';
+
+            // Remaining sections
+            for (let index = 2; index < sections.length; index++) {
+                const section = sections[index];
+                const sectionElement = document.createElement('div');
+                sectionElement.className = 'dynamic-section';
+
+                const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+                if (lines.length > 1 && lines[0].length < 100) {
+                    const heading = document.createElement('h3');
+                    heading.textContent = lines[0];
+                    sectionElement.appendChild(heading);
+
+                    lines.slice(1).forEach(line => {
+                        if (line.trim()) {
+                            const para = document.createElement('p');
+                            para.textContent = line;
+                            sectionElement.appendChild(para);
+                        }
+                    });
+                } else {
+                    lines.forEach(line => {
+                        if (line.trim()) {
+                            const para = document.createElement('p');
+                            para.textContent = line;
+                            sectionElement.appendChild(para);
+                        }
+                    });
+                }
+
+                contentContainer.appendChild(sectionElement);
+            }
+        } else {
+            // Original logic for 2 or fewer sections
+            if (sections) {
+                sections.forEach((section, index) => {
+                    const sectionElement = document.createElement('div');
+                    sectionElement.className = 'dynamic-section';
+
+                    const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+                    if (lines.length > 1 && lines[0].length < 100) {
+                        const heading = document.createElement('h3');
+                        heading.textContent = lines[0];
+                        sectionElement.appendChild(heading);
+
+                        lines.slice(1).forEach(line => {
+                            if (line.trim()) {
+                                const para = document.createElement('p');
+                                para.textContent = line;
+                                sectionElement.appendChild(para);
+                            }
+                        });
+                    } else {
+                        lines.forEach(line => {
+                            if (line.trim()) {
+                                const para = document.createElement('p');
+                                para.textContent = line;
+                                sectionElement.appendChild(para);
+                            }
+                        });
+                    }
+
+                    contentContainer.appendChild(sectionElement);
+                    if (index === 0) {
+                        const imgContainer = document.querySelector('.modal-content .img-container');
+                        if (imgContainer) imgContainer.style.display = 'block';
+                    }
+                });
+            } else {
+                const para = document.createElement('p');
+                para.textContent = 'N/A';
+                contentContainer.appendChild(para);
+            }
+
+            // Update main image for 2 or fewer sections
+            const modalImage = document.getElementById('modal-image');
+            if (modalImage) {
+                modalImage.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
+                modalImage.alt = article.title || 'Hình ảnh bài viết';
+            }
+        }
         modal.style.display = 'block';
     } catch (error) {
         console.error('Error fetching article details:', error);

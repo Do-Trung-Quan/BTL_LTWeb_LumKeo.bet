@@ -298,7 +298,7 @@ const getAllViewedArticlesByUser = async (userId, page, limit) => {
     .populate('UserID', 'username avatar') // Populate user fields
     .populate({
       path: 'ArticleID',
-      select: 'title thumbnail created_at', // Select fields from Article
+      select: 'title thumbnail created_at slug', // Add slug to selected fields
       populate: {
         path: 'CategoryID', // Populate CategoryID within ArticleID
         select: 'name' // Only select the 'name' field from Category
@@ -481,7 +481,14 @@ const recordArticleView = async (userId, articleId) => {
     throw new Error('Article is not published, view cannot be recorded');
   }
 
-  // Tạo bản ghi ViewHistory
+  // Kiểm tra xem đã có bản ghi lịch sử xem chưa
+  const existingView = await ViewHistory.findOne({ UserID: userId, ArticleID: articleId });
+  if (existingView) {
+    console.log(`View history already exists for user ${userId} and article ${articleId}, skipping creation.`);
+    return; // Không tạo bản ghi mới nếu đã tồn tại
+  }
+
+  // Tạo bản ghi ViewHistory nếu chưa tồn tại
   await ViewHistory.create({
     UserID: userId,
     ArticleID: articleId,

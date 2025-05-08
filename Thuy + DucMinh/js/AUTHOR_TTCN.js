@@ -1,7 +1,142 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const API_BASE_URL = "http://localhost:3000";
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
 
-    // Elements
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function decodeJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                })
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error('Error decoding JWT:', error);
+        return null;
+    }
+}
+
+async function getCurrentUser() {
+    try {
+        const token = getCookie("token");
+        console.log('Token:', token);
+        if (!token) {
+            throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
+        }
+
+        const payload = decodeJwt(token);
+        if (!payload) {
+            throw new Error("Token không hợp lệ!");
+        }
+
+        const { id, username, role, avatar } = payload;
+        console.log('User ID:', id);
+        console.log('User Name from Token:', username);
+        console.log('User Role from Token:', role);
+        console.log('User Avatar from Token:', avatar);
+        console.log('Full Payload:', payload);
+
+        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+            throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
+        }
+
+        let userData = { id, username, role, avatar };
+        try {
+            const res = await fetch(`${window.API_BASE_URL}/api/users/${id}/?_t=${Date.now()}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token.trim()}`,
+                    'Cache-Control': 'no-cache'
+                }
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.warn('API Error Response:', errorText);
+                if (res.status === 403) {
+                    console.warn('Permission denied for /api/users/:id/, using token data');
+                    return userData;
+                } else if (res.status === 401) {
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        console.log('Parsed Error Data:', errorData);
+                        if (errorData.error === "jwt expired") {
+                            console.log('Token confirmed expired, triggering logout...');
+                            const logoutLink = document.querySelector('li a#logout-link');
+                            if (logoutLink) {
+                                logoutLink.click();
+                                return null;
+                            } else {
+                                console.error('Logout link not found, redirecting to login manually');
+                                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                                return null;
+                            }
+                        } else {
+                            console.warn('401 error not due to expiration, treating as API issue:', errorData.error || errorText);
+                            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                        }
+                    } catch (parseError) {
+                        console.error('Failed to parse 401 error response:', parseError);
+                        throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                    }
+                } else {
+                    throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+                }
+            }
+
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Response is not JSON');
+            }
+
+            const data = await res.json();
+            console.log('API Response:', data);
+            const user = data.user || data;
+            userData = {
+                id,
+                username: user.username || username,
+                role: user.role || role,
+                avatar: user.avatar || avatar
+            };
+        } catch (apiError) {
+            console.warn('Falling back to token data due to API error:', apiError.message);
+            return userData;
+        }
+
+        console.log('Final User Data:', userData);
+        return userData;
+    } catch (error) {
+        console.error('getCurrentUser Error:', error.message, error.stack);
+        throw error;
+    }
+}
+
+// Make functions globally accessible for logout.js
+window.getCookie = getCookie;
+window.setCookie = setCookie;
+window.decodeJwt = decodeJwt;
+window.getCurrentUser = getCurrentUser;
+window.API_BASE_URL = "http://localhost:3000";
+
+document.addEventListener("DOMContentLoaded", function () {
     const userNameDisplay = document.getElementById("user-name");
     const userRoleDisplay = document.getElementById("user-role");
     const profilePic = document.getElementById("profile-pic-upper");
@@ -16,46 +151,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnSaveFullname = document.getElementById("btn_save_fullname");
     const togglePasswordButtons = document.querySelectorAll(".toggle-password");
 
-    // Helper: Get cookie value
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
-
-    // Helper: Set cookie value
-    function setCookie(name, value, days) {
-        let expires = "";
-        if (days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
-    }
-
-    // Helper: Decode JWT token with Unicode support
-    function decodeJwt(token) {
-        try {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(
-                atob(base64)
-                    .split('')
-                    .map(function (c) {
-                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                    })
-                    .join('')
-            );
-            return JSON.parse(jsonPayload);
-        } catch (error) {
-            console.error('Error decoding JWT:', error);
-            return null;
-        }
-    }
-
-    // Update user info display
     function updateAdminInfo(user) {
         userNameDisplay.textContent = user.username || 'Unknown';
         userRoleDisplay.textContent = user.role ? user.role.toUpperCase() : 'Unknown';
@@ -68,101 +163,12 @@ document.addEventListener("DOMContentLoaded", function () {
         btnChangePassword.disabled = true;
     }
 
-    // Fetch current user data
-    async function getCurrentUser() {
-        try {
-            const token = getCookie("token");
-            console.log('Token:', token);
-            if (!token) {
-                throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
-            }
-
-            const payload = decodeJwt(token);
-            if (!payload) {
-                throw new Error("Token không hợp lệ!");
-            }
-
-            const { id, username, role, avatar } = payload;
-            console.log('User ID:', id);
-            console.log('User Name from Token:', username);
-            console.log('User Role from Token:', role);
-            console.log('User Avatar from Token:', avatar);
-            console.log('Full Payload:', payload);
-
-            if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-                throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
-            }
-
-            let userData = { id, username, role, avatar };
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/users/${id}/?_t=${Date.now()}`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${token.trim()}`,
-                        'Cache-Control': 'no-cache'
-                    }
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    console.warn('API Error:', errorText);
-                    if (res.status === 403) {
-                        console.warn('Permission denied for /api/users/:id/, using token data');
-                        return userData;
-                    } else if (res.status === 401) {
-                        const errorData = JSON.parse(errorText);
-                        if (errorData.error === "jwt expired") {
-                            // Token expired, trigger logout via logout.js
-                            const logoutLink = document.querySelector('li a#logout-link');
-                            if (logoutLink) {
-                                console.log('Token expired, triggering logout...');
-                                logoutLink.click(); // Simulate click to trigger logout.js logic
-                                return null; // Exit function to prevent further execution
-                            } else {
-                                console.error('Logout link not found, redirecting to login manually');
-                                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-                                return null;
-                            }
-                        } else {
-                            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
-                        }
-                    }
-                }
-
-                const contentType = res.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Response is not JSON');
-                }
-
-                const data = await res.json();
-                console.log('API Response:', data);
-                const user = data.user || data;
-                userData = {
-                    id,
-                    username: user.username || username,
-                    role: user.role || role,
-                    avatar: user.avatar || avatar
-                };
-            } catch (apiError) {
-                console.warn('Falling back to token data due to API error:', apiError);
-                return userData;
-            }
-
-            console.log('Final User Data:', userData);
-            return userData;
-        } catch (error) {
-            console.error('getCurrentUser Error:', error);
-            throw error;
-        }
-    }
-
-    // Update avatar
     async function updateAvatar(file, userId, token) {
         try {
             const formData = new FormData();
             formData.append('avatar', file);
 
-            const res = await fetch(`${API_BASE_URL}/api/users/${userId}/avatar/`, {
+            const res = await fetch(`${window.API_BASE_URL}/api/users/${userId}/avatar/`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token.trim()}`
@@ -185,10 +191,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Update password
     async function updatePassword(oldPassword, newPassword, userId, token) {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/users/${userId}/password/`, {
+            const res = await fetch(`${window.API_BASE_URL}/api/users/${userId}/password/`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token.trim()}`,
@@ -215,10 +220,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Update username
     async function updateUsername(newUsername, userId, token) {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/users/${userId}/username/`, {
+            const res = await fetch(`${window.API_BASE_URL}/api/users/${userId}/username/`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token.trim()}`,
@@ -242,24 +246,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Initialize: Fetch and display user data
     let currentUser = null;
     async function initialize() {
         try {
             const token = getCookie("token");
             if (!token) {
-                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html'; // Redirect to login without alert
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
                 return;
             }
 
             currentUser = await getCurrentUser();
-            if (!currentUser) return; // Exit if user is null (due to logout redirect)
+            if (!currentUser) return;
 
             updateAdminInfo(currentUser);
         } catch (error) {
             console.error('Initialize error:', error.message);
             if (!getCookie("token")) {
-                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html'; // Redirect if no token after error
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
             } else {
                 userNameDisplay.textContent = 'Lỗi tải dữ liệu';
                 userRoleDisplay.textContent = 'Unknown';
@@ -269,12 +272,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     initialize();
 
-    // Avatar upload: Trigger file input on "Chọn lại ảnh"
     btnSelectAva.addEventListener("click", function () {
         profilePicInput.click();
     });
 
-    // Avatar upload: Preview selected image
     profilePicInput.addEventListener("change", function (event) {
         const file = event.target.files[0];
         if (file) {
@@ -287,7 +288,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Avatar upload: Save new avatar
     btnSaveAva.addEventListener("click", async function () {
         try {
             const token = getCookie("token");
@@ -303,20 +303,18 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const response = await updateAvatar(file, currentUser.id, token);
-            // Update the token in the cookie if a new one is provided
             if (response.token) {
-                setCookie("token", response.token, 1); // Store for 1 day
+                setCookie("token", response.token, 1);
             }
             alert('Cập nhật avatar thành công! Trang sẽ tải lại để hiển thị thay đổi.');
             setTimeout(() => {
                 location.reload();
-            }, 1000); // Delay to allow the user to see the alert
+            }, 1000);
         } catch (error) {
             alert('Lỗi: ' + error.message);
         }
     });
 
-    // Password toggle functionality
     togglePasswordButtons.forEach(button => {
         button.addEventListener("click", function () {
             const input = button.previousElementSibling;
@@ -330,7 +328,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Enable/disable "Đổi mật khẩu" button based on input
     function updateChangePasswordButtonState() {
         const oldPassword = passOld.value.trim();
         const newPassword = passNew.value.trim();
@@ -340,7 +337,6 @@ document.addEventListener("DOMContentLoaded", function () {
     passOld.addEventListener("input", updateChangePasswordButtonState);
     passNew.addEventListener("input", updateChangePasswordButtonState);
 
-    // Password update
     btnChangePassword.addEventListener("click", async function () {
         try {
             const token = getCookie("token");
@@ -363,9 +359,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const response = await updatePassword(oldPassword, newPassword, currentUser.id, token);
-            // Update the token in the cookie if a new one is provided
             if (response.token) {
-                setCookie("token", response.token, 1); // Store for 1 day
+                setCookie("token", response.token, 1);
             }
             alert('Đổi mật khẩu thành công!');
             passOld.value = '';
@@ -376,12 +371,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Username update: Enable save button on input change
     txtFullname.addEventListener("input", function () {
         btnSaveFullname.disabled = txtFullname.value.trim() === userNameDisplay.textContent.trim();
     });
 
-    // Username update: Save new username
     btnSaveFullname.addEventListener("click", async function () {
         try {
             const token = getCookie("token");
@@ -397,14 +390,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const response = await updateUsername(newUsername, currentUser.id, token);
-            // Update the token in the cookie if a new one is provided
             if (response.token) {
-                setCookie("token", response.token, 1); // Store for 1 day
+                setCookie("token", response.token, 1);
             }
             alert('Cập nhật tên đăng nhập thành công! Trang sẽ tải lại để hiển thị thay đổi.');
             setTimeout(() => {
                 location.reload();
-            }, 1000); // Delay to allow the user to see the alert
+            }, 1000);
         } catch (error) {
             alert('Lỗi: ' + error.message);
         }

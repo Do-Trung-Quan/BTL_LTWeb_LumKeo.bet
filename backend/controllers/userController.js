@@ -46,8 +46,16 @@ const resetPassword = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const result = await UserService.getUsers();
-    res.status(200).json(result);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const result = await UserService.getUsers(page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
@@ -55,8 +63,16 @@ const getUsers = async (req, res) => {
 
 const getAuthors = async (req, res) => {
   try {
-    const result = await UserService.getAuthors();
-    res.status(200).json(result);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const result = await UserService.getAuthors(page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
@@ -206,6 +222,42 @@ const logOut = async (req, res) => {
   }
 };
 
+const validateToken = async (req, res) => {
+  try {
+    console.log('Request headers:', req.headers);
+    console.log('Request body:', req.body);
+
+    const tokenFromBody = req.body?.token;
+    const tokenFromHeader = req.headers.authorization?.split(' ')[1];
+    const token = tokenFromBody || tokenFromHeader;
+
+    console.log('ValidateTokenController - Token received:', token ? 'Yes' : 'No', 'Value:', token);
+
+    if (!token) {
+      return res.status(400).json({ success: false, message: 'No token provided' });
+    }
+
+    const result = await UserService.validateToken(token);
+    console.log('ValidateTokenController - Validation result:', result);
+
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        payload: result.payload
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        message: result.message
+      });
+    }
+  } catch (error) {
+    console.error('ValidateTokenController - Unexpected error:', error.message, 'Stack:', error.stack);
+    res.status(500).json({ success: false, message: 'Server error during token validation', error: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -222,4 +274,5 @@ module.exports = {
   getAllUsersStatistics,
   getAllAuthorsStatistics,
   logOut,
+  validateToken 
 };

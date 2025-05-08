@@ -99,16 +99,47 @@ const resetPassword = async ({ username, newPassword }) => {
 };
 
 // Hàm lấy tất cả users
-const getUsers = async () => {
-  const users = await User.find({ role: 'user' }).select('-password');
-  return users;
+const getUsers = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+  const users = await User.find({ role: 'user' })
+    .select('-password')
+    .skip(skip)
+    .limit(limit);
+
+  const total = await User.countDocuments({ role: 'user' });
+
+  return {
+    data: users,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 // Hàm lấy tất cả authors
-const getAuthors = async () => {
-  const authors = await User.find({ role: 'author' }).select('-password');
-  return authors;
+const getAuthors = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+  const authors = await User.find({ role: 'author' })
+    .select('-password')
+    .skip(skip)
+    .limit(limit);
+
+  const total = await User.countDocuments({ role: 'author' });
+
+  return {
+    data: authors,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
+
 
 const getUserById = async (userId) => {
   const user = await User.findById(userId).select('-password');
@@ -314,7 +345,7 @@ const getAllAuthorsStatistics = async () => {
   return { count };
 };
 
-const logOut = async (token) => {
+const logOut = (token) => {
   try {
     // Optional: Decode token without verifying expiration for logging
     let payload = null;
@@ -327,16 +358,48 @@ const logOut = async (token) => {
     }
 
     // Simulate adding token to a blacklist (in-memory for this example)
-    // In a real app, use a database (e.g., MongoDB) or Redis
     if (!global.blacklist) {
       global.blacklist = new Set();
     }
     global.blacklist.add(token);
 
+    // Invalidate token by adding expiration check (optional enhancement)
+    const decoded = jwt.decode(token, { complete: true });
+    if (decoded && decoded.payload.exp) {
+      const expiry = new Date(decoded.payload.exp * 1000);
+      console.log('Token will expire on:', expiry);
+    }
+
     return { success: true, message: 'Đăng xuất thành công' };
   } catch (error) {
     console.error('Logout service error:', error.message);
     return { success: false, message: 'Lỗi khi xử lý đăng xuất' };
+  }
+};
+
+const validateToken = (token) => {
+  try {
+    if (!token) {
+      throw new Error('No token provided');
+    }
+
+    // Check if token is in blacklist
+    if (global.blacklist && global.blacklist.has(token)) {
+      throw new Error('Token has been blacklisted');
+    }
+
+    // Verify JWT signature (without ignoring expiration)
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return {
+      success: true,
+      message: 'Token is valid',
+      payload: decoded
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message || 'Invalid token'
+    };
   }
 };
 
@@ -357,4 +420,5 @@ module.exports = {
   getAllUsersStatistics,
   getAllAuthorsStatistics,
   logOut,
+  validateToken
 };

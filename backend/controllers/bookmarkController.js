@@ -68,10 +68,11 @@ const getBookmarksByUser = async (req, res) => {
     const bookmarks = await bookmarkService.getBookmarksByUser(userId, page, limit);
     res.status(200).json(bookmarks);
   } catch (error) {
+    console.error('Error in getBookmarksByUser controller:', error.message);
     if (error.message === 'Invalid UserID format') {
       return res.status(400).json({ message: error.message });
     }
-    res.status(500).json({ message: 'Error fetching bookmarks', error: error.message });
+    res.status(500).json({ message: 'Lỗi khi lấy danh sách bookmark', error: error.message });
   }
 };
 

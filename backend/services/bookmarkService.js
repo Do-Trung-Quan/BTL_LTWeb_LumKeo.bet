@@ -50,7 +50,7 @@ const getBookmarkById = async (bookmarkId) => {
 };
 
 // Lấy danh sách bookmark theo User
-const getBookmarksByUser = async (userId, page = 1, limit = 10) => {
+const getBookmarksByUser = async (userId, page, limit) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid UserID format');
   }
@@ -63,7 +63,7 @@ const getBookmarksByUser = async (userId, page = 1, limit = 10) => {
     .populate('UserID', 'username avatar') // Populate user fields
     .populate({
       path: 'ArticleID',
-      select: 'title thumbnail created_at', // Select fields from Article
+      select: 'title thumbnail created_at slug', // Include slug field
       populate: {
         path: 'CategoryID', // Populate CategoryID within ArticleID
         select: 'name' // Only select the 'name' field from Category
@@ -76,12 +76,11 @@ const getBookmarksByUser = async (userId, page = 1, limit = 10) => {
   return {
     data: bookmarks,
     total,
-    page,
-    limit,
+    page: parseInt(page),
+    limit: parseInt(limit),
     totalPages: Math.ceil(total / limit),
   };
 };
-
 // Xóa bookmark
 const deleteBookmark = async (bookmarkId, userId) => {
   if (!mongoose.Types.ObjectId.isValid(bookmarkId)) {

@@ -1,27 +1,27 @@
 const multer = require('multer');
 
-// Dùng memoryStorage để có file.buffer upload lên Cloudinary
+// Use memoryStorage to store files in memory for Cloudinary upload
 const storage = multer.memoryStorage();
 
-// Kiểm tra loại file (chỉ cho phép ảnh)
+// File filter to allow only images
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Only images (jpeg, png, gif) are allowed'), false);
+    cb(new Error('Chỉ cho phép tải lên các file ảnh (jpeg, png, gif, jpg)!'), false);
   }
 };
 
-// Middleware upload file với nhiều trường
+// Multer middleware setup
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn kích thước file: 5MB
+  limits: { fileSize: 5 * 1024 * 1024 } // Limit file size to 5MB
 }).fields([
-  { name: 'avatar', maxCount: 1 },      // Trường avatar
-  { name: 'thumbnails', maxCount: 1 }, // Trường thumbnails
-  { name: 'logo', maxCount: 1 }        // Trường logo
+  { name: 'avatar', maxCount: 1 },      // Field for avatar
+  { name: 'thumbnails', maxCount: 1 },  // Field for thumbnails
+  { name: 'logo', maxCount: 1 }         // Field for logo
 ]);
 
 module.exports = upload;

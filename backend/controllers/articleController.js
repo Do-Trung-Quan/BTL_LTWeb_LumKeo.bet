@@ -365,7 +365,9 @@ const recordArticleView = async (req, res) => {
     if (
       error.message === 'User not found' ||
       error.message === 'Article not found' ||
-      error.message === 'Article is not published, view cannot be recorded'
+      error.message === 'Article is not published, view cannot be recorded' ||
+      error.message === 'Invalid UserID format' ||
+      error.message === 'Invalid ArticleID format'
     ) {
       return res.status(404).json({ message: error.message });
     }

@@ -5,7 +5,6 @@ function getCookie(name) {
     return null;
 }
 
-// Helper: Decode JWT token with Unicode support
 function decodeJwt(token) {
     try {
         const base64Url = token.split('.')[1];
@@ -457,7 +456,7 @@ async function saveEdit() {
 
         alert('Cập nhật bài viết thành công!');
         closeEditModal();
-        fetchNews(articlesPagination?.currentPage || 1, 10);
+        fetchNews(articlesPagination?.currentPage || 1, 6);
     } catch (error) {
         console.error('Error saving edit:', error);
         alert('Lỗi: ' + error.message);
@@ -546,7 +545,7 @@ async function addNewPost() {
 
         alert('Thêm bài viết thành công!');
         closeAddModal();
-        fetchNews(articlesPagination?.currentPage || 1, 10);
+        fetchNews(articlesPagination?.currentPage || 1, 6);
     } catch (error) {
         console.error('Error adding post:', error);
         alert('Lỗi: ' + error.message);
@@ -555,7 +554,7 @@ async function addNewPost() {
 
 let articlesPagination;
 
-async function fetchNews(page = 1, limit = 10) {
+async function fetchNews(page = 1, limit = 6) {
     try {
         const token = getCookie("token");
         console.log('Token for fetchNews:', token);
@@ -599,10 +598,10 @@ async function fetchNews(page = 1, limit = 10) {
             return;
         }
 
-        const articles = data.data.articles || [];
-        const pagination = data.data.pagination || { total: 0, page: 1, limit: 10, totalPages: 1 };
+        const articles = data.data?.articles || [];
+        const pagination = data.data?.pagination || { total: 0, page: 1, limit: 6, totalPages: 1 };
 
-        populateTable(articles);
+        populateTable(articles, 'table-body', page);
 
         // Initialize or update pagination
         if (!articlesPagination) {
@@ -621,9 +620,18 @@ async function fetchNews(page = 1, limit = 10) {
     }
 }
 
-function populateTable(articles) {
-    const tbody = document.getElementById("table-body");
-    tbody.innerHTML = "";
+function populateTable(articles, tableBodyId, currentPage) {
+    const tableBody = document.getElementById(tableBodyId);
+    if (!tableBody) {
+        console.error(`Table body not found for ID: ${tableBodyId}`);
+        return;
+    }
+    tableBody.innerHTML = ''; // Clear existing rows
+
+    if (articles.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5">Không có bài báo nào.</td></tr>';
+        return;
+    }
 
     console.log('Stored categories:', window.categories);
     console.log('Stored leagues:', window.leagues);
@@ -659,6 +667,9 @@ function populateTable(articles) {
             }
         }
 
+        const generatedUrl = `http://127.0.0.1:5500/Quang/baichitiet/html/baichitiet.html?slug=${item.slug}`;
+        console.log('Generated URL for article:', generatedUrl);
+
         row.innerHTML = `
             <td>${item.title || 'N/A'}</td>
             <td><img src="${item.thumbnail || ''}" alt="News Image" width="50" onerror="this.src='img/placeholder.jpg'"></td>
@@ -666,7 +677,7 @@ function populateTable(articles) {
             <td>${item.is_published && item.published_date ? new Date(item.published_date).toLocaleDateString('vi-VN') : 'Chờ duyệt'}</td>
             <td>
                 ${item.is_published ? 
-                    `<a href="../Quang/baichitiet/html/baichitiet.html?articleId=${item._id}">
+                    `<a href="${generatedUrl}">
                         <i class="fa-regular fa-eye"></i>
                     </a>` : 
                     `<i class="fa-regular fa-eye view-btn" data-article-id="${item._id}"></i>`}
@@ -678,7 +689,7 @@ function populateTable(articles) {
                 </button>
             </td>
         `;
-        tbody.appendChild(row);
+        tableBody.appendChild(row);
     });
 
     document.querySelectorAll('.view-btn').forEach(button => {
@@ -698,8 +709,8 @@ function populateTable(articles) {
 async function openModal(articleId) {
     const modal = document.getElementById('article-modal');
     const token = getCookie('token');
-
     try {
+        // Fetch article by ID
         const res = await fetch(`http://localhost:3000/api/articles/${articleId}/`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -708,17 +719,148 @@ async function openModal(articleId) {
         });
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         const article = await res.json();
-        console.log('Fetched article:', article);
 
+        // Populate breadcrumb and basic info
         document.getElementById('modal-breadcrumb-link').textContent = 'Trang chủ';
         document.getElementById('modal-breadcrumb-link').href = '#';
-        document.getElementById('modal-breadcrumb-category').textContent = article.CategoryID?.name;
+        document.getElementById('modal-breadcrumb-category').textContent = article.CategoryID?.name || 'N/A';
         document.getElementById('modal-breadcrumb-category').href = '#';
         document.getElementById('modal-title').textContent = article.title || 'N/A';
-        document.getElementById('modal-summary').textContent = article.summary;
-        document.getElementById('modal-image').src = article.thumbnail;
-        document.getElementById('modal-content').textContent = article.content;
-        document.getElementById('modal-author-signature').textContent = `Tác giả: ${article.UserID?.username}`;
+        document.getElementById('modal-summary').textContent = article.summary || 'N/A';
+        document.getElementById('modal-author-signature').textContent = `Tác giả: ${article.UserID?.username || 'N/A'}`;
+
+        // Split content into sections using both \r\n\r\n and \n\n
+        const sections = article.content?.split(/(\r\n\r\n|\n\n)/).filter(section => section.trim().length > 0);
+        const contentContainer = document.getElementById('modal-content');
+        contentContainer.innerHTML = '';
+
+        if (sections && sections.length > 2) {
+            // First two sections
+            for (let index = 0; index < 2; index++) {
+                const section = sections[index];
+                const sectionElement = document.createElement('div');
+                sectionElement.className = 'dynamic-section';
+
+                const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+                if (lines.length > 1 && lines[0].length < 100) {
+                    const heading = document.createElement('h3');
+                    heading.textContent = lines[0];
+                    sectionElement.appendChild(heading);
+
+                    lines.slice(1).forEach(line => {
+                        if (line.trim()) {
+                            const para = document.createElement('p');
+                            para.textContent = line;
+                            sectionElement.appendChild(para);
+                        }
+                    });
+                } else {
+                    lines.forEach(line => {
+                        if (line.trim()) {
+                            const para = document.createElement('p');
+                            para.textContent = line;
+                            sectionElement.appendChild(para);
+                        }
+                    });
+                }
+
+                contentContainer.appendChild(sectionElement);
+            }
+
+            // Insert thumbnail after the second section (single instance)
+            const thumbnailContainer = document.createElement('div');
+            thumbnailContainer.className = 'article-thumbnail';
+            const thumbnailImg = document.createElement('img');
+            thumbnailImg.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
+            thumbnailImg.alt = 'Article Thumbnail';
+            thumbnailImg.style.maxWidth = '100%';
+            thumbnailContainer.appendChild(thumbnailImg);
+            contentContainer.appendChild(thumbnailContainer);
+
+            // Hide default image container to avoid duplication
+            const imgContainer = document.querySelector('.modal-content .img-container');
+            if (imgContainer) imgContainer.style.display = 'none';
+
+            // Remaining sections
+            for (let index = 2; index < sections.length; index++) {
+                const section = sections[index];
+                const sectionElement = document.createElement('div');
+                sectionElement.className = 'dynamic-section';
+
+                const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+                if (lines.length > 1 && lines[0].length < 100) {
+                    const heading = document.createElement('h3');
+                    heading.textContent = lines[0];
+                    sectionElement.appendChild(heading);
+
+                    lines.slice(1).forEach(line => {
+                        if (line.trim()) {
+                            const para = document.createElement('p');
+                            para.textContent = line;
+                            sectionElement.appendChild(para);
+                        }
+                    });
+                } else {
+                    lines.forEach(line => {
+                        if (line.trim()) {
+                            const para = document.createElement('p');
+                            para.textContent = line;
+                            sectionElement.appendChild(para);
+                        }
+                    });
+                }
+
+                contentContainer.appendChild(sectionElement);
+            }
+        } else {
+            // Original logic for 2 or fewer sections
+            if (sections) {
+                sections.forEach((section, index) => {
+                    const sectionElement = document.createElement('div');
+                    sectionElement.className = 'dynamic-section';
+
+                    const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+                    if (lines.length > 1 && lines[0].length < 100) {
+                        const heading = document.createElement('h3');
+                        heading.textContent = lines[0];
+                        sectionElement.appendChild(heading);
+
+                        lines.slice(1).forEach(line => {
+                            if (line.trim()) {
+                                const para = document.createElement('p');
+                                para.textContent = line;
+                                sectionElement.appendChild(para);
+                            }
+                        });
+                    } else {
+                        lines.forEach(line => {
+                            if (line.trim()) {
+                                const para = document.createElement('p');
+                                para.textContent = line;
+                                sectionElement.appendChild(para);
+                            }
+                        });
+                    }
+
+                    contentContainer.appendChild(sectionElement);
+                    if (index === 0) {
+                        const imgContainer = document.querySelector('.modal-content .img-container');
+                        if (imgContainer) imgContainer.style.display = 'block';
+                    }
+                });
+            } else {
+                const para = document.createElement('p');
+                para.textContent = 'N/A';
+                contentContainer.appendChild(para);
+            }
+
+            // Update main image for 2 or fewer sections
+            const modalImage = document.getElementById('modal-image');
+            if (modalImage) {
+                modalImage.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
+                modalImage.alt = article.title || 'Hình ảnh bài viết';
+            }
+        }
         modal.style.display = 'block';
     } catch (error) {
         console.error('Error fetching article details:', error);
@@ -755,7 +897,7 @@ async function deleteNews(postId) {
         }
 
         alert("Xóa bài viết thành công!");
-        fetchNews(articlesPagination?.currentPage || 1, 10);
+        fetchNews(articlesPagination?.currentPage || 1, 6);
     } catch (error) {
         console.error("Lỗi khi xóa bài viết:", error);
         alert("Lỗi: " + error.message);

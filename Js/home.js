@@ -25,25 +25,54 @@ function decodeJwt(token) {
 async function getCurrentUser() {
     try {
         const token = getCookie("token");
+        console.log('getCurrentUser - Token from cookie:', token);
+
         if (!token) {
             console.log('No token found, user is unauthenticated');
             return null;
         }
 
         const payload = decodeJwt(token);
+        console.log('getCurrentUser - Decoded payload:', payload);
+
         if (!payload) {
             console.log('Invalid token, treating as unauthenticated');
             return null;
         }
 
         const { id, username, role, avatar } = payload;
-        console.log('User ID:', id);
-        console.log('User Name:', username);
-        console.log('User Role:', role);
-        console.log('Full Payload:', payload);
+        console.log('Token payload:', { id, username, role, avatar });
 
         if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
             console.warn('Invalid ID format, treating as unauthenticated');
+            return null;
+        }
+
+        const validationRes = await fetch('http://localhost:3000/api/validate-token', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token.trim()}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token })
+        });
+
+        console.log('getCurrentUser - Validation response status:', validationRes.status);
+
+        if (!validationRes.ok) {
+            const errorText = await validationRes.json();
+            console.warn('Token validation failed:', errorText);
+            if (validationRes.status === 401 || validationRes.status === 403) {
+                console.log('Token blacklisted or invalid, treating as unauthenticated');
+                return null;
+            }
+            throw new Error(`Token validation error: ${JSON.stringify(errorText)}`);
+        }
+
+        const validationData = await validationRes.json();
+        if (!validationData.success) {
+            console.log('Server rejected token, treating as unauthenticated');
             return null;
         }
 
@@ -60,8 +89,8 @@ async function getCurrentUser() {
                 const errorText = await res.text();
                 console.warn('API Error:', errorText);
                 if (res.status === 403 || res.status === 401) {
-                    console.warn('Permission or token issue, falling back to token data or unauthenticated');
-                    return userData.id ? userData : null;
+                    console.warn('Permission or token issue, treating as unauthenticated');
+                    return null;
                 }
                 throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
             }
@@ -149,14 +178,14 @@ async function fetchArticles(endpoint) {
 // Helper: Create a news item element
 function createNewsItem(article, isMain = false) {
     const element = document.createElement('a');
-    element.href = `./Quang/baichitiet/html/baichitiet.html?slug=${article.slug || 'default-slug'}`;
+    element.href = `./Quang/baichitiet/html/baichitiet.html?slug=${article.slug}`;
     element.className = isMain ? 'main-news' : 'news-item';
 
-    const thumbnail = article.thumbnail || 'default-image.jpg';
-    const title = article.title || 'No Title';
-    const category = article.CategoryID?.name || 'Unknown';
-    const author = article.UserID?.username || 'Tác giả';
-    const updatedAt = article.updated_at || new Date().toISOString();
+    const thumbnail = article.thumbnail;
+    const title = article.title;
+    const category = article.CategoryID?.name;
+    const author = article.UserID?.username;
+    const updatedAt = article.updated_at;
 
     if (isMain) {
         element.innerHTML = `

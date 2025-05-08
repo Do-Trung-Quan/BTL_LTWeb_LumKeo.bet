@@ -594,4 +594,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('related-articles').innerHTML = '<p>Lỗi khi tải tin liên quan</p>';
     document.getElementById('other-articles').innerHTML = '<p>Lỗi khi tải tin khác</p>';
   }
+
+  // Helper: Truncate text to fit within 3 lines
+  function truncateTextToThreeLines(element, maxLines = 4) {
+    const lineHeight = parseFloat(getComputedStyle(element).lineHeight); // Lấy chiều cao dòng
+    const maxHeight = lineHeight * maxLines; // Tính chiều cao tối đa cho 3 dòng
+
+    if (element.scrollHeight > maxHeight) {
+      let originalText = element.textContent;
+      while (element.scrollHeight > maxHeight && originalText.length > 0) {
+        originalText = originalText.slice(0, -1); // Cắt bớt ký tự cuối
+        element.textContent = originalText + '...'; // Thêm "..." vào cuối
+      }
+    }
+  }
+
+  // Áp dụng truncate cho các tiêu đề trong sidebar
+  document.querySelectorAll('.news-text p').forEach(titleElement => {
+    truncateTextToThreeLines(titleElement);
+  });
 });

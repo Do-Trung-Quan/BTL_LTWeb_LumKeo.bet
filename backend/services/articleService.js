@@ -527,6 +527,21 @@ const getArticleIdBySlug = async (slug) => {
   }
 };
 
+// 18. Find Articles By Title
+const findArticlesByTitle = async (title) => {
+  try {
+      // Tìm kiếm gần đúng theo tiêu đề (không phân biệt hoa thường)
+      const articles = await Article.find({
+          title: { $regex: title, $options: 'i' } // 'i' để không phân biệt hoa thường
+      }).populate('UserID', 'username'); // Lấy thông tin tác giả
+
+      return articles;
+  } catch (error) {
+      console.error('Error in findArticlesByTitle service:', error);
+      throw error;
+  }
+};
+
 module.exports = {
   createArticle,
   getAllPostArticles,
@@ -545,5 +560,6 @@ module.exports = {
   recordArticleView, 
   initWebSocket,
   countPublishedArticlesByAuthor,
-  getArticleIdBySlug
+  getArticleIdBySlug,
+  findArticlesByTitle
 };

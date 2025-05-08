@@ -20,44 +20,62 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("search-text");
     const dropdownSearchbar = document.getElementById("dropdown-searchbar");
 
-    // Chặn form submit gây reload trang
+    // Prevent form submission from reloading the page
     document.querySelector(".search-bar").addEventListener("submit", function (event) {
         event.preventDefault();
     });
 
-    // Hiển thị dropdown khi nhập liệu
+    // Show dropdown when typing
     searchInput.addEventListener("input", async function () {
-        const query = searchInput.value.trim().toLowerCase();
+        const query = searchInput.value.trim();
         dropdownSearchbar.innerHTML = "";
-
+        console.log("Query:", query);
+    
         if (query.length === 0) {
             dropdownSearchbar.style.display = "none";
+            console.log("Dropdown hidden: Empty query");
             return;
         }
-
+    
         try {
-            // Gọi API để lấy danh sách bài báo
-            const res = await fetch(`http://localhost:3000/api/news?title=${encodeURIComponent(query)}`, {
-                headers: { 'Accept': 'application/json' }
+            const res = await fetch("http://localhost:3000/api/articles/title", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ title: query })
             });
+            
+
+            console.log("API response status:", res.status);
             if (!res.ok) {
                 throw new Error(`HTTP error! Status: ${res.status}`);
             }
-            const newsList = await res.json();
-            const filteredNews = newsList.news || newsList;
-
-            if (filteredNews.length === 0) {
+    
+            const articles = await res.json();
+            // const articles = response;
+            console.log("Articles:", articles);
+    
+            if (!Array.isArray(articles)) {
+                console.error("Articles is not an array:", articles);
                 dropdownSearchbar.style.display = "none";
+                console.log("Dropdown hidden: Not an array");
                 return;
             }
-
-            filteredNews.forEach(news => {
+    
+            if (articles.length === 0) {
+                dropdownSearchbar.style.display = "none";
+                console.log("Dropdown hidden: No articles");
+                return;
+            }
+    
+            articles.forEach(article => {
                 const newsItem = document.createElement("div");
                 newsItem.classList.add("news-search-item");
-                newsItem.setAttribute("data-url", `/Quang/baichitiet/html/baichitiet.html?id=${news._id}`);
-
-                // Tính thời gian đăng bài
-                const publishedAt = new Date(news.published_at);
+                newsItem.setAttribute("data-url",  `/Quang/baichitiet/html/baichitiet.html?slug=${article.slug}`);
+    
+                const publishedAt = new Date(article.updated_at);
                 const now = new Date();
                 const diffInMs = now - publishedAt;
                 const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
@@ -69,12 +87,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     timeDisplay = `${Math.floor(diffInMinutes / 1440)} ngày trước`;
                 }
-
+    
                 newsItem.innerHTML = `
-                    <img src="${news.image_url || '/pics/News/default.png'}" alt="Ảnh bài viết" class="news-search-img">
+                    <img src="${article.thumbnail || '/pics/News/default.png'}" alt="Ảnh bài viết" class="news-search-img">
                     <div class="news-search-content">
-                        <div class="news-search-title">${news.title}</div>
-                        <div class="news-search-source">${news.author_id?.username || 'Tác giả'} - ${timeDisplay}</div>
+                        <div class="news-search-title">${article.title}</div>
+                        <div class="news-search-source">${article.UserID?.username || 'Tác giả'} - ${timeDisplay}</div>
                     </div>
                 `;
                 newsItem.addEventListener("click", function () {
@@ -82,15 +100,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
                 dropdownSearchbar.appendChild(newsItem);
             });
-
+    
             dropdownSearchbar.style.display = "block";
+            console.log("Dropdown shown: Articles found");
         } catch (error) {
             console.error("Lỗi khi tìm kiếm bài báo:", error);
             dropdownSearchbar.style.display = "none";
+            console.log("Dropdown hidden: Error occurred");
         }
     });
 
-    // Ẩn dropdown khi click ra ngoài
+    // Hide dropdown when clicking outside
     document.addEventListener("click", function (e) {
         if (!searchInput.contains(e.target) && !dropdownSearchbar.contains(e.target)) {
             dropdownSearchbar.style.display = "none";

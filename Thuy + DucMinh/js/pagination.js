@@ -1,94 +1,120 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const rowsPerPage = 6; // Số bài báo hiển thị trên mỗi trang
-    let currentPage = 1; // Trang hiện tại
-    let newsRows = Array.from(document.querySelectorAll("tbody tr")); // Lấy tất cả các dòng tin tức trong bảng
+class Pagination {
+    constructor(containerSelector, totalItems, itemsPerPage = 6, onPageChange) {
+        this.container = document.querySelector(containerSelector);
+        this.totalItems = totalItems;
+        this.itemsPerPage = itemsPerPage;
+        this.totalPages = Math.ceil(totalItems / itemsPerPage);
+        this.currentPage = 1;
+        this.onPageChange = onPageChange;
+        this.maxPagesToShow = 5; // Maximum number of page buttons to show at once
+        this.init();
+    }
 
-    const totalPages = Math.ceil(newsRows.length / rowsPerPage); // Tính tổng số trang dựa trên số bài báo
-    const paginationContainer = document.querySelector(".pagination"); // Lấy phần tử chứa phân trang
-    const prevButton = paginationContainer.querySelector(".prev"); // Lấy nút "Previous"
-    const nextButton = paginationContainer.querySelector(".next"); // Lấy nút "Next"
+    init() {
+        if (!this.container) {
+            console.error(`Pagination container not found: ${this.containerSelector}`);
+            return;
+        }
+        this.render();
+        this.bindEvents();
+    }
 
-    /**
-     * 🏷️ Tạo lại phần phân trang dựa vào trang hiện tại
-     */
-    function renderPagination() {
-        // Xóa nội dung phân trang cũ và thêm nút "Previous"
-        paginationContainer.innerHTML = `
-            <button class="prev" ${currentPage === 1 ? "disabled" : ""}>← Previous</button>
-        `;
+    render() {
+        this.container.innerHTML = ''; // Clear existing content
 
-        // Duyệt qua từng số trang để hiển thị
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
-                paginationContainer.innerHTML += `
-                    <button class="page ${i === currentPage ? "active" : ""}">${i}</button>
-                `;
-            } else if ((i === currentPage - 2 || i === currentPage + 2) && totalPages > 5) {
-                // Thêm dấu "..." để rút gọn phân trang nếu số trang lớn
-                paginationContainer.innerHTML += `<span class="dots">...</span>`;
-            }
+        // Previous button
+        const prevButton = document.createElement('button');
+        prevButton.className = 'prev';
+        prevButton.innerHTML = '← Previous';
+        prevButton.disabled = this.currentPage === 1;
+        this.container.appendChild(prevButton);
+
+        // Page numbers
+        const { startPage, endPage } = this.calculatePageRange();
+        
+        // Add page numbers
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = `page ${i === this.currentPage ? 'active' : ''}`;
+            pageButton.textContent = i;
+            this.container.appendChild(pageButton);
         }
 
-        // Thêm nút "Next"
-        paginationContainer.innerHTML += `
-            <button class="next" ${currentPage === totalPages ? "disabled" : ""}>Next →</button>
-        `;
+        // Add dots if there are skipped pages
+        if (endPage < this.totalPages) {
+            const dots = document.createElement('span');
+            dots.className = 'dots';
+            dots.textContent = '...';
+            this.container.appendChild(dots);
 
-        // Cập nhật sự kiện cho các nút phân trang
-        addEventListeners();
-        // Cập nhật bảng tin tức hiển thị theo trang hiện tại
-        renderTable();
+            // Add last page
+            const lastPageButton = document.createElement('button');
+            lastPageButton.className = 'page';
+            lastPageButton.textContent = this.totalPages;
+            this.container.appendChild(lastPageButton);
+        }
+
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.className = 'next';
+        nextButton.innerHTML = 'Next →';
+        nextButton.disabled = this.currentPage === this.totalPages || this.totalItems === 0;
+        this.container.appendChild(nextButton);
     }
 
-    /**
-     * 📋 Cập nhật hiển thị dữ liệu trong bảng dựa vào trang hiện tại
-     */
-    function renderTable() {
-        // Duyệt qua tất cả các dòng tin tức
-        newsRows.forEach((row, index) => {
-            // Chỉ hiển thị dòng tin tức trong phạm vi của trang hiện tại
-            row.style.display =
-                index >= (currentPage - 1) * rowsPerPage && index < currentPage * rowsPerPage
-                    ? "table-row"
-                    : "none";
-        });
+    calculatePageRange() {
+        let startPage = Math.max(1, this.currentPage - Math.floor(this.maxPagesToShow / 2));
+        let endPage = Math.min(this.totalPages, startPage + this.maxPagesToShow - 1);
 
-        // Nếu trang hiện tại không có tin tức, hiển thị thông báo
-        const tableBody = document.querySelector("tbody");
-        if (tableBody.querySelectorAll("tr[style='display: table-row;']").length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Không có tin tức nào.</td></tr>`;
+        // Adjust startPage if endPage is at the maximum
+        if (endPage - startPage + 1 < this.maxPagesToShow) {
+            startPage = Math.max(1, endPage - this.maxPagesToShow + 1);
+        }
+
+        return { startPage, endPage };
+    }
+
+    bindEvents() {
+        this.container.addEventListener('click', (e) => {
+            const target = e.target;
+
+            if (target.classList.contains('prev') && this.currentPage > 1) {
+                this.currentPage--;
+                this.render();
+                this.onPageChange(this.currentPage);
+            }
+
+            if (target.classList.contains('next') && this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.render();
+                this.onPageChange(this.currentPage);
+            }
+
+            if (target.classList.contains('page')) {
+                const page = parseInt(target.textContent);
+                if (page !== this.currentPage) {
+                    this.currentPage = page;
+                    this.render();
+                    this.onPageChange(this.currentPage);
+                }
+            }
+        });
+    }
+
+    setPage(page) {
+        if (page >= 1 && page <= this.totalPages) {
+            this.currentPage = page;
+            this.render();
         }
     }
 
-    /**
-     * 🎯 Thêm sự kiện click cho các nút phân trang
-     */
-    function addEventListeners() {
-        // Bắt sự kiện khi bấm vào số trang
-        paginationContainer.querySelectorAll(".page").forEach((btn) => {
-            btn.addEventListener("click", function () {
-                currentPage = parseInt(this.innerText); // Lấy số trang từ nội dung nút
-                renderPagination(); // Cập nhật lại phân trang và bảng tin tức
-            });
-        });
-
-        // Bắt sự kiện khi bấm vào nút "Previous"
-        paginationContainer.querySelector(".prev").addEventListener("click", function () {
-            if (currentPage > 1) {
-                currentPage--; // Giảm số trang hiện tại
-                renderPagination();
-            }
-        });
-
-        // Bắt sự kiện khi bấm vào nút "Next"
-        paginationContainer.querySelector(".next").addEventListener("click", function () {
-            if (currentPage < totalPages) {
-                currentPage++; // Tăng số trang hiện tại
-                renderPagination();
-            }
-        });
+    updateTotalItems(newTotalItems) {
+        this.totalItems = newTotalItems;
+        this.totalPages = Math.ceil(newTotalItems / this.itemsPerPage);
+        this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
+        this.render();
     }
+}
 
-    // Gọi hàm để hiển thị phân trang ban đầu
-    renderPagination();
-});
+// Export the Pagination class for use in other scripts
+window.Pagination = Pagination;

@@ -78,16 +78,39 @@ const createArticle = async (articleData, file) => {
 
   return populatedArticle;
 };
+
 // 2. Get All Post Articles (Lấy tất cả bài đăng đã duyệt, sắp xếp theo ngày đăng DESC)
-const getAllPostArticles = async (page = 1, limit = 10) => {
-  const skip = (page - 1) * limit;
-  const articles = await Article.find({ is_published: true })
-    .sort({ published_date: -1 })
-    .skip(skip)
-    .limit(limit)
-    .populate('UserID', 'username avatar')
-    .populate('CategoryID', 'name slug type');
-  return articles;
+const getAllPostArticles = async (page, limit) => {
+  try {
+    const query = { is_published: true }; // Use consistent field name
+    const options = {
+      sort: { published_date: -1 },
+      populate: [
+        { path: 'UserID', select: 'username avatar' },
+        { path: 'CategoryID', select: 'name slug type' }
+      ]
+    };
+
+    let articles, total;
+    if (limit === 0) {
+      articles = await Article.find(query, null, options).lean();
+      total = articles.length;
+    } else {
+      const skip = (page - 1) * limit;
+      articles = await Article.find(query, null, { ...options, skip, limit }).lean();
+      total = await Article.countDocuments(query);
+    }
+
+    return {
+      articles,
+      total,
+      page,
+      limit,
+      totalPages: limit > 0 ? Math.ceil(total / limit) : 1
+    };
+  } catch (error) {
+    throw new Error(`Error fetching articles: ${error.message}`);
+  }
 };
 
 // 3. Get Article by ID (Lấy thông tin bài báo theo ID)
@@ -100,19 +123,29 @@ const getArticleById = async (articleId) => {
 };
 
 // 4. Get Most Viewed Articles (Tin nóng)
-const getMostViewedArticles = async (page = 1, limit = 10) => {
+const getMostViewedArticles = async (page, limit) => {
   const skip = (page - 1) * limit;
   const articles = await Article.find({ is_published: true })
-    .sort({ views: -1 })
+    .sort({ views: -1, published_date: -1 })
     .skip(skip)
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-  return articles;
+
+  const total = await Article.countDocuments({ is_published: true });
+
+  return {
+    articles,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 };
 
+
 // 5. Get Article by Category (Lấy bài báo theo danh mục - Hỗ trợ "Giải đấu")
-const getArticleByCategory = async (categoryId, page = 1, limit = 10) => {
+const getArticleByCategory = async (categoryId, page, limit) => {
   const skip = (page - 1) * limit;
 
   // Kiểm tra xem categoryId có phải là danh mục "Giải đấu" không
@@ -164,7 +197,7 @@ const getArticleByCategory = async (categoryId, page = 1, limit = 10) => {
 };
 
 // 6. Get Article by Author (Lấy bài báo theo author_id - Kiểm tra role)
-const getArticleByAuthor = async (authorId, page = 1, limit = 10) => {
+const getArticleByAuthor = async (authorId, page, limit) => {
   const skip = (page - 1) * limit;
   // Kiểm tra role của UserID (giả định role là 'author')
   const user = await User.findById(authorId);
@@ -177,11 +210,21 @@ const getArticleByAuthor = async (authorId, page = 1, limit = 10) => {
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-  return articles;
+
+  const total = await Article.countDocuments({ UserID: authorId });
+
+  return {
+    articles,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 };
 
+
 // 7. Get Article by Published State (Lấy bài báo theo trạng thái duyệt)
-const getArticleByPublishedState = async (publishedState, page = 1, limit = 10) => {
+const getArticleByPublishedState = async (publishedState, page, limit) => {
   const skip = (page - 1) * limit;
   const isPublished = publishedState === 'published' ? true : false;
   const articles = await Article.find({ is_published: isPublished })
@@ -190,7 +233,16 @@ const getArticleByPublishedState = async (publishedState, page = 1, limit = 10) 
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
-  return articles;
+
+  const total = await Article.countDocuments({ is_published: isPublished });
+
+  return {
+    articles,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 };
 
 // 8. Get New Published Articles Statistics (Lấy số lượng bài báo mới trong 15 ngày)
@@ -235,7 +287,7 @@ const getNewPublishedArticlesStats = async () => {
 };
 
 // 9. Get All Viewed Articles by User (Lấy danh sách bài báo đã đọc của người dùng)
-const getAllViewedArticlesByUser = async (userId, page = 1, limit = 10) => {
+const getAllViewedArticlesByUser = async (userId, page, limit) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid UserID format');
   }
@@ -261,7 +313,9 @@ const getAllViewedArticlesByUser = async (userId, page = 1, limit = 10) => {
     page,
     limit,
     totalPages: Math.ceil(total / limit),
-  }};
+  };
+};
+
 
 // 10. Delete a View History Record (Xóa một lịch sử xem bài báo)
 const deleteViewHistory = async (historyId, userId) => {
@@ -452,6 +506,20 @@ const countPublishedArticlesByAuthor = async (userId) => {
   }
 };
 
+// 17. Get article ID by slug
+const getArticleIdBySlug = async (slug) => {
+  try {
+    const article = await Article.findOne({ slug, is_published: true }).select('_id');
+    if (!article) {
+      throw new Error('Article not found');
+    }
+    return article._id;
+  } catch (error) {
+    console.error('Error fetching article ID:', error);
+    throw new Error('Failed to fetch article ID');
+  }
+};
+
 module.exports = {
   createArticle,
   getAllPostArticles,
@@ -469,5 +537,6 @@ module.exports = {
   publishArticle,
   recordArticleView, 
   initWebSocket,
-  countPublishedArticlesByAuthor
+  countPublishedArticlesByAuthor,
+  getArticleIdBySlug
 };

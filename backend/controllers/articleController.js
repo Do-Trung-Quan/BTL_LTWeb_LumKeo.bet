@@ -57,10 +57,25 @@ const createArticle = async (req, res) => {
 // 2. Get All Post Articles (Lấy tất cả bài đăng đã duyệt)
 const getAllPostArticles = async (req, res) => {
   try {
-    const articles = await articleService.getAllPostArticles();
-    res.status(200).json(articles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = req.query.limit === '0' ? 0 : parseInt(req.query.limit) || 10;
+
+    const result = await articleService.getAllPostArticles(page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        articles: result.articles,
+        pagination: limit > 0 ? {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        } : undefined
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching articles', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching articles', error: error.message });
   }
 };
 
@@ -80,8 +95,20 @@ const getArticleById = async (req, res) => {
 // 4. Get Most Viewed Articles (Tin nóng)
 const getMostViewedArticles = async (req, res) => {
   try {
-    const articles = await articleService.getMostViewedArticles();
-    res.status(200).json(articles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
+
+    const result = await articleService.getMostViewedArticles(page, limit);
+
+    res.status(200).json({
+      mostViewedArticle: result.articles,
+      pagination: {
+        total: result.total,
+        page: result.page,
+        limit: result.limit,
+        totalPages: result.totalPages
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching most viewed articles', error: error.message });
   }
@@ -91,14 +118,11 @@ const getMostViewedArticles = async (req, res) => {
 const getArticleByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
-    const { page = 1, limit = 10 } = req.query; // Lấy page và limit từ query params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
 
     // Gọi service với categoryId, page, và limit
-    const result = await articleService.getArticleByCategory(
-      categoryId,
-      parseInt(page),
-      parseInt(limit)
-    );
+    const result = await articleService.getArticleByCategory(categoryId, page, limit);
 
     // Trả về kết quả với cấu trúc mới
     res.status(200).json({
@@ -125,26 +149,57 @@ const getArticleByCategory = async (req, res) => {
     });
   }
 };
+
 // 6. Get Article by Author (Lấy bài báo theo author_id - Xử lý lỗi mới)
 const getArticleByAuthor = async (req, res) => {
   try {
-    const articles = await articleService.getArticleByAuthor(req.params.authorId);
-    res.status(200).json(articles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
+
+    const result = await articleService.getArticleByAuthor(req.params.authorId, page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        articles: result.articles,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        }
+      }
+    });
   } catch (error) {
     if (error.message === 'User not found' || error.message === 'User is not an author') {
-      return res.status(404).json({ message: error.message });
+      return res.status(404).json({ success: false, message: error.message });
     }
-    res.status(500).json({ message: 'Error fetching articles by author', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching articles by author', error: error.message });
   }
 };
 
 // 7. Get Article by Published State (Lấy bài báo theo trạng thái duyệt)
 const getArticleByPublishedState = async (req, res) => {
   try {
-    const articles = await articleService.getArticleByPublishedState(req.params.publishedState);
-    res.status(200).json(articles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6; // Default to 6 for admin panel
+
+    const result = await articleService.getArticleByPublishedState(req.params.publishedState, page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        articles: result.articles,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        }
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching articles by published state', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching articles by published state', error: error.message });
   }
 };
 
@@ -162,21 +217,34 @@ const getNewPublishedArticlesStats = async (req, res) => {
 const getAllViewedArticlesByUser = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({ message: 'User not authenticated' });
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
     }
 
     const userId = req.params.userId;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
 
     // Kiểm tra xem user có quyền xem danh sách bookmark không
     if (req.user._id.toString() !== userId.toString()) {
-      return res.status(403).json({ message: 'You can only view your own histories' });
+      return res.status(403).json({ success: false, message: 'You can only view your own histories' });
     }
-    const viewedArticles = await articleService.getAllViewedArticlesByUser(userId, page, limit);
-    res.status(200).json(viewedArticles);
+
+    const result = await articleService.getAllViewedArticlesByUser(userId, page, limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        viewedArticles: result.data,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        }
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching viewed articles', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching viewed articles', error: error.message });
   }
 };
 
@@ -320,6 +388,22 @@ const countPublishedArticlesByAuthor = async (req, res) => {
   }
 };
 
+// 17. Get article ID by slug
+const getArticleIdBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    if (!slug) {
+      return res.status(400).json({ success: false, message: 'Invalid or missing slug' });
+    }
+
+    const articleId = await articleService.getArticleIdBySlug(slug);
+    res.status(200).json({ success: true, data: { articleId } });
+  } catch (error) {
+    console.error('Error in getArticleIdBySlug:', error.message);
+    res.status(404).json({ success: false, message: error.message });
+  }
+};
 
 module.exports = {
   createArticle,
@@ -337,5 +421,6 @@ module.exports = {
   deleteArticle,
   publishArticle,
   recordArticleView,
-  countPublishedArticlesByAuthor 
+  countPublishedArticlesByAuthor,
+  getArticleIdBySlug 
 };

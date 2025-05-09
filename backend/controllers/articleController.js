@@ -448,6 +448,29 @@ const getArticleIdBySlug = async (req, res) => {
   }
 };
 
+// 18. Get Article by Title (Lấy bài báo theo tiêu đề)
+const getArticleByTitle = async (req, res) => {
+  try {
+    const { title } = req.body; // Lấy tiêu đề từ body
+
+    if (!title) {
+      return res.status(400).json({ error: 'Missing title in request body' });
+    }
+
+    // Gọi service để tìm kiếm bài báo
+    const articles = await articleService.findArticlesByTitle(title);
+
+    if (!articles || articles.length === 0) {
+      return res.status(404).json({ message: 'No articles found' });
+    }
+
+    res.status(200).json(articles);
+  } catch (error) {
+    console.error('Error fetching articles by title:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createArticle,
   getAllPostArticles,
@@ -465,5 +488,6 @@ module.exports = {
   publishArticle,
   recordArticleView,
   countPublishedArticlesByAuthor,
-  getArticleIdBySlug 
+  getArticleIdBySlug ,
+  getArticleByTitle
 };

@@ -91,6 +91,8 @@
 
 /* Tiêu đề tin */
 .news-text p {
+  line-height: 1; /* Chiều cao dòng */
+  overflow: hidden; /* Ẩn phần nội dung tràn */
   font-size: 20px; /* Giảm kích thước chữ */
   color: #333;
   font-weight: bold;
@@ -232,4 +234,12 @@ h3 {
 .bookmark-btn i.fas.fa-bookmark {
   /* Ensure the icon inherits the button's color */
   color: inherit;
+}
+
+
+/* Nội dung bài báo */
+.dynamic-section {
+  font-size: 18px; /* Tăng cỡ chữ */
+  line-height: 1.5; /* Tăng khoảng cách giữa các dòng */
+  margin-bottom: 10px; /* Khoảng cách giữa các phần tử */
 }

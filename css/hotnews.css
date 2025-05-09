@@ -34,16 +34,24 @@
   transition: all 0.3s ease-in-out;
 }
 
+.news-info h3, .news-text p {
+  line-height: 1; /* Đặt chiều cao dòng */
+  overflow: hidden; /* Ẩn phần nội dung tràn */
+}
+
 .main-news {
+  width: 100%; /* Chiều rộng linh hoạt theo container */
+  max-width: 700px; /* Giới hạn chiều rộng tối đa */
+  height: 560px; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
   position: relative;
   overflow: hidden;
 }
 
 .main-news img {
-  height: 100%;
-  width: 700px;
-  display: block;
-  object-fit: cover;
+  width: 100%; /* Chiều rộng linh hoạt theo container */
+  max-width: 700px; /* Giới hạn chiều rộng tối đa */
+  height: 560px; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+  object-fit: cover; /* Đảm bảo ảnh được cắt gọn mà không bị méo */
 }
 
 .main-overlay{
@@ -84,11 +92,12 @@
   display: flex;
   gap: 10px;
 }
+
 .side-news img {
-  max-height: 170px;
-  height: 100%;
-  max-width: 260px;
-  object-fit: cover;
+  width: 100%; /* Chiều rộng linh hoạt theo container */
+  max-width: 260px; /* Giới hạn chiều rộng tối đa */
+  height: 170px; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+  object-fit: cover; /* Đảm bảo ảnh được cắt gọn mà không bị méo */
 }
 
 .side-news .news-text {

@@ -99,14 +99,21 @@ const resetPassword = async ({ username, newPassword }) => {
 };
 
 // Hàm lấy tất cả users
-const getUsers = async (page = 1, limit = 10) => {
+const getUsers = async (page = 1, limit = 10, keyword = '') => {
   const skip = (page - 1) * limit;
-  const users = await User.find({ role: 'user' })
+
+  // Build query with role and keyword filter
+  const query = { role: 'user' };
+  if (keyword && keyword.trim() !== '') {
+    query.username = { $regex: keyword.trim(), $options: 'i' }; // Case-insensitive search
+  }
+
+  const users = await User.find(query)
     .select('-password')
     .skip(skip)
     .limit(limit);
 
-  const total = await User.countDocuments({ role: 'user' });
+  const total = await User.countDocuments(query);
 
   return {
     data: users,
@@ -120,14 +127,21 @@ const getUsers = async (page = 1, limit = 10) => {
 };
 
 // Hàm lấy tất cả authors
-const getAuthors = async (page = 1, limit = 10) => {
+const getAuthors = async (page = 1, limit = 10, keyword = '') => {
   const skip = (page - 1) * limit;
-  const authors = await User.find({ role: 'author' })
+
+  // Build query with role and keyword filter
+  const query = { role: 'author' };
+  if (keyword && keyword.trim() !== '') {
+    query.username = { $regex: keyword.trim(), $options: 'i' }; // Case-insensitive search
+  }
+
+  const authors = await User.find(query)
     .select('-password')
     .skip(skip)
     .limit(limit);
 
-  const total = await User.countDocuments({ role: 'author' });
+  const total = await User.countDocuments(query);
 
   return {
     data: authors,
@@ -139,7 +153,6 @@ const getAuthors = async (page = 1, limit = 10) => {
     },
   };
 };
-
 
 const getUserById = async (userId) => {
   const user = await User.findById(userId).select('-password');

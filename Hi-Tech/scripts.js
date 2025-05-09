@@ -52,27 +52,8 @@ document.getElementById('login-form').addEventListener('submit', async function(
             // Lưu token vào cookie, hết hạn sau 7 ngày
             document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; secure`;
 
-            // Kiểm tra role trước khi vào switch
-            if (!data.user || !data.user.role) {
-                alert('Không nhận được quyền truy cập từ server.');
-                return;
-            }
-
-            // Chuyển role về chữ thường để đảm bảo khớp với case
-            const role = data.user.role.toLowerCase();
-            switch (role) {
-                case 'admin':
-                    window.location.href = '../Thuy + DucMinh/ADMIN_QLBB.html';
-                    break;
-                case 'author':
-                    window.location.href = '../Thuy + DucMinh/AUTHOR_QLBV.html';
-                    break;
-                case 'user':
-                    window.location.href = '../Thuy + DucMinh/USER_BBDL.html';
-                    break;
-                default:
-                    alert('Không xác định được quyền truy cập: ' + role);
-            }
+            // Redirect to index.html regardless of role
+            window.location.href = '../index.html';
         } else {
             alert(data.message || 'Sai tài khoản hoặc mật khẩu');
         }

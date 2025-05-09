@@ -48,8 +48,9 @@ const getUsers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const keyword = req.query.keyword || '';
 
-    const result = await UserService.getUsers(page, limit);
+    const result = await UserService.getUsers(page, limit, keyword);
 
     res.status(200).json({
       success: true,
@@ -65,8 +66,9 @@ const getAuthors = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const keyword = req.query.keyword || '';
 
-    const result = await UserService.getAuthors(page, limit);
+    const result = await UserService.getAuthors(page, limit, keyword);
 
     res.status(200).json({
       success: true,

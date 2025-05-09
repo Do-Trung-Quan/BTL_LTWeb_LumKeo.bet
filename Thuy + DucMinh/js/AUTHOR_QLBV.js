@@ -141,50 +141,69 @@ function toggleLeagueSelect(modalType = 'add') {
     }
 }
 
-function openAddModal() {
-    document.getElementById('add-content-form').reset();
-    const addCategorySelect = document.getElementById('add-category');
-    populateCategoryDropdown(addCategorySelect, window.categories || []);
-    toggleLeagueSelect('add');
-    document.getElementById('addModal').style.display = 'block';
-
-    addCategorySelect.removeEventListener('change', handleCategoryChange);
-    addCategorySelect.addEventListener('change', handleCategoryChange);
-}
-
-function handleCategoryChange() {
-    toggleLeagueSelect('add');
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const user = await getCurrentUser();
-        if (!user || !user.id) {
-            window.location.href = "../../Hi-Tech/Login.html";
-            return;
-        }
-
-        window.currentAuthorId = user.id;
-        window.currentUser = user;
-        updateAdminInfo(user);
-
-        window.categories = await fetchCategories();
-        window.leagues = await fetchLeagues();
-        console.log('Stored categories:', window.categories);
-        console.log('Stored leagues:', window.leagues);
-
-        const addCategorySelect = document.getElementById('add-category');
-        populateCategoryDropdown(addCategorySelect, window.categories);
-        const addLeagueSelect = document.getElementById('add-league');
-        populateLeagueDropdown(addLeagueSelect, window.leagues);
-        fetchNews();
-    } catch (error) {
-        console.error('DOMContentLoaded error:', error.message);
-        if (!getCookie("token")) {
-            window.location.href = "../../Hi-Tech/Login.html";
-        }
+async function populateTheLoaiDropdown(categories, leagues) {
+    const theLoaiMenu = document.getElementById('theLoai-menu');
+    if (!theLoaiMenu) {
+        console.error('TheLoai menu element not found');
+        return;
     }
-});
+
+    try {
+        // Show loading state
+        theLoaiMenu.innerHTML = '<li><a href="#" data-category="">Đang tải...</a></li>';
+
+        // Add the "Tất cả" option
+        theLoaiMenu.innerHTML = '<li><a href="#" data-category="Tất cả">Tất cả</a></li>';
+
+        // Add all categories (type: 'Category'), excluding "Giải đấu"
+        const categoryItems = categories
+            .filter(cat => cat.type === 'Category' && cat.name !== 'Giải đấu')
+            .map(category => {
+                return `<li><a href="#" data-category="${category.name}" data-type="category" data-id="${category._id}">${category.name}</a></li>`;
+            })
+            .join('');
+
+        // Add all leagues (type: 'League') without filtering
+        const leagueItems = leagues
+            .filter(league => league.type === 'League')
+            .map(league => {
+                const logo = league.logo_url ? `<img src="${league.logo_url}" alt="${league.name}" style="width: 20px; margin-right: 5px;">` : '';
+                return `<li><a href="#" data-category="${league.name}" data-type="league" data-id="${league._id}">${logo}${league.name}</a></li>`;
+            })
+            .join('');
+
+        // Append all items to the menu
+        theLoaiMenu.innerHTML += categoryItems + leagueItems;
+
+        // Add event listeners to dropdown items
+        theLoaiMenu.querySelectorAll('a').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const selectedCategory = e.target.getAttribute('data-category');
+                const params = new URLSearchParams(window.location.search);
+                params.set('page', '1'); // Reset to page 1 on new filter
+                params.set('category', selectedCategory);
+                window.history.pushState({}, '', `?${params.toString()}`);
+                fetchNews(1, 6, selectedCategory, params.get('keyword') || '');
+            });
+        });
+
+        console.log('TheLoai dropdown populated successfully');
+    } catch (error) {
+        console.error('Error populating TheLoai dropdown:', error);
+        theLoaiMenu.innerHTML = '<li><a href="#" data-category="Tất cả">Tất cả</a></li>' +
+                                '<li><a href="#" data-category="">Không có thể loại</a></li>';
+    }
+}
+
+// Debounce function to limit API calls during typing
+function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func(...args), delay);
+    };
+}
 
 async function getCurrentUser() {
     try {
@@ -345,11 +364,19 @@ async function openEditModal(button) {
 
         console.log('Edit league dropdown after population:', Array.from(leagueSelect.options).map(opt => ({ value: opt.value, text: opt.text, selected: opt.selected })));
 
+        // Add event listener for category change in edit modal
+        categorySelect.removeEventListener('change', handleEditCategoryChange);
+        categorySelect.addEventListener('change', handleEditCategoryChange);
+
         document.getElementById('editModal').style.display = 'block';
     } catch (error) {
         console.error('Error opening edit modal:', error);
         alert('Lỗi: ' + error.message);
     }
+}
+
+function handleEditCategoryChange() {
+    toggleLeagueSelect('edit');
 }
 
 function closeEditModal() {
@@ -456,7 +483,11 @@ async function saveEdit() {
 
         alert('Cập nhật bài viết thành công!');
         closeEditModal();
-        fetchNews(articlesPagination?.currentPage || 1, 6);
+        const params = new URLSearchParams(window.location.search);
+        const page = parseInt(params.get('page')) || 1;
+        const category = params.get('category') || 'Tất cả';
+        const keyword = params.get('keyword') || '';
+        fetchNews(page, 6, category, keyword);
     } catch (error) {
         console.error('Error saving edit:', error);
         alert('Lỗi: ' + error.message);
@@ -469,11 +500,22 @@ function openAddModal() {
     populateCategoryDropdown(addCategorySelect, window.categories || []);
     toggleLeagueSelect('add');
     document.getElementById('addModal').style.display = 'block';
+
+    addCategorySelect.removeEventListener('change', handleAddCategoryChange);
+    addCategorySelect.addEventListener('change', handleAddCategoryChange);
+}
+
+function handleAddCategoryChange() {
+    toggleLeagueSelect('add');
 }
 
 function closeAddModal() {
     document.getElementById('addModal').style.display = 'none';
     document.getElementById('add-content-form').reset();
+    const leagueSelect = document.getElementById('add-league');
+    leagueSelect.value = '';
+    leagueSelect.innerHTML = '<option value="" disabled selected>Chọn giải đấu</option>';
+    document.getElementById('add-league-container').style.display = 'none';
 }
 
 async function addNewPost() {
@@ -545,7 +587,11 @@ async function addNewPost() {
 
         alert('Thêm bài viết thành công!');
         closeAddModal();
-        fetchNews(articlesPagination?.currentPage || 1, 6);
+        const params = new URLSearchParams(window.location.search);
+        const page = parseInt(params.get('page')) || 1;
+        const category = params.get('category') || 'Tất cả';
+        const keyword = params.get('keyword') || '';
+        fetchNews(page, 6, category, keyword);
     } catch (error) {
         console.error('Error adding post:', error);
         alert('Lỗi: ' + error.message);
@@ -554,7 +600,8 @@ async function addNewPost() {
 
 let articlesPagination;
 
-async function fetchNews(page = 1, limit = 6) {
+// Updated fetchNews to include category and keyword filters
+async function fetchNews(page = 1, limit = 6, category = 'Tất cả', keyword = '') {
     try {
         const token = getCookie("token");
         console.log('Token for fetchNews:', token);
@@ -568,7 +615,16 @@ async function fetchNews(page = 1, limit = 6) {
             throw new Error("Không tìm thấy userID, vui lòng đăng nhập!");
         }
 
-        const res = await fetch(`http://localhost:3000/api/articles/author/${authorId}?page=${page}&limit=${limit}`, {
+        // Build query parameters including category and keyword
+        const queryParams = new URLSearchParams({ page, limit });
+        if (category && category !== 'Tất cả') {
+            queryParams.append('category', category);
+        }
+        if (keyword) {
+            queryParams.append('keyword', keyword);
+        }
+
+        const res = await fetch(`http://localhost:3000/api/articles/author/${authorId}?${queryParams.toString()}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${token.trim()}`
@@ -603,17 +659,17 @@ async function fetchNews(page = 1, limit = 6) {
 
         populateTable(articles, 'table-body', page);
 
-        // Initialize or update pagination
-        if (!articlesPagination) {
-            articlesPagination = new Pagination('.pagination', pagination.total, limit, (newPage) => {
-                fetchNews(newPage, limit);
-            });
-            console.log('Initialized articlesPagination:', articlesPagination);
-        } else {
-            articlesPagination.updateTotalItems(pagination.total);
-            articlesPagination.setPage(page);
-            console.log('Updated articlesPagination:', articlesPagination);
-        }
+        // Reset pagination to ensure the callback uses the latest category and keyword
+        articlesPagination = new Pagination('.pagination', pagination.total, limit, (newPage) => {
+            const params = new URLSearchParams(window.location.search);
+            params.set('page', newPage);
+            window.history.pushState({}, '', `?${params.toString()}`);
+            const updatedParams = new URLSearchParams(window.location.search);
+            const currentCategory = updatedParams.get('category') || 'Tất cả';
+            const currentKeyword = updatedParams.get('keyword') || '';
+            fetchNews(newPage, limit, currentCategory, currentKeyword);
+        });
+        articlesPagination.setPage(page);
     } catch (error) {
         console.error('fetchNews Error:', error);
         alert("Lỗi mạng: " + error.message);
@@ -897,9 +953,82 @@ async function deleteNews(postId) {
         }
 
         alert("Xóa bài viết thành công!");
-        fetchNews(articlesPagination?.currentPage || 1, 6);
+        const params = new URLSearchParams(window.location.search);
+        const page = parseInt(params.get('page')) || 1;
+        const category = params.get('category') || 'Tất cả';
+        const keyword = params.get('keyword') || '';
+        fetchNews(page, 6, category, keyword);
     } catch (error) {
         console.error("Lỗi khi xóa bài viết:", error);
         alert("Lỗi: " + error.message);
     }
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const user = await getCurrentUser();
+        if (!user || !user.id) {
+            window.location.href = "../../Hi-Tech/Login.html";
+            return;
+        }
+
+        window.currentAuthorId = user.id;
+        window.currentUser = user;
+        updateAdminInfo(user);
+
+        window.categories = await fetchCategories();
+        window.leagues = await fetchLeagues();
+        console.log('Stored categories:', window.categories);
+        console.log('Stored leagues:', window.leagues);
+
+        await populateTheLoaiDropdown(window.categories, window.leagues);
+
+        const addCategorySelect = document.getElementById('add-category');
+        populateCategoryDropdown(addCategorySelect, window.categories);
+        const addLeagueSelect = document.getElementById('add-league');
+        populateLeagueDropdown(addLeagueSelect, window.leagues);
+
+        const params = new URLSearchParams(window.location.search);
+        const page = parseInt(params.get('page')) || 1;
+        const category = params.get('category') || 'Tất cả';
+        const keyword = params.get('keyword') || '';
+
+        // Update search box with keyword from URL
+        const searchBox = document.querySelector('.search-box');
+        if (searchBox) {
+            searchBox.value = keyword;
+
+            const debouncedFetch = debounce(async (keyword) => {
+                const params = new URLSearchParams(window.location.search);
+                params.set('page', '1'); // Reset to page 1 on new search
+                if (keyword) {
+                    params.set('keyword', keyword);
+                } else {
+                    params.delete('keyword');
+                }
+                const selectedCategory = params.get('category') || 'Tất cả';
+                window.history.pushState({}, '', `?${params.toString()}`);
+                await fetchNews(1, 6, selectedCategory, keyword);
+            }, 300);
+
+            searchBox.addEventListener('input', (e) => {
+                const keyword = e.target.value.trim();
+                debouncedFetch(keyword);
+            });
+
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const keyword = e.target.value.trim();
+                    debouncedFetch(keyword);
+                }
+            });
+        }
+
+        fetchNews(page, 6, category, keyword);
+    } catch (error) {
+        console.error('DOMContentLoaded error:', error.message);
+        if (!getCookie("token")) {
+            window.location.href = "../../Hi-Tech/Login.html";
+        }
+    }
+});

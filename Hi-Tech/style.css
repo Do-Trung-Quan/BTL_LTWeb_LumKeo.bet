@@ -12,11 +12,11 @@ body, html {
 
 .login-wrapper {
     position: relative;
-    width: 450px;
-    height: 590px;
-    padding: 2px; /* Điều chỉnh khoảng này để tạo độ dày của viền */
+    width: 500px;
+    height: 700px; /* Tăng từ 650px lên 700px để có thêm không gian cho password-reset-form */
+    padding: 2px;
     background: linear-gradient(to right, rgb(252, 193, 6), rgb(228, 129, 51), rgb(208, 76, 87), rgb(186, 17, 129));
-    border-radius: 10px; /* Đảm bảo góc tròn phù hợp với .login-container */
+    border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -27,14 +27,14 @@ body, html {
     width: 100%;
     height: 100%;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.9); /* Màu nền trắng trong suốt */
+    background-color: rgba(255, 255, 255, 0.9);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     box-sizing: border-box;
 }
 
-.login-form, .password-reset-form {
+.login-form, .verify-email, .password-reset-form {
     position: absolute;
     top: 0;
     left: 0;
@@ -49,6 +49,28 @@ body, html {
 .login-form.hide {
     opacity: 0;
     transform: translateX(-100%);
+}
+
+.verify-email {
+    opacity: 0;
+    transform: translateX(100%);
+    width: 400px; 
+    height: 400px; 
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%); /* Căn giữa theo chiều ngang */
+}
+
+.verify-email.show {
+    opacity: 1;
+    transform: translateX(-50%); /* Giữ căn giữa khi hiển thị */
+}
+
+.verify-email h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    font-weight: 600;
 }
 
 .password-reset-form {
@@ -68,9 +90,8 @@ body, html {
     font-weight: 600;
 }
 
-.login-form h2 {
-    text-align: center;
-    margin-bottom: 20px;
+.password-reset-form .back-to-login {
+    margin-top: 10px; /* Tăng từ -20px lên 10px để tạo khoảng cách thoải mái hơn */
 }
 
 .login-form h2 {
@@ -123,6 +144,15 @@ body, html {
     height: 45px;
 }
 
+.input-group input[type="email"] {
+    background-image: url('Images/EmailIcon.png');
+    background-position: 5px center;
+    background-repeat: no-repeat;
+    padding-left: 45px;
+    font-size: 16px;
+    height: 45px;
+}
+
 .input-group label {
     display: block;
     margin-bottom: 5px;
@@ -133,14 +163,14 @@ body, html {
     width: 85%;
     padding: 10px 5px;
     border: none;
-    border-bottom: 2px solid #ccc; /* Gạch dưới chân */
+    border-bottom: 2px solid #ccc;
     background-color: transparent;
     color: #333;
 }
 
 .input-group input:focus {
     outline: none;
-    border-bottom: 2px solid #007BFF; /* Thay đổi màu khi focus */
+    border-bottom: 2px solid #007BFF;
 }
 
 .password-field {
@@ -149,7 +179,7 @@ body, html {
 }
 
 .password-field input {
-    width: 85%%;
+    width: 85%;
 }
 
 .toggle-password {
@@ -187,7 +217,7 @@ body, html {
 
 .back-to-login {
     text-align: center;
-    margin-top: -20px;  /* Di chuyển lên trên */
+    margin-top: -20px;
 }
 
 .back-to-login a {
@@ -196,31 +226,28 @@ body, html {
 }
 
 button {
-    background-image: linear-gradient(to right,  RGB(252, 193, 6),  RGB(228, 129, 51), RGB(208, 76, 87), RGB(186, 17, 129));
+    background-image: linear-gradient(to right, RGB(252, 193, 6), RGB(228, 129, 51), RGB(208, 76, 87), RGB(186, 17, 129));
     width: 85%;
     margin: 50px auto;
     display: block;
-    padding: 15px 20px;  /* Increased padding */
+    padding: 15px 20px;
     background-color: #cc9fc5;
     border: none;
     border-radius: 50px;
-    font-size: 18px;    /* Increased font size */
-    font-weight: 600;   /* Made text bolder */
+    font-size: 18px;
+    font-weight: 600;
     color: #ffffff;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;  /* Smooth transition for hover effects */
+    transition: all 0.3s ease;
 }
 
 button:hover {
     background-color: #f0b000;
-    transform: scale(1.02);  /* Slight scale up on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Enhanced shadow on hover */
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .password-reset-form button {
-    margin: 30px auto;  /* Giảm margin của button trong form reset password */
+    margin: 30px auto;
 }
-
-
-

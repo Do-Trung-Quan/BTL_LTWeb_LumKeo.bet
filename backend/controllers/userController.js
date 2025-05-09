@@ -2,8 +2,11 @@ const UserService = require('../services/userService');
 
 const register = async (req, res) => {
   try {
-    const { username, password, role, avatar } = req.body;
-    const result = await UserService.createUser({ username, password, role, avatar });
+    const { username, password, role, email, avatar } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+    const result = await UserService.createUser({ username, password, role, email, avatar });
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
@@ -33,6 +36,15 @@ const login = async (req, res) => {
   }
 };
 
+const sendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await UserService.sendOtp(email);
+    res.status(200).json({ success: true, otp: result.otp }); // Return OTP for testing (remove in production)
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
 
 const resetPassword = async (req, res) => {
   try {
@@ -109,6 +121,21 @@ const updateUsername = async (req, res) => {
       message: 'Username updated successfully',
       user: result.user,
       token: result.token // Include the new token in the response
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// Update email
+const updateEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await UserService.updateEmail(req.params.userId, email);
+    res.status(200).json({
+      message: 'Email updated successfully',
+      user: result.user,
+      token: result.token
     });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
@@ -263,6 +290,7 @@ const validateToken = async (req, res) => {
 module.exports = {
   register,
   login,
+  sendOtp,
   resetPassword,
   getUsers,
   getAuthors,
@@ -271,6 +299,7 @@ module.exports = {
   updateUsername,
   updatePassword,
   updateAvatar,
+  updateEmail,
   getNewUsersStatistics,
   getNewAuthorsStatistics,
   getAllUsersStatistics,

@@ -5,6 +5,8 @@ const Bookmark = require('../models/Bookmark');
 const ViewHistory = require('../models/viewHistory');
 const Notification = require('../models/Notification');
 const cloudinary = require('cloudinary').v2;
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();  
 
@@ -30,13 +32,14 @@ const checkUsernameExists = async (username) => {
 };
 
 // Hàm tạo mới một user
-const createUser = async ({ username, password, role, avatar }) => {
+const createUser = async ({ username, password, role, email, avatar }) => {
   await checkUsernameExists(username); // Kiểm tra trước khi tạo user mới
 
   const user = new User({
     username,
     password,
     role,
+    email, 
     avatar: avatar || undefined,
     created_at: new Date(),
   });
@@ -73,6 +76,32 @@ const loginUser = async ({ username, password }) => {
 
   // Trả về đối tượng gồm user và token
   return { user, token };
+};
+
+const sendOtp = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error('Email không hợp lệ hoặc không tìm thấy tài khoản.');
+  }
+
+  const otp = crypto.randomInt(100000, 999999).toString(); // Generate 6-digit OTP
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'Lumkeo.bet@gmail.com',
+      pass: 'gbju rmpd pxbd xpod' // Use an App Password for Gmail with 2FA enabled
+    }
+  });
+
+  const mailOptions = {
+    from: 'Lumkeo.bet@gmail.com',
+    to: email,
+    subject: 'Your OTP for Password Reset',
+    text: `Your OTP for password reset is: ${otp}. This code is valid for 10 minutes.`
+  };
+
+  await transporter.sendMail(mailOptions);
+  return { otp }; // Return OTP to store in session (in production, use a secure store)
 };
 
 // Hàm reset mật khẩu
@@ -185,7 +214,6 @@ const deleteUser = async (userId) => {
 };
 
 
-
 // Update username
 const updateUsername = async (userId, username) => {
   const user = await User.findById(userId);
@@ -199,6 +227,37 @@ const updateUsername = async (userId, username) => {
   const updatedUser = await user.save();
 
   // Generate a new token with the updated username
+  const newToken = generateToken(updatedUser);
+
+  return {
+    user: updatedUser,
+    token: newToken
+  };
+};
+
+// Update email
+const updateEmail = async (userId, email) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Optional: Add validation for email format if needed
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new Error('Invalid email format');
+  }
+
+  // Check if the email is already in use by another user
+  const existingUser = await User.findOne({ email, _id: { $ne: userId } });
+  if (existingUser) {
+    throw new Error('Email is already in use');
+  }
+
+  user.email = email;
+  const updatedUser = await user.save();
+
+  // Generate a new token with the updated email
   const newToken = generateToken(updatedUser);
 
   return {
@@ -420,12 +479,14 @@ const validateToken = (token) => {
 module.exports = {
   createUser,
   loginUser,
+  sendOtp,
   resetPassword,
   getUsers,
   getAuthors,
   getUserById,
   deleteUser,
   updateUsername,
+  updateEmail,
   updatePassword,
   updateAvatar,
   getNewUsersStatistics,

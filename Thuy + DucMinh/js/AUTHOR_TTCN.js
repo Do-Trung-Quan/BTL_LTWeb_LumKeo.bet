@@ -58,7 +58,7 @@ async function getCurrentUser() {
             throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
         }
 
-        let userData = { id, username, role, avatar };
+        let userData = { id, username, role, avatar, email: payload.email || null };
         try {
             const res = await fetch(`${window.API_BASE_URL}/api/users/${id}/?_t=${Date.now()}`, {
                 headers: {
@@ -114,7 +114,8 @@ async function getCurrentUser() {
                 id,
                 username: user.username || username,
                 role: user.role || role,
-                avatar: user.avatar || avatar
+                avatar: user.avatar || avatar,
+                email: user.email || payload.email || null
             };
         } catch (apiError) {
             console.warn('Falling back to token data due to API error:', apiError.message);
@@ -149,6 +150,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnChangePassword = document.getElementById("btn_change_password");
     const txtFullname = document.getElementById("txtFullname");
     const btnSaveFullname = document.getElementById("btn_save_fullname");
+    const txtEmail = document.getElementById("txtEmail");
+    const btnSaveEmail = document.getElementById("btn_save_email");
     const togglePasswordButtons = document.querySelectorAll(".toggle-password");
 
     function updateAdminInfo(user) {
@@ -159,7 +162,9 @@ document.addEventListener("DOMContentLoaded", function () {
         avatarImg.src = user.avatar || 'img/defaultAvatar.jpg';
         avatarImg.alt = `${user.username || 'User'}'s Avatar`;
         txtFullname.value = user.username || "";
+        txtEmail.value = user.email || "";
         btnSaveFullname.disabled = true;
+        btnSaveEmail.disabled = true;
         btnChangePassword.disabled = true;
     }
 
@@ -242,6 +247,32 @@ document.addEventListener("DOMContentLoaded", function () {
             return data;
         } catch (error) {
             console.error('Error updating username:', error);
+            throw error;
+        }
+    }
+
+    async function updateEmail(newEmail, userId, token) {
+        try {
+            const res = await fetch(`${window.API_BASE_URL}/api/users/${userId}/email/`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token.trim()}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: newEmail })
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Không thể cập nhật email');
+            }
+
+            const data = await res.json();
+            console.log('Email updated response:', data);
+            console.log('New Token after email update:', data.token);
+            return data;
+        } catch (error) {
+            console.error('Error updating email:', error);
             throw error;
         }
     }
@@ -394,6 +425,37 @@ document.addEventListener("DOMContentLoaded", function () {
                 setCookie("token", response.token, 1);
             }
             alert('Cập nhật tên đăng nhập thành công! Trang sẽ tải lại để hiển thị thay đổi.');
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } catch (error) {
+            alert('Lỗi: ' + error.message);
+        }
+    });
+
+    txtEmail.addEventListener("input", function () {
+        btnSaveEmail.disabled = txtEmail.value.trim() === (currentUser?.email || "");
+    });
+
+    btnSaveEmail.addEventListener("click", async function () {
+        try {
+            const token = getCookie("token");
+            if (!token || !currentUser) {
+                alert('Vui lòng đăng nhập lại!');
+                return;
+            }
+
+            const newEmail = txtEmail.value.trim();
+            if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+                alert('Vui lòng nhập email hợp lệ!');
+                return;
+            }
+
+            const response = await updateEmail(newEmail, currentUser.id, token);
+            if (response.token) {
+                setCookie("token", response.token, 1);
+            }
+            alert('Cập nhật email thành công! Trang sẽ tải lại để hiển thị thay đổi.');
             setTimeout(() => {
                 location.reload();
             }, 1000);

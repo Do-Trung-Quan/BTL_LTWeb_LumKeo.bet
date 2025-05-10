@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,9 +14,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../../css/general.css">
     <link rel="stylesheet" href="../css/tincanh.css">
-    <link rel="stylesheet" href="../css/pagination.css">
     <script src="/Js/Search-header.js"></script>
+    <script src="/Js/notification.js"></script>
+    <script src="../js/pagination.js"></script>
+    <script src="../js/categoryDetail.js"></script>
 </head>
+
 <body>
     <!--header and search-header section-->
     <!--header section-->
@@ -47,6 +51,22 @@
             <a class="search-button">
                 <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
             </a>
+            <!-- Notification Icon -->
+            <div class="notification-dropdown">
+                <a class="notification-button" aria-label="Thông báo">
+                    <img src="../../../pics/header/notification-bell.png" alt="Notification Icon">
+                    <span class="notification-count" id="notification-count">0</span>
+                </a>
+                <div class="notification-menu" id="notification-menu">
+                    <div class="notification-header">
+                        <span>Thông báo</span>
+                        <a href="#" id="mark-all-read">Đánh dấu tất cả đã đọc</a>
+                    </div>
+                    <ul class="notification-list" id="notification-list">
+                        <li>Không có thông báo mới</li>
+                    </ul>
+                </div>
+            </div>
             <a class="account-button" href="#">
                 <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
             </a>
@@ -81,8 +101,8 @@
     <!-- phần giải đấu -->
     <div class="container">
         <div class="header-container">
-            <div class="breadcrumb" id="category-breadcrumb"></div>
-            <img src="../image/content-img/bongdaTG.jpg.png" alt="bongdaTG" id="category-image">
+            <div class="breadcrumb"></div>
+            <img src="../image/content-img/bongdaVN.jpg.png" alt="laliga">
         </div>
         <!-- Tin trên -->
         <!--Hotnews section-->
@@ -141,7 +161,8 @@
         <footer>
             <div class="footer-1st">
                 <img class="logo" src="../image/header-footer-logo/logo-web.png" alt="logo website">
-                <p class="description">Trang thông tin điện tử tổng hợp về lĩnh vực bóng đá trong nước và thế giới</p>
+                <p class="description">Trang thông tin điện tử tổng hợp về lĩnh vực bóng đá trong nước và thế giới
+                </p>
                 <i class="fa-brands fa-square-facebook"></i>
                 <i class="fa-brands fa-youtube"></i>
             </div>
@@ -168,9 +189,17 @@
                 </div>
 
                 <div class="message">
-                    <p class="ms-title pacifico-regular">Trang web này chắc chắn không thể hoạt động nếu thiếu đi sự đồng hành của quý độc giả!</p>
+                    <p class="ms-title pacifico-regular">Trang web này chắc chắn không thể hoạt động nếu thiếu đi sự
+                        đồng
+                        hành của quý độc giả!</p>
                     <div class="ms-donate">
-                        <p class="ms-detail pacifico-regular">Trong tương lai, LumKeo.bet sẽ mở rộng thêm các tính năng mới như livescore, dự đoán tỉ số, soi kèo,... cho tới lúc đó, mọi sự ủng hộ của mina đều là động lực lớn lao cho anh em chúng tôi vững bước. Cảm ơn mina rấc nhìuuu!</p>
+                        <p class="ms-detail pacifico-regular">Trong tương lai, LumKeo.bet sẽ mở rộng thêm các tính
+                            năng
+                            mới
+                            như livescore, dự đoán tỉ số, soi kèo,... cho tới lúc đó, mọi sự ủng hộ của mina đều là
+                            động
+                            lực
+                            lớn lao cho anh em chúng tôi vững bước. Cảm ơn mina rấc nhìuuu!</p>
                         <img src="../image/header-footer-logo/logo-footer.png" alt="creator-avatar">
                         <img src="../image/header-footer-logo/qr-code.png" alt="creator's QR">
                     </div>
@@ -178,8 +207,5 @@
             </div>
         </footer>
     </div>
-    <!-- Scripts -->
-    <script src="../js/categoryDetail.js"></script>
-    <script src="../js/pagination.js"></script>
 </body>
 </html>

@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="./Js/Swiper.js" defer></script>
     <script src="./Js/Search-header.js" defer></script>
+    <script src="./Js/home.js"></script>
+    <script src="./Js/notification.js"></script>
 </head>
   <body>
     <!-- Header and Search-Header Section -->
@@ -47,6 +49,22 @@
             <a class="search-button" aria-label="Tìm kiếm">
                 <img src="./pics/header/Search.png" alt="Search Icon">
             </a>
+                       <!-- Notification Icon -->
+            <div class="notification-dropdown">
+                <a class="notification-button" aria-label="Thông báo">
+                    <img src="./pics/header/notification-bell.png" alt="Notification Icon">
+                    <span class="notification-count" id="notification-count">0</span>
+                </a>
+                <div class="notification-menu" id="notification-menu">
+                    <div class="notification-header">
+                        <span>Thông báo</span>
+                        <a href="#" id="mark-all-read">Đánh dấu tất cả đã đọc</a>
+                    </div>
+                    <ul class="notification-list" id="notification-list">
+                        <li>Không có thông báo mới</li>
+                    </ul>
+                </div>
+            </div>
             <a class="account-button" href="#" aria-label="Tài khoản người dùng">
                 <img src="./pics/header/User.png" alt="User Icon">
             </a>
@@ -295,6 +313,5 @@
         </div>
     </div>
   </footer>
-  <script src="./Js/home.js"></script>
   </body>
 </html>

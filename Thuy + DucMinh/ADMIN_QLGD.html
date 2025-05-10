@@ -40,6 +40,22 @@
             <a class="search-button">
                 <img src="../pics/header/Search.png" alt="Search Icon">
             </a>
+             <!-- Notification Icon -->
+            <div class="notification-dropdown">
+                <a class="notification-button" aria-label="Thông báo">
+                    <img src="../pics/header/notification-bell.png" alt="Notification Icon">
+                    <span class="notification-count" id="notification-count">0</span>
+                </a>
+                <div class="notification-menu" id="notification-menu">
+                    <div class="notification-header">
+                        <span>Thông báo</span>
+                        <a href="#" id="mark-all-read">Đánh dấu tất cả đã đọc</a>
+                    </div>
+                    <ul class="notification-list" id="notification-list">
+                        <li>Không có thông báo mới</li>
+                    </ul>
+                </div>
+            </div>
             <a class="account-button" href="./ADMIN_QLBB.html">
                 <img src="../pics/header/User.png" alt="User Icon">
             </a>
@@ -119,5 +135,6 @@
     <script src="./js/searchBar1.js"></script>
     <script src="./js/ADMIN_QLGD.js"></script>
     <script src="./js/logout.js"></script>
+    <script src="../Js/notification.js"></script>
 </body>
 </html>

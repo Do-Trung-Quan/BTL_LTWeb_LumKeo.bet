@@ -1,4 +1,3 @@
-const API_BASE_URL = "http://localhost:3000";
 let currentPage = 1;
 let totalArticles = 0;
 let categoryId = null;

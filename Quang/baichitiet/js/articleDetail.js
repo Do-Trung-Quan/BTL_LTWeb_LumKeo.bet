@@ -588,6 +588,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       otherArticlesContainer.innerHTML = '<p>Không tải được tin khác</p>';
     }
+
+    // Fetch comments when the page loads
+    fetchComments(articleId);
   } catch (error) {
     console.error('Lỗi khi tải dữ liệu:', error);
     document.querySelector('.content-left').innerHTML = '<p>Lỗi khi tải bài viết. Vui lòng thử lại sau.</p>';
@@ -613,4 +616,255 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.news-text p').forEach(titleElement => {
     truncateTextToThreeLines(titleElement);
   });
+
+  async function fetchComments(articleId, sort = 'most-relevant') {
+    try {
+        const response = await fetch(`http://localhost:3000/api/comments/article/${articleId}?sort=${sort}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const comments = await response.json();
+        const commentsList = document.getElementById('comments-list');
+        const commentCount = document.getElementById('comment-count');
+        commentCount.textContent = comments.length;
+        commentsList.innerHTML = '';
+
+        const user = await getCurrentUser(); // Check if the user is logged in
+
+        // Helper function to render comments recursively
+        function renderComments(comments, parentElement) {
+            comments.forEach(comment => {
+                const commentItem = document.createElement('div');
+                commentItem.className = 'comment-item';
+                commentItem.innerHTML = `
+                    <img src="${comment.UserID?.avatar || 'default-avatar.png'}" alt="Avatar">
+                    <div class="comment-content">
+                        <div class="comment-author">${comment.UserID?.username || 'Ẩn danh'}</div>
+                        <div class="comment-text">${comment.content}</div>
+                        <div class="comment-actions">
+                            ${user ? `
+                                <span class="reply-btn" data-id="${comment._id}">Trả lời</span>
+                                ${user.id === comment.UserID?._id ? `
+                                    <span class="edit-btn" data-id="${comment._id}">Sửa</span>
+                                    <span class="delete-btn" data-id="${comment._id}">Xóa</span>
+                                ` : ''}
+                            ` : ''}
+                            <span>${timeAgo(comment.created_at)}</span>
+                        </div>
+                    </div>
+                `;
+
+                parentElement.appendChild(commentItem);
+
+                // Create a container for replies
+                if (comment.replies && comment.replies.length > 0) {
+                    const repliesContainer = document.createElement('div');
+                    repliesContainer.className = 'comment-replies';
+                    commentItem.appendChild(repliesContainer);
+                    renderComments(comment.replies, repliesContainer); // Recursive call
+                }
+            });
+        }
+
+        renderComments(comments, commentsList);
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        document.getElementById('comments-list').innerHTML = '<p>Lỗi khi tải bình luận.</p>';
+    }
+  }
+
+  document.getElementById('comment-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = document.getElementById('comment-content').value.trim();
+    if (!content) {
+        alert('Nội dung bình luận không được để trống.');
+        return;
+    }
+    try {
+        const token = getCookie('token');
+        if (!token) {
+            alert('Bạn cần đăng nhập để bình luận.');
+            return;
+        }
+        const response = await fetch('http://localhost:3000/api/comments/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ content, ArticleID: articleId })
+        });
+        if (!response.ok) throw new Error('Failed to submit comment');
+
+        // Display success message in the UI
+        const successMessage = document.createElement('p');
+        successMessage.textContent = 'Bình luận của bạn đã được đăng!';
+        successMessage.style.color = 'green';
+        successMessage.style.marginTop = '10px';
+        document.getElementById('comment-form').appendChild(successMessage);
+
+        // Remove the success message after 3 seconds
+        setTimeout(() => successMessage.remove(), 3000);
+
+        fetchComments(articleId); // Refresh comments
+    } catch (error) {
+        console.error('Error submitting comment:', error);
+        alert('Lỗi khi gửi bình luận.');
+    }
+    document.getElementById('comment-content').value = '';
+  });
+
+  document.getElementById('comments-list').addEventListener('click', async (e) => {
+    const target = e.target;
+    const commentId = target.dataset.id;
+
+    if (target.classList.contains('reply-btn')) {
+        // Check if a reply form already exists
+        const existingReplyForm = document.querySelector(`#reply-form-${commentId}`);
+        if (existingReplyForm) {
+            existingReplyForm.remove(); // Remove the existing reply form
+            return;
+        }
+
+        // Create a reply form
+        const replyForm = document.createElement('form');
+        replyForm.id = `reply-form-${commentId}`;
+        replyForm.className = 'reply-form';
+        replyForm.innerHTML = `
+            <textarea placeholder="Viết phản hồi của bạn..." required></textarea>
+            <div>
+                <button type="submit" class="btn-submit-reply">Gửi</button>
+                <button type="button" class="btn-cancel-reply">Hủy</button>
+            </div>
+        `;
+
+        // Append the reply form directly below the comment actions
+        const commentActions = target.closest('.comment-actions');
+        commentActions.insertAdjacentElement('afterend', replyForm);
+
+        // Handle reply form submission
+        replyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const content = replyForm.querySelector('textarea').value.trim();
+            if (!content) {
+                alert('Nội dung phản hồi không được để trống.');
+                return;
+            }
+            try {
+                const token = getCookie('token');
+                if (!token) {
+                    alert('Bạn cần đăng nhập để phản hồi.');
+                    return;
+                }
+                const response = await fetch('http://localhost:3000/api/comments/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ content, ArticleID: articleId, CommentID: commentId })
+                });
+                if (!response.ok) throw new Error('Failed to submit reply');
+                fetchComments(articleId);
+            } catch (error) {
+                console.error('Error submitting reply:', error);
+                alert('Lỗi khi gửi phản hồi.');
+            }
+        });
+
+        // Handle cancel button
+        replyForm.querySelector('.btn-cancel-reply').addEventListener('click', () => {
+            replyForm.remove();
+        });
+    } else if (target.classList.contains('edit-btn')) {
+        // Check if an edit form already exists
+        const existingEditForm = document.querySelector(`#edit-form-${commentId}`);
+        if (existingEditForm) {
+            existingEditForm.remove(); // Remove the existing edit form
+            return;
+        }
+
+        // Create an edit form
+        const editForm = document.createElement('form');
+        editForm.id = `edit-form-${commentId}`;
+        editForm.className = 'edit-form';
+        const currentText = target.closest('.comment-content').querySelector('.comment-text').textContent.trim();
+        editForm.innerHTML = `
+            <textarea required>${currentText}</textarea>
+            <div>
+                <button type="submit" class="btn-submit-edit">Lưu</button>
+                <button type="button" class="btn-cancel-edit">Hủy</button>
+            </div>
+        `;
+
+        // Append the edit form directly below the comment actions
+        const commentActions = target.closest('.comment-actions');
+        commentActions.insertAdjacentElement('afterend', editForm);
+
+        // Handle edit form submission
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newContent = editForm.querySelector('textarea').value.trim();
+            if (!newContent) {
+                alert('Nội dung sửa không được để trống.');
+                return;
+            }
+            try {
+                const token = getCookie('token');
+                if (!token) {
+                    alert('Bạn cần đăng nhập để sửa bình luận.');
+                    return;
+                }
+                const response = await fetch(`http://localhost:3000/api/comments/${commentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ content: newContent })
+                });
+                if (!response.ok) throw new Error('Failed to edit comment');
+                fetchComments(articleId);
+            } catch (error) {
+                console.error('Error editing comment:', error);
+                alert('Lỗi khi sửa bình luận.');
+            }
+        });
+
+        // Handle cancel button
+        editForm.querySelector('.btn-cancel-edit').addEventListener('click', () => {
+            editForm.remove();
+        });
+    } else if (target.classList.contains('delete-btn')) {
+      if (confirm('Bạn có chắc chắn muốn xóa bình luận này?')) {
+        try {
+          const token = getCookie('token');
+          if (!token) {
+            alert('Bạn cần đăng nhập để xóa bình luận.');
+            return;
+          }
+
+          const response = await fetch(`http://localhost:3000/api/comments/${commentId}/`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error deleting comment:', errorData);
+            throw new Error(errorData.message || 'Failed to delete comment');
+          }
+
+          alert('Xóa bình luận thành công!');
+          fetchComments(articleId); // Refresh comments
+        } catch (error) {
+          console.error('Error deleting comment:', error);
+          alert('Lỗi khi xóa bình luận.');
+        }
+      }
+    }
+  });
+
+  // Fetch comments when the page loads
+  fetchComments(articleId);
 });

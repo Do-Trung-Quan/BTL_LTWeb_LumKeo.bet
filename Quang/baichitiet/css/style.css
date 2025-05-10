@@ -243,3 +243,236 @@ h3 {
   line-height: 1.5; /* Tăng khoảng cách giữa các dòng */
   margin-bottom: 10px; /* Khoảng cách giữa các phần tử */
 }
+
+/* Comment Section */
+/* Comment Section */
+.comment-section {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comment-section h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+#comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#comment-content {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  resize: none;
+  font-size: 14px;
+}
+
+.btn-submit {
+  align-self: flex-end;
+  padding: 8px 16px;
+  background-color: #e53935;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-submit:hover {
+  background-color: #d32f2f;
+}
+
+.comment-tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+#comments-list {
+  margin-top: 20px;
+}
+
+.comment-item {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 15px; /* Add padding inside the border */
+  border: 1px solid #ddd; /* Add a border around the comment */
+  border-radius: 10px; /* Make the border rounded */
+  background-color: #f9f9f9; /* Add a light background color */
+}
+
+.comment-content {
+  display: flex;
+  flex-direction: column; /* Ensure content is stacked vertically */
+  gap: 5px;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center; /* Align avatar and username vertically */
+  gap: 10px; /* Add spacing between avatar and username */
+  flex-direction: row; /* Ensure avatar and username are on the same line */
+}
+
+.comment-item img {
+  width: 50px; /* Adjust avatar size */
+  height: 50px;
+  border-radius: 50%; /* Make avatar circular */
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.comment-author {
+  font-weight: bold;
+  font-size: 16px;
+  color: #1a3d7c;
+}
+
+.comment-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px; /* Add spacing between comment text and actions */
+}
+
+.comment-actions span {
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.comment-actions span:hover {
+  color: #007bff; /* Highlight on hover */
+}
+
+.comment-replies {
+  margin-left: 20px; /* Indent replies slightly to the right */
+  margin-top: 15px; /* Add spacing between the main comment and replies */
+  padding-left: 15px; /* Add padding to separate the content from the vertical line */
+  border-left: 2px solid #ddd; /* Add a vertical line for replies */
+  background-color: transparent; /* Remove background color for replies */
+}
+
+.reply-form {
+  margin-top: 10px;
+  margin-left: 46px; /* Align reply form with the text container */
+}
+
+.reply-form textarea {
+  width: 100%;
+  height: 60px;
+  padding: 8px;
+  border: 1px solid #3a3b3c; /* Darker border for input */
+  border-radius: 18px;
+  resize: none;
+  font-size: 14px;
+  background-color: #242526; /* Match the comment container background */
+  color: #e7f3ff; /* Bright text color for better readability */
+}
+
+.reply-form .btn-submit-reply,
+.reply-form .btn-cancel-reply {
+  margin-top: 5px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.reply-form .btn-submit-reply {
+  background-color: #1877f2; /* Vibrant blue for submit button */
+  color: white;
+}
+
+.reply-form .btn-submit-reply:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.reply-form .btn-cancel-reply {
+  background-color: #3a3b3c; /* Match the container background */
+  color: #e7f3ff; /* Bright text color for better readability */
+}
+
+.reply-form .btn-cancel-reply:hover {
+  background-color: #242526; /* Slightly darker on hover */
+}
+
+/* Add subtle hover effect for comments */
+.comment-item:hover .comment-text-container {
+  background-color: #3a3b3c; /* Slightly lighter background on hover */
+}
+
+/* Tag styles for author and badges */
+.comment-author .badge {
+  background-color: #1877f2; /* Vibrant blue for badges */
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 5px;
+}
+
+/* Inline Edit Form */
+.edit-form {
+  margin-top: 10px;
+  margin-left: 46px;
+}
+
+.edit-form textarea {
+  width: 100%;
+  height: 60px;
+  padding: 8px;
+  border: 1px solid #3a3b3c; /* Darker border for input */
+  border-radius: 18px;
+  resize: none;
+  font-size: 14px;
+  background-color: #242526; /* Match the comment container background */
+  color: #e7f3ff; /* Bright text color for better readability */
+}
+
+.edit-form .btn-submit-edit,
+.edit-form .btn-cancel-edit {
+  margin-top: 5px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.edit-form .btn-submit-edit {
+  background-color: #1877f2; /* Vibrant blue for submit button */
+  color: white;
+}
+
+.edit-form .btn-submit-edit:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.edit-form .btn-cancel-edit {
+  background-color: #3a3b3c; /* Match the container background */
+  color: #e7f3ff; /* Bright text color for better readability */
+}
+
+.edit-form .btn-cancel-edit:hover {
+  background-color: #242526; /* Slightly darker on hover */
+}

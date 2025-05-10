@@ -11,33 +11,27 @@ const initWebSocket = (ws) => {
 };
 
 const CommentService = {
-  // Lấy tất cả bình luận theo bài viết (bao gồm replies)
+  // Lấy tất cả bình luận theo bài viết
   async getCommentsByArticle(articleId) {
     if (!mongoose.Types.ObjectId.isValid(articleId)) {
-      throw new Error('ID bài viết không hợp lệ');
+        throw new Error('ID bài viết không hợp lệ');
     }
+    const comments = await Comment.find({ ArticleID: articleId, CommentID: null })
+        .populate('UserID', 'username avatar')
+        .sort({ created_at: -1 });
 
-    const rootComments = await Comment.find({
-      ArticleID: articleId,
-      CommentID: null,
-    })
-      .populate('UserID', 'name avatar')
-      .sort({ created_at: -1 });
-
-    const commentsWithReplies = await Promise.all(
-      rootComments.map(async (comment) => {
+    // Fetch replies for each root comment
+    const populateReplies = async (comment) => {
         const replies = await Comment.find({ CommentID: comment._id })
-          .populate('UserID', 'name avatar')
-          .sort({ created_at: 1 });
-
+            .populate('UserID', 'username avatar')
+            .sort({ created_at: 1 });
         return {
-          ...comment.toObject(),
-          replies,
+            ...comment.toObject(),
+            replies: await Promise.all(replies.map(populateReplies))
         };
-      })
-    );
+    };
 
-    return commentsWithReplies;
+    return Promise.all(comments.map(populateReplies));
   },
 
   // Tạo bình luận mới
@@ -106,11 +100,11 @@ const CommentService = {
   },
 
   // Xóa bình luận và các bình luận con
-  async deleteComment(commentId, userId) {
+  async deleteComment(commentId, userId, userRole) {
     const comment = await Comment.findById(commentId);
     if (!comment) throw new Error('Không tìm thấy bình luận');
 
-    if (comment.UserID.toString() !== userId.toString()) {
+    if (comment.UserID.toString() !== userId.toString() && userRole !== 'admin') {
       throw new Error('Bạn không có quyền xóa bình luận này');
     }
 

@@ -202,13 +202,13 @@ async function setUserIconBehavior() {
         let redirectPage;
         switch (user.role.toLowerCase()) {
             case 'admin':
-                redirectPage = '../Thuy + DucMinh/ADMIN_QLBB.html';
+                redirectPage = '../../../Thuy + DucMinh/ADMIN_QLBB.html';
                 break;
             case 'author':
-                redirectPage = '../Thuy + DucMinh/AUTHOR_QLBV.html';
+                redirectPage = '../../../Thuy + DucMinh/AUTHOR_QLBV.html';
                 break;
             case 'user':
-                redirectPage = '../Thuy + DucMinh/USER_BBDL.html';
+                redirectPage = '../../../Thuy + DucMinh/USER_BBDL.html';
                 break;
             default:
                 redirectPage = 'http://127.0.0.1:5500/Hi-Tech/Login.html';

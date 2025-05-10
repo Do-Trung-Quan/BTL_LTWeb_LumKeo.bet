@@ -13,7 +13,7 @@ router.post('/comments/', authMiddleware(), CommentController.createComment);
 router.put('/comments/:commentId/', authMiddleware(), CommentController.updateComment);
 
 // Xoá bình luận - yêu cầu đăng nhập, người tạo hoặc admin mới được xoá
-router.delete('/comments/:id/', authMiddleware(), CommentController.deleteComment);
+router.delete('/comments/:commentId/', authMiddleware(), CommentController.deleteComment);
 
 // Thống kê bình luận - yêu cầu đăng nhập, chỉ admin xem được
 router.get('/comments/statistics/all/', authMiddleware('admin'), CommentController.getAllCommentsStatistics);

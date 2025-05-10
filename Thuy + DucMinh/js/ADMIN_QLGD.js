@@ -13,9 +13,7 @@ function decodeJwt(token) {
         const jsonPayload = decodeURIComponent(
             atob(base64)
                 .split('')
-                .map(function (c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                })
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
                 .join('')
         );
         return JSON.parse(jsonPayload);
@@ -76,12 +74,11 @@ async function getCurrentUser() {
                 } else if (res.status === 401) {
                     const errorData = JSON.parse(errorText);
                     if (errorData.error === "jwt expired") {
-                        // Token expired, trigger logout via logout.js
                         const logoutLink = document.querySelector('li a#logout-link');
                         if (logoutLink) {
                             console.log('Token expired, triggering logout...');
-                            logoutLink.click(); // Simulate click to trigger logout.js logic
-                            return null; // Exit function to prevent further execution
+                            logoutLink.click();
+                            return null;
                         } else {
                             console.error('Logout link not found, redirecting to login manually');
                             window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
@@ -127,14 +124,17 @@ const leaguePageMap = {
     'serie-a': 'giaidau-seria',
     'la-liga': 'giaidau-LaLiga',
     'premier-league': 'giaidau-EPL'
-    // Add more mappings as needed
 };
 
 // Fetch leagues and populate the table
-async function fetchLeagues(token) {
+async function fetchLeagues(token, keyword = '') {
     try {
-        // Fetch all leagues
-        const resLeagues = await fetch('http://localhost:3000/api/leagues/', {
+        const queryParams = new URLSearchParams();
+        if (keyword && keyword.trim() !== '') {
+            queryParams.append('keyword', keyword.trim());
+        }
+        const url = `http://localhost:3000/api/leagues/?${queryParams.toString()}`;
+        const resLeagues = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json',
@@ -156,10 +156,8 @@ async function fetchLeagues(token) {
         tableBody.innerHTML = ''; // Clear existing rows
 
         for (const league of leagueData) {
-            // Debug league data
             console.log('League data:', league);
 
-            // Fetch only totalArticles for each league
             let articleCount = 0;
             try {
                 console.log(`Fetching totalArticles for categoryId: ${league._id}, Token: ${token}`);
@@ -183,11 +181,9 @@ async function fetchLeagues(token) {
                 console.error(`Error fetching totalArticles for league ${league.name}:`, error);
             }
 
-            // Use slug directly for the link
             const slug = league.slug;
             const pageFileName = leaguePageMap[slug];
 
-            // Create table row
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${league.name}</td>
@@ -223,10 +219,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         window.currentUserId = user.id;
         window.currentUser = user;
-        updateAdminInfo(user); // Assuming updateAdminInfo is defined
+        updateAdminInfo(user);
 
         const token = getCookie('token');
         await fetchLeagues(token);
+
+        // Add search functionality
+        const searchBox = document.querySelector('.search-box');
+        if (searchBox) {
+            const debouncedFetch = debounce(async (keyword) => {
+                await fetchLeagues(token, keyword);
+            }, 300);
+
+            searchBox.addEventListener('input', (e) => {
+                const keyword = e.target.value.trim();
+                debouncedFetch(keyword);
+            });
+
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const keyword = e.target.value.trim();
+                    debouncedFetch(keyword);
+                }
+            });
+        }
     } catch (error) {
         console.error('User initialization error:', error.message);
         if (!getCookie("token")) {
@@ -234,3 +250,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 });
+
+// Debounce function to limit API calls during typing
+function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+}

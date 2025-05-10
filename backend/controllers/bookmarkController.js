@@ -53,26 +53,42 @@ const getBookmarkById = async (req, res) => {
 const getBookmarksByUser = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({ message: 'User not authenticated' });
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
     }
 
     const userId = req.params.userId;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 6;
+    const category = req.query.category || '';
+    const keyword = req.query.keyword || '';
 
-    // Kiểm tra xem user có quyền xem danh sách bookmark không
+    console.log('Request params:', { userId, page, limit, category, keyword });
+
     if (req.user._id.toString() !== userId.toString()) {
-      return res.status(403).json({ message: 'You can only view your own bookmarks' });
+      return res.status(403).json({ success: false, message: 'You can only view your own bookmarks' });
     }
 
-    const bookmarks = await bookmarkService.getBookmarksByUser(userId, page, limit);
-    res.status(200).json(bookmarks);
+    const result = await bookmarkService.getBookmarksByUser(userId, page, limit, category, keyword);
+    console.log('Service result:', result);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        bookmarks: result.bookmarks,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        }
+      }
+    });
   } catch (error) {
     console.error('Error in getBookmarksByUser controller:', error.message);
-    if (error.message === 'Invalid UserID format') {
-      return res.status(400).json({ message: error.message });
+    if (error.message === 'Invalid UserID format' || error.message.startsWith('Category')) {
+      return res.status(400).json({ success: false, message: error.message });
     }
-    res.status(500).json({ message: 'Lỗi khi lấy danh sách bookmark', error: error.message });
+    res.status(500).json({ success: false, message: 'Lỗi khi lấy danh sách bookmark', error: error.message });
   }
 };
 

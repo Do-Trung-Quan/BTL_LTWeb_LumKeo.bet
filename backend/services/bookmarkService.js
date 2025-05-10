@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Bookmark = require('../models/Bookmark');
 const Article = require('../models/Article');
+const Category = require('../models/Category');
 // Tạo bookmark
 const createBookmark = async (userId, articleId) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -50,37 +51,71 @@ const getBookmarkById = async (bookmarkId) => {
 };
 
 // Lấy danh sách bookmark theo User
-const getBookmarksByUser = async (userId, page, limit) => {
+const getBookmarksByUser = async (userId, page, limit, category = '', keyword = '') => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid UserID format');
   }
 
-  const skip = (page - 1) * limit;
+  // Build match conditions for ArticleID population
+  const articleMatch = {};
 
-  const bookmarks = await Bookmark.find({ UserID: userId })
-    .skip(skip)
-    .limit(limit)
-    .populate('UserID', 'username avatar') // Populate user fields
+  // Optional: Filter by category
+  if (category && category !== 'Tất cả') {
+    const categoryDoc = await Category.findOne({ name: category.trim() }).catch(err => {
+      console.error('Error finding category:', err);
+      throw new Error(`Category '${category}' not found`);
+    });
+    if (!categoryDoc) {
+      throw new Error(`Category '${category}' not found`);
+    }
+    articleMatch.CategoryID = categoryDoc._id;
+  }
+
+  // Optional: Filter by keyword in title
+  if (keyword && keyword.trim() !== '') {
+    articleMatch.title = { $regex: keyword.trim(), $options: 'i' };
+  }
+
+  // Fetch all bookmarks with populated ArticleID
+  const allBookmarks = await Bookmark.find({ UserID: userId })
+    .populate({
+      path: 'UserID',
+      select: 'username avatar'
+    })
     .populate({
       path: 'ArticleID',
-      select: 'title thumbnail created_at slug', // Include slug field
+      match: articleMatch,
+      select: 'title thumbnail created_at slug',
       populate: {
-        path: 'CategoryID', // Populate CategoryID within ArticleID
-        select: 'name' // Only select the 'name' field from Category
+        path: 'CategoryID',
+        select: 'name'
       }
     })
-    .sort({ created_at: -1 }); // Sắp xếp theo thời gian tạo, mới nhất trước
+    .sort({ created_at: -1 })
+    .catch(err => {
+      console.error('Error fetching bookmarks:', err);
+      throw new Error('Error fetching bookmarks');
+    });
 
-  const total = await Bookmark.countDocuments({ UserID: userId });
+  // Filter out entries where ArticleID didn't match the criteria
+  const filteredBookmarks = allBookmarks.filter(bm => bm.ArticleID);
+
+  // Calculate total count after filtering
+  const total = filteredBookmarks.length;
+
+  // Apply pagination on the filtered results
+  const skip = (page - 1) * limit;
+  const paginatedBookmarks = filteredBookmarks.slice(skip, skip + limit);
 
   return {
-    data: bookmarks,
+    bookmarks: paginatedBookmarks,
     total,
-    page: parseInt(page),
-    limit: parseInt(limit),
-    totalPages: Math.ceil(total / limit),
+    page,
+    limit,
+    totalPages: total > 0 ? Math.ceil(total / limit) : 0
   };
 };
+
 // Xóa bookmark
 const deleteBookmark = async (bookmarkId, userId) => {
   if (!mongoose.Types.ObjectId.isValid(bookmarkId)) {

@@ -1,33 +1,64 @@
-{/* <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script> */}
+// Hiển thị form Đăng nhập
+function showLoginForm() {
+    const loginForm = document.getElementById('login-form');
+    const verifyEmailForm = document.getElementById('verify-email-form');
+    const resetForm = document.getElementById('password-reset-form');
+
+    // Ẩn các form khác trước
+    verifyEmailForm.classList.remove('show');
+    resetForm.classList.remove('show');
+    
+    setTimeout(() => {
+        verifyEmailForm.style.display = 'none';
+        resetForm.style.display = 'none';
+        loginForm.style.display = 'block';
+        loginForm.classList.remove('hide');
+    }, 500);
+}
+
+// Hiển thị form Xác minh Email
+function showVerifyEmailForm() {
+    const loginForm = document.getElementById('login-form');
+    const verifyEmailForm = document.getElementById('verify-email-form');
+    const resetForm = document.getElementById('password-reset-form');
+    
+    // Ẩn các form khác trước
+    loginForm.classList.add('hide');
+    resetForm.classList.remove('show');
+    
+    setTimeout(() => {
+        loginForm.style.display = 'none';
+        resetForm.style.display = 'none';
+        verifyEmailForm.style.display = 'block';
+        setTimeout(() => {
+            verifyEmailForm.classList.add('show');
+        }, 10);
+    }, 500);
+}
 
 // Hiển thị form Reset mật khẩu
 function showResetForm() {
     const loginForm = document.getElementById('login-form');
+    const verifyEmailForm = document.getElementById('verify-email-form');
     const resetForm = document.getElementById('password-reset-form');
     
+    // Ẩn các form khác trước
     loginForm.classList.add('hide');
-    resetForm.style.display = 'block';
-    setTimeout(() => {
-        resetForm.classList.add('show');
-    }, 10);
-}
-
-// Hiển thị form Đăng nhập
-function showLoginForm() {
-    const loginForm = document.getElementById('login-form');
-    const resetForm = document.getElementById('password-reset-form');
-    
-    resetForm.classList.remove('show');
-    loginForm.classList.remove('hide');
+    verifyEmailForm.classList.remove('show');
     
     setTimeout(() => {
-        resetForm.style.display = 'none';
+        loginForm.style.display = 'none';
+        verifyEmailForm.style.display = 'none';
+        resetForm.style.display = 'block';
+        setTimeout(() => {
+            resetForm.classList.add('show');
+        }, 10);
     }, 500);
 }
 
 // Đăng nhập — Gọi API
 document.getElementById('login-form').addEventListener('submit', async function(event) {
-    event.preventDefault();  // Ngừng gửi form theo cách mặc định
+    event.preventDefault();
 
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
@@ -40,41 +71,52 @@ document.getElementById('login-form').addEventListener('submit', async function(
     try {
         console.log('Data being sent:', { username, password });
         const response = await fetch('http://localhost:3000/api/login/', {
-            method: 'POST',  // Gửi dữ liệu qua POST request
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })  // Gửi dữ liệu trong body của request
+            body: JSON.stringify({ username, password })
         });
 
         const data = await response.json();
-        console.log('Phản hồi từ backend:', data); // Log để kiểm tra
+        console.log('Phản hồi từ backend:', data);
 
         if (response.ok) {
-            // Lưu token vào cookie, hết hạn sau 7 ngày
             document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; secure`;
-
-            // Kiểm tra role trước khi vào switch
-            if (!data.user || !data.user.role) {
-                alert('Không nhận được quyền truy cập từ server.');
-                return;
-            }
-
-            // Chuyển role về chữ thường để đảm bảo khớp với case
-            const role = data.user.role.toLowerCase();
-            switch (role) {
-                case 'admin':
-                    window.location.href = '../Thuy + DucMinh/ADMIN_QLBB.html';
-                    break;
-                case 'author':
-                    window.location.href = '../Thuy + DucMinh/AUTHOR_QLBV.html';
-                    break;
-                case 'user':
-                    window.location.href = '../Thuy + DucMinh/USER_BBDL.html';
-                    break;
-                default:
-                    alert('Không xác định được quyền truy cập: ' + role);
-            }
+            window.location.href = '../index.html';
         } else {
             alert(data.message || 'Sai tài khoản hoặc mật khẩu');
+        }
+    } catch (error) {
+        alert(`Lỗi kết nối: ${error.message}`);
+    }
+});
+
+// Verify email and send OTP
+document.getElementById('verify-email-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const email = document.getElementById('verify-email').value.trim();
+
+    if (!email) {
+        alert('Vui lòng nhập email!');
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:3000/api/send-otp/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            sessionStorage.setItem('resetEmail', email);
+            sessionStorage.setItem('otp', data.otp);
+            alert('OTP đã được gửi đến email của bạn!');
+            showResetForm();
+        } else {
+            alert(data.message || 'Email không hợp lệ hoặc không tìm thấy tài khoản.');
         }
     } catch (error) {
         alert(`Lỗi kết nối: ${error.message}`);
@@ -88,9 +130,22 @@ document.getElementById('password-reset-form').addEventListener('submit', async 
     const username = document.getElementById('reset-username').value.trim();
     const newPassword = document.getElementById('new-password').value.trim();
     const confirmPassword = document.getElementById('confirm-password').value.trim();
+    const otp = document.getElementById('otp').value.trim();
+
+    if (!username || !newPassword || !confirmPassword || !otp) {
+        alert('Vui lòng điền đầy đủ thông tin!');
+        return;
+    }
 
     if (newPassword !== confirmPassword) {
-        return alert('Mật khẩu xác nhận không khớp.');
+        alert('Mật khẩu xác nhận không khớp.');
+        return;
+    }
+
+    const storedOtp = sessionStorage.getItem('otp');
+    if (otp !== storedOtp) {
+        alert('Mã OTP không chính xác!');
+        return;
     }
 
     try {
@@ -100,25 +155,24 @@ document.getElementById('password-reset-form').addEventListener('submit', async 
             body: JSON.stringify({ username, newPassword })
         });
 
-        // Check if the response has a body before trying to parse JSON
         const contentType = response.headers.get('content-type');
         let data = {};
 
         if (response.status === 204) {
-            // 204 No Content: No body to parse
             data = { message: 'No content returned from server' };
         } else if (contentType && contentType.includes('application/json')) {
-            // Only parse as JSON if the Content-Type is application/json
             data = await response.json();
         } else {
-            // If not JSON, treat the response as text
             const text = await response.text();
             throw new Error(`Unexpected response format: ${text}`);
         }
 
         if (response.ok) {
-            alert('Đặt lại mật khẩu thành công!');
+            alert('Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.');
             showLoginForm();
+            document.getElementById('password-reset-form').reset();
+            sessionStorage.removeItem('resetEmail');
+            sessionStorage.removeItem('otp');
         } else {
             alert(data.message || 'Đặt lại mật khẩu thất bại.');
         }
@@ -143,3 +197,6 @@ document.querySelectorAll('.toggle-password').forEach(icon => {
         }
     });
 });
+
+// Initialize with login form visible
+document.addEventListener('DOMContentLoaded', showLoginForm);

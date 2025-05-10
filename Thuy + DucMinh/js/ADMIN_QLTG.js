@@ -138,13 +138,35 @@ async function fetchPublishedArticleCount(authorId, token) {
     }
 }
 
+// Debounce function to limit API calls during typing
+function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func(...args), delay);
+    };
+}
+
 // Fetch and populate authors
 async function fetchAuthors(token) {
     try {
-        const page = parseInt(new URLSearchParams(window.location.search).get('page')) || 1;
-        const limit = parseInt(new URLSearchParams(window.location.search).get('limit')) || 10;
+        const params = new URLSearchParams(window.location.search);
+        const page = parseInt(params.get('page')) || 1;
+        const limit = parseInt(params.get('limit')) || 10;
+        const keyword = params.get('keyword') || '';
 
-        const res = await fetch(`http://localhost:3000/api/authors/?page=${page}&limit=${limit}`, {
+        // Update search box value if keyword exists in URL
+        const searchBox = document.querySelector('.search-box');
+        if (searchBox) {
+            searchBox.value = keyword;
+        }
+
+        const queryParams = new URLSearchParams({ page, limit });
+        if (keyword) {
+            queryParams.append('keyword', keyword);
+        }
+
+        const res = await fetch(`http://localhost:3000/api/authors/?${queryParams.toString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json',
@@ -211,10 +233,14 @@ async function fetchAuthors(token) {
             });
         });
 
-        // Initialize Pagination
+        // Initialize Pagination with keyword support
         if (!window.paginationInstance) {
             window.paginationInstance = new Pagination('.pagination', data.pagination.total, data.pagination.limit, (newPage) => {
-                window.history.pushState({}, '', `?page=${newPage}&limit=${limit}`);
+                const newParams = new URLSearchParams({ page: newPage, limit });
+                if (keyword) {
+                    newParams.append('keyword', keyword);
+                }
+                window.history.pushState({}, '', `?${newParams.toString()}`);
                 fetchAuthors(token);
             });
         }
@@ -245,6 +271,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateAdminInfo(user);
         const token = getCookie('token');
         await fetchAuthors(token);
+
+        // Add search functionality
+        const searchBox = document.querySelector('.search-box');
+        if (searchBox) {
+            const debouncedFetch = debounce(async (keyword) => {
+                const params = new URLSearchParams(window.location.search);
+                params.set('page', '1'); // Reset to page 1 on new search
+                if (keyword) {
+                    params.set('keyword', keyword);
+                } else {
+                    params.delete('keyword');
+                }
+                window.history.pushState({}, '', `?${params.toString()}`);
+                await fetchAuthors(token);
+            }, 300);
+
+            searchBox.addEventListener('input', (e) => {
+                const keyword = e.target.value.trim();
+                debouncedFetch(keyword);
+            });
+
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const keyword = e.target.value.trim();
+                    debouncedFetch(keyword);
+                }
+            });
+        }
     } catch (error) {
         console.error('User initialization error:', error.message);
         if (!getCookie("token")) {

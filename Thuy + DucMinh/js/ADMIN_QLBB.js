@@ -165,9 +165,26 @@ async function getCurrentUser() {
     }
 }
 
-async function fetchArticles(publishedState, token, page = 1, limit = 6) {
+// Debounce function to limit API calls during typing
+function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func(...args), delay);
+    };
+}
+
+async function fetchArticles(publishedState, token, page = 1, limit = 6, category = 'Tất cả', keyword = '') {
     try {
-        const res = await fetch(`http://localhost:3000/api/articles/published/${publishedState}/?page=${page}&limit=${limit}`, {
+        const queryParams = new URLSearchParams({ page, limit });
+        if (category && category !== 'Tất cả') {
+            queryParams.append('category', category);
+        }
+        if (keyword) {
+            queryParams.append('keyword', keyword);
+        }
+
+        const res = await fetch(`http://localhost:3000/api/articles/published/${publishedState}/?${queryParams.toString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json',
@@ -192,7 +209,7 @@ async function fetchArticles(publishedState, token, page = 1, limit = 6) {
     }
 }
 
-function populateTable(articles, tableBodyId, isPublished, currentPage) {
+function populateTable(articles, tableBodyId, isPublished, currentPage, category, keyword) {
     const tableBody = document.getElementById(tableBodyId);
     if (!tableBody) {
         console.error(`Table body not found for ID: ${tableBodyId}`);
@@ -258,7 +275,7 @@ function populateTable(articles, tableBodyId, isPublished, currentPage) {
                     });
                     if (res.ok) {
                         alert('Bài báo đã được duyệt thành công!');
-                        initializeTables(currentPage); // Refresh with current page
+                        initializeTables(currentPage, category, keyword); // Refresh with current filters
                     } else {
                         const errorText = await res.text();
                         alert(`Lỗi: ${errorText}`);
@@ -286,7 +303,7 @@ function populateTable(articles, tableBodyId, isPublished, currentPage) {
                     });
                     if (res.ok) {
                         alert('Bài báo đã được xóa thành công!');
-                        initializeTables(currentPage); // Refresh with current page
+                        initializeTables(currentPage, category, keyword); // Refresh with current filters
                     } else {
                         const errorText = await res.text();
                         alert(`Lỗi: ${errorText}`);
@@ -301,7 +318,7 @@ function populateTable(articles, tableBodyId, isPublished, currentPage) {
 }
 
 async function openModal(articleId) {
-const modal = document.getElementById('article-modal');
+    const modal = document.getElementById('article-modal');
     const token = getCookie('token');
     try {
         // Fetch article by ID
@@ -468,40 +485,111 @@ const modal = document.getElementById('article-modal');
 
 let publishedPagination, unpublishedPagination;
 
-async function initializeTables(page = 1) {
+// Function to reset pagination when filters change
+function resetPagination(totalPublished, totalUnpublished, page) {
+    publishedPagination = new Pagination('#published-table .pagination', totalPublished, 6, (newPage) => {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', newPage);
+        window.history.pushState({}, '', `?${params.toString()}`);
+        const updatedParams = new URLSearchParams(window.location.search);
+        const category = updatedParams.get('category') || 'Tất cả';
+        const keyword = updatedParams.get('keyword') || '';
+        initializeTables(newPage, category, keyword);
+    });
+    publishedPagination.setPage(page);
+
+    unpublishedPagination = new Pagination('#unpublished-table .pagination', totalUnpublished, 6, (newPage) => {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', newPage);
+        window.history.pushState({}, '', `?${params.toString()}`);
+        const updatedParams = new URLSearchParams(window.location.search);
+        const category = updatedParams.get('category') || 'Tất cả';
+        const keyword = updatedParams.get('keyword') || '';
+        initializeTables(newPage, category, keyword);
+    });
+    unpublishedPagination.setPage(page);
+}
+
+async function initializeTables(page = 1, category = 'Tất cả', keyword = '') {
     const token = getCookie('token');
-    const publishedData = await fetchArticles('published', token, page, 6);
-    const unpublishedData = await fetchArticles('unpublished', token, page, 6);
+    const searchBox = document.querySelector('.search-box');
+    if (searchBox && searchBox.value.trim() === '' && keyword !== '') {
+        keyword = ''; // Reset keyword if search box is empty
+    }
+
+    // Always use the latest category and keyword from URL if available
+    const params = new URLSearchParams(window.location.search);
+    const urlCategory = params.get('category') || category;
+    const urlKeyword = params.get('keyword') || keyword;
+
+    const publishedData = await fetchArticles('published', token, page, 6, urlCategory, urlKeyword);
+    const unpublishedData = await fetchArticles('unpublished', token, page, 6, urlCategory, urlKeyword);
 
     console.log('Published data:', publishedData);
     console.log('Unpublished data:', unpublishedData);
     console.log('Pagination constructor available:', typeof Pagination !== 'undefined');
+    console.log('Current filters - category:', urlCategory, 'keyword:', urlKeyword);
 
-    populateTable(publishedData.articles, 'published-body', true, page);
-    populateTable(unpublishedData.articles, 'unpublished-body', false, page);
+    populateTable(publishedData.articles, 'published-body', true, page, urlCategory, urlKeyword);
+    populateTable(unpublishedData.articles, 'unpublished-body', false, page, urlCategory, urlKeyword);
 
-    // Initialize or update pagination for published articles
-    if (!publishedPagination) {
-        publishedPagination = new Pagination('#published-table .pagination', publishedData.total, 6, (newPage) => {
-            initializeTables(newPage);
-        });
-        console.log('Initialized publishedPagination:', publishedPagination);
-    } else {
-        publishedPagination.updateTotalItems(publishedData.total);
-        publishedPagination.setPage(page);
-        console.log('Updated publishedPagination:', publishedPagination);
+    // Reset pagination to ensure the callback uses the latest filters
+    resetPagination(publishedData.total, unpublishedData.total, page);
+}
+
+async function populateTheLoaiDropdown(categories, leagues) {
+    const theLoaiMenu = document.getElementById('theLoai-menu');
+    if (!theLoaiMenu) {
+        console.error('TheLoai menu element not found');
+        return;
     }
 
-    // Initialize or update pagination for unpublished articles
-    if (!unpublishedPagination) {
-        unpublishedPagination = new Pagination('#unpublished-table .pagination', unpublishedData.total, 6, (newPage) => {
-            initializeTables(newPage);
+    try {
+        // Show loading state
+        theLoaiMenu.innerHTML = '<li><a href="#" data-category="">Đang tải...</a></li>';
+
+        // Add the "Tất cả" option
+        theLoaiMenu.innerHTML = '<li><a href="#" data-category="Tất cả">Tất cả</a></li>';
+
+        // Add all categories (type: 'Category'), excluding "Giải đấu"
+        const categoryItems = categories
+            .filter(cat => cat.type === 'Category' && cat.name !== 'Giải đấu')
+            .map(category => {
+                return `<li><a href="#" data-category="${category.name}" data-type="category" data-id="${category._id}">${category.name}</a></li>`;
+            })
+            .join('');
+
+        // Add all leagues (type: 'League') without filtering
+        const leagueItems = leagues
+            .filter(league => league.type === 'League')
+            .map(league => {
+                const logo = league.logo_url ? `<img src="${league.logo_url}" alt="${league.name}" style="width: 20px; margin-right: 5px;">` : '';
+                return `<li><a href="#" data-category="${league.name}" data-type="league" data-id="${league._id}">${logo}${league.name}</a></li>`;
+            })
+            .join('');
+
+        // Append all items to the menu
+        theLoaiMenu.innerHTML += categoryItems + leagueItems;
+
+        // Add event listeners to dropdown items
+        theLoaiMenu.querySelectorAll('a').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const selectedCategory = e.target.getAttribute('data-category');
+                const params = new URLSearchParams(window.location.search);
+                params.set('page', '1'); // Reset to page 1 on new filter
+                params.set('category', selectedCategory);
+                const keyword = params.get('keyword') || '';
+                window.history.pushState({}, '', `?${params.toString()}`);
+                initializeTables(1, selectedCategory, keyword);
+            });
         });
-        console.log('Initialized unpublishedPagination:', unpublishedPagination);
-    } else {
-        unpublishedPagination.updateTotalItems(unpublishedData.total);
-        unpublishedPagination.setPage(page);
-        console.log('Updated unpublishedPagination:', unpublishedPagination);
+
+        console.log('TheLoai dropdown populated successfully');
+    } catch (error) {
+        console.error('Error populating TheLoai dropdown:', error);
+        theLoaiMenu.innerHTML = '<li><a href="#" data-category="Tất cả">Tất cả</a></li>' +
+                                '<li><a href="#" data-category="">Không có thể loại</a></li>';
     }
 }
 
@@ -522,8 +610,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.currentUser = user;
         updateAdminInfo(user);
 
-        await fetchCategories();
-        await fetchLeagues();
+        const categories = await fetchCategories();
+        const leagues = await fetchLeagues();
+        await populateTheLoaiDropdown(categories, leagues);
+
+        const params = new URLSearchParams(window.location.search);
+        const page = parseInt(params.get('page')) || 1;
+        const category = params.get('category') || 'Tất cả';
+        const keyword = params.get('keyword') || '';
+
+        // Update search box with keyword from URL
+        const searchBox = document.querySelector('.search-box');
+        if (searchBox) {
+            searchBox.value = keyword;
+        }
 
         const publishedBtn = document.getElementById('published-btn');
         const unpublishedBtn = document.getElementById('unpublished-btn');
@@ -535,7 +635,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             unpublishedBtn.classList.remove('active_btn');
             publishedTable.style.display = 'block';
             unpublishedTable.style.display = 'none';
-            initializeTables(1); // Reset to first page
+            const params = new URLSearchParams(window.location.search);
+            const page = parseInt(params.get('page')) || 1;
+            const category = params.get('category') || 'Tất cả';
+            const keyword = params.get('keyword') || '';
+            initializeTables(page, category, keyword);
         });
 
         unpublishedBtn.addEventListener('click', () => {
@@ -543,10 +647,42 @@ document.addEventListener("DOMContentLoaded", async () => {
             publishedBtn.classList.remove('active_btn');
             unpublishedTable.style.display = 'block';
             publishedTable.style.display = 'none';
-            initializeTables(1); // Reset to first page
+            const params = new URLSearchParams(window.location.search);
+            const page = parseInt(params.get('page')) || 1;
+            const category = params.get('category') || 'Tất cả';
+            const keyword = params.get('keyword') || '';
+            initializeTables(page, category, keyword);
         });
 
-        initializeTables(1);
+        // Add search functionality
+        if (searchBox) {
+            const debouncedFetch = debounce(async (keyword) => {
+                const params = new URLSearchParams(window.location.search);
+                params.set('page', '1'); // Reset to page 1 on new search
+                if (keyword) {
+                    params.set('keyword', keyword);
+                } else {
+                    params.delete('keyword');
+                }
+                const selectedCategory = params.get('category') || 'Tất cả';
+                window.history.pushState({}, '', `?${params.toString()}`);
+                await initializeTables(1, selectedCategory, keyword);
+            }, 300);
+
+            searchBox.addEventListener('input', (e) => {
+                const keyword = e.target.value.trim();
+                debouncedFetch(keyword);
+            });
+
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const keyword = e.target.value.trim();
+                    debouncedFetch(keyword);
+                }
+            });
+        }
+
+        initializeTables(page, category, keyword);
     } catch (error) {
         console.error('User initialization error:', error.message);
         if (!getCookie("token")) {

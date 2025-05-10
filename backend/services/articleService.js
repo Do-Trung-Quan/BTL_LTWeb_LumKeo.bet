@@ -80,9 +80,15 @@ const createArticle = async (articleData, file) => {
 };
 
 // 2. Get All Post Articles (Lấy tất cả bài đăng đã duyệt, sắp xếp theo ngày đăng DESC)
-const getAllPostArticles = async (page, limit) => {
+const getAllPostArticles = async (page, limit, keyword = '') => {
   try {
-    const query = { is_published: true }; // Use consistent field name
+    const query = { is_published: true };
+
+    // Nếu có từ khóa, thêm điều kiện tìm kiếm theo title (không phân biệt hoa thường)
+    if (keyword && keyword.trim() !== '') {
+      query.title = { $regex: keyword.trim(), $options: 'i' };
+    }
+
     const options = {
       sort: { published_date: -1 },
       populate: [
@@ -112,6 +118,7 @@ const getAllPostArticles = async (page, limit) => {
     throw new Error(`Error fetching articles: ${error.message}`);
   }
 };
+
 
 // 3. Get Article by ID (Lấy thông tin bài báo theo ID)
 const getArticleById = async (articleId) => {
@@ -197,21 +204,39 @@ const getArticleByCategory = async (categoryId, page, limit) => {
 };
 
 // 6. Get Article by Author (Lấy bài báo theo author_id - Kiểm tra role)
-const getArticleByAuthor = async (authorId, page, limit) => {
+const getArticleByAuthor = async (authorId, page, limit, category = '', keyword = '') => {
   const skip = (page - 1) * limit;
-  // Kiểm tra role của UserID (giả định role là 'author')
+
+  // Kiểm tra role của UserID
   const user = await User.findById(authorId);
   if (!user) throw new Error('User not found');
   if (user.role !== 'author') throw new Error('User is not an author');
 
-  const articles = await Article.find({ UserID: authorId })
+  // Xây dựng query lọc
+  const query = { UserID: authorId };
+
+  // Nếu có category, lọc theo CategoryID
+  if (category && category !== 'Tất cả') {
+    const categoryDoc = await Category.findOne({ name: category.trim() });
+    if (!categoryDoc) {
+      throw new Error(`Category '${category}' not found`);
+    }
+    query.CategoryID = categoryDoc._id;
+  }
+
+  // Nếu có từ khóa, lọc theo title
+  if (keyword && keyword.trim() !== '') {
+    query.title = { $regex: keyword.trim(), $options: 'i' };
+  }
+
+  const articles = await Article.find(query)
     .sort({ created_at: -1 })
     .skip(skip)
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
 
-  const total = await Article.countDocuments({ UserID: authorId });
+  const total = await Article.countDocuments(query);
 
   return {
     articles,
@@ -224,17 +249,35 @@ const getArticleByAuthor = async (authorId, page, limit) => {
 
 
 // 7. Get Article by Published State (Lấy bài báo theo trạng thái duyệt)
-const getArticleByPublishedState = async (publishedState, page, limit) => {
+const getArticleByPublishedState = async (publishedState, page, limit, category = '', keyword = '') => {
   const skip = (page - 1) * limit;
-  const isPublished = publishedState === 'published' ? true : false;
-  const articles = await Article.find({ is_published: isPublished })
+  const isPublished = publishedState === 'published';
+
+  // Build base query
+  const query = { is_published: isPublished };
+
+  // Optional: Filter by category
+  if (category && category !== 'Tất cả') {
+    const categoryDoc = await Category.findOne({ name: category.trim() });
+    if (!categoryDoc) {
+      throw new Error(`Category '${category}' not found`);
+    }
+    query.CategoryID = categoryDoc._id;
+  }
+
+  // Optional: Filter by keyword in title
+  if (keyword && keyword.trim() !== '') {
+    query.title = { $regex: keyword.trim(), $options: 'i' }; // case-insensitive match
+  }
+
+  const articles = await Article.find(query)
     .sort({ created_at: -1 })
     .skip(skip)
     .limit(limit)
     .populate('UserID', 'username avatar')
     .populate('CategoryID', 'name slug type');
 
-  const total = await Article.countDocuments({ is_published: isPublished });
+  const total = await Article.countDocuments(query);
 
   return {
     articles,
@@ -287,41 +330,74 @@ const getNewPublishedArticlesStats = async () => {
 };
 
 // 9. Get All Viewed Articles by User (Lấy danh sách bài báo đã đọc của người dùng)
-const getAllViewedArticlesByUser = async (userId, page, limit) => {
+const getAllViewedArticlesByUser = async (userId, page, limit, category = '', keyword = '') => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid UserID format');
   }
-  const skip = (page - 1) * limit;
-  const viewedArticles = await ViewHistory.find({ UserID: userId })
-    .skip(skip)
-    .limit(limit)
-    .populate('UserID', 'username avatar') // Populate user fields
+
+  // Build match conditions for ArticleID population
+  const articleMatch = {};
+
+  // Optional: Filter by category
+  if (category && category !== 'Tất cả') {
+    const categoryDoc = await Category.findOne({ name: category.trim() }).catch(err => {
+      console.error('Error finding category:', err);
+      throw new Error(`Category '${category}' not found`);
+    });
+    if (!categoryDoc) {
+      throw new Error(`Category '${category}' not found`);
+    }
+    articleMatch.CategoryID = categoryDoc._id;
+  }
+
+  // Optional: Filter by keyword in title
+  if (keyword && keyword.trim() !== '') {
+    articleMatch.title = { $regex: keyword.trim(), $options: 'i' };
+  }
+
+  // Fetch all viewed articles with populated ArticleID
+  const allViewedArticles = await ViewHistory.find({ UserID: userId })
+    .populate('UserID', 'username avatar')
     .populate({
       path: 'ArticleID',
-      select: 'title thumbnail created_at slug', // Add slug to selected fields
+      match: articleMatch,
+      select: 'title thumbnail created_at slug CategoryID',
       populate: {
-        path: 'CategoryID', // Populate CategoryID within ArticleID
-        select: 'name' // Only select the 'name' field from Category
+        path: 'CategoryID',
+        select: 'name slug type'
       }
     })
-    .sort({ viewed_at: -1 }); // Sắp xếp theo thời gian xem, mới nhất trước
+    .sort({ viewed_at: -1 })
+    .catch(err => {
+      console.error('Error fetching viewed articles:', err);
+      throw new Error('Error fetching viewed articles');
+    });
 
-  const total = await ViewHistory.countDocuments({ UserID: userId });
+  // Filter out entries where ArticleID didn't match the criteria
+  const filteredArticles = allViewedArticles.filter(vh => vh.ArticleID);
+
+  // Calculate total count after filtering
+  const total = filteredArticles.length;
+
+  // Apply pagination on the filtered results
+  const skip = (page - 1) * limit;
+  const paginatedArticles = filteredArticles.slice(skip, skip + limit);
+
   return {
-    data: viewedArticles,
+    viewedArticles: paginatedArticles,
     total,
     page,
     limit,
-    totalPages: Math.ceil(total / limit),
+    totalPages: total > 0 ? Math.ceil(total / limit) : 0
   };
 };
 
-
 // 10. Delete a View History Record (Xóa một lịch sử xem bài báo)
 const deleteViewHistory = async (historyId, userId) => {
+  if (!userId) throw new Error('Không xác định được người dùng.');
   const history = await ViewHistory.findOneAndDelete({
     _id: historyId,
-    UserID: userId // Ensure the history belongs to the user
+    UserID: userId 
   });
 
   if (!history) {

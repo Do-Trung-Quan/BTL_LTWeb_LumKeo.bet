@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['admin', 'author', 'user'], required: true },
+  email: { type: String, required: true, unique: true },
   avatar: { type: String, default: 'https://res.cloudinary.com/dsm1uhecl/image/upload/v1744786758/defaultAva_qhcu41.jpg' },
   created_at: { type: Date, default: Date.now },
   last_login: { type: Date, default: null },

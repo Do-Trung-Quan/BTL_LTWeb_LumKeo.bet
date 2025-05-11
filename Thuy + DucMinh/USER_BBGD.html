@@ -20,26 +20,41 @@
         <nav class="menu">
             <ul>
                 <li><a href="../index.html">Trang chủ</a></li>
-                
                 <li class="dropdown">
-                  <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="../Quang/giaidau/html/giaidau-EPL.html">Premier League</a></li>
-                    <li><a href="../Quang/giaidau/html/giaidau-LaLiga.html">La Liga</a></li>
-                    <li><a href="../Quang/giaidau/html/giaidau-seria.html">Serie A</a></li>
-                    <li><a href="../Quang/giaidau/html/giaidau-bundes.html">Bundesliga</a></li>
-                    <li><a href="../Quang/giaidau/html/giaidau-l1.html">Ligue 1</a></li>
-                    <li><a href="../Quang/giaidau/html/giaidau-vleague.html">V.League 1</a></li>
-                  </ul>
+                    <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../Quang/giaidau/html/giaidau-EPL.html?slug=premier-league">Premier League</a></li>
+                        <li><a href="../Quang/giaidau/html/giaidau-LaLiga.html?slug=la-liga">La Liga</a></li>
+                        <li><a href="../Quang/giaidau/html/giaidau-seria.html?slug=serie-a">Serie A</a></li>
+                        <li><a href="../Quang/giaidau/html/giaidau-bundes.html?slug=bundesliga">Bundesliga</a></li>
+                        <li><a href="../Quang/giaidau/html/giaidau-l1.html?slug=ligue-1">Ligue 1</a></li>
+                        <li><a href="../Quang/giaidau/html/giaidau-vleague.html?slug=v-league">V.League 1</a></li>
+                    </ul>
                 </li>
-                <li><a href="../Quang/giaidau/html/bongdaVN.html">Bóng đá Việt Nam</a></li>
-                <li><a href="../Quang/giaidau/html/bongdaTG.html">Bóng đá thế giới</a></li>
+                <li><a href="../Quang/giaidau/html/bongdaVN.html?slug=bong-da-viet-nam">Bóng đá Việt Nam</a></li>
+                <li><a href="../Quang/giaidau/html/bongdaTG.html?slug=bong-da-the-gioi">Bóng đá thế giới</a></li>
             </ul>
         </nav>
         <div class="nav-icons">
             <a class="search-button">
                 <img src="../pics/header/Search.png" alt="Search Icon">
             </a>
+             <!-- Notification Icon -->
+            <div class="notification-dropdown">
+                <a class="notification-button" aria-label="Thông báo">
+                    <img src="../pics/header/notification-bell.png" alt="Notification Icon">
+                    <span class="notification-count" id="notification-count">0</span>
+                </a>
+                <div class="notification-menu" id="notification-menu">
+                    <div class="notification-header">
+                        <span>Thông báo</span>
+                        <a href="#" id="mark-all-read">Đánh dấu tất cả đã đọc</a>
+                    </div>
+                    <ul class="notification-list" id="notification-list">
+                        <li>Không có thông báo mới</li>
+                    </ul>
+                </div>
+            </div>
             <a class="account-button" href="./USER_BBDL.html">
                 <img src="../pics/header/User.png" alt="User Icon">
             </a>
@@ -95,18 +110,13 @@
             </div>
     
             <div class="functionBar">
-                <div class="dropdown_two">
-                    <button class="custom-button">THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i></button>
+                <!-- Category Dropdown -->
+                 <div class="dropdown_two">
+                    <button class="custom-button">
+                        THỂ LOẠI <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </button>
                     <ul class="dropdown-menu" id="theLoai-menu">
                         <li><a href="#" data-category="Tất cả">Tất cả</a></li>
-                        <li><a href="#" data-category="Bóng đá Việt Nam">Bóng đá Việt Nam</a></li>
-                        <li><a href="#" data-category="Bóng đá thế giới">Bóng đá thế giới</a></li>
-                        <li><a href="#" data-category="Premier League">Premier League</a></li>
-                        <li><a href="#" data-category="V.League 1">V.League 1</a></li>
-                        <li><a href="#" data-category="Ligue 1">Ligue 1</a></li>
-                        <li><a href="#" data-category="Bundesliga">Bundesliga</a></li>
-                        <li><a href="#" data-category="Serie A">Serie A</a></li>
-                        <li><a href="#" data-category="La Liga">La Liga</a></li>
                     </ul>
                 </div>
                 <input type="text" class="search-box" placeholder="Tìm kiếm...">
@@ -142,9 +152,8 @@
         <button class="next">Next →</button>
     </div>   
     <script src="./js/pagination.js"></script> 
-    <script src="./js/searchBar1.js"></script>
-    <script src="./js/filterCategory.js"></script>
     <script src="./js/AUTHOR_BDGD.js"></script>
     <script src="./js/logout.js"></script>
+    <script src="../Js/notification.js"></script>
 </body>
 </html>

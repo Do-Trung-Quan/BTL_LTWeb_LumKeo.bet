@@ -50,8 +50,15 @@ const createLeague = async (leagueData, file) => {
 };
 
 // 2. Get All Leagues (Lấy tất cả giải đấu, filter theo type = League)
-const getAllLeagues = async () => {
-  const leagues = await Category.find({ type: 'League' })
+const getAllLeagues = async (keyword = '') => {
+  const query = { type: 'League' };
+  if (keyword && keyword.trim() !== '') {
+    query.$or = [
+      { name: { $regex: keyword.trim(), $options: 'i' } },
+      { season_time: { $regex: keyword.trim(), $options: 'i' } }
+    ];
+  }
+  const leagues = await Category.find(query)
     .populate('parentCategory', 'name slug')
     .select('name slug type logo_url parentCategory season_time created_at');
   return leagues;

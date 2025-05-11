@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="SignupStyle.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body  style="background-image: url('Images/SignUpBackground.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<body style="background-image: url('Images/SignUpBackground.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
     <div class="signup-wrapper">
     <div class="signup-container">
         <form class="signup-form" onsubmit="handleSignup(event)">
@@ -15,6 +15,10 @@
             <div class="input-group">
                 <label for="new-username">Username:</label>
                 <input type="text" id="new-username" name="new-username" placeholder="Username...">
+            </div>
+            <div class="input-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Email...">
             </div>
             <div class="input-group">
                 <label for="new-password">Password:</label>
@@ -43,11 +47,12 @@ async function handleSignup(event) {
     event.preventDefault();
 
     const username = document.getElementById('new-username').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('new-password').value.trim();
     const confirmPassword = document.getElementById('confirm-password').value.trim();
     const role = document.querySelector('input[name="role"]:checked').value;
 
-    if (!username || !password || !confirmPassword) {
+    if (!username || !email || !password || !confirmPassword) {
         alert('Vui lòng điền đầy đủ thông tin!');
         return;
     }
@@ -61,10 +66,10 @@ async function handleSignup(event) {
         const response = await fetch('http://localhost:3000/api/register/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password, role })
+            body: JSON.stringify({ username, email, password, role })
         });
 
-        console.log({ username, password, role });
+        console.log({ username, email, password, role });
         const data = await response.json();
         
         if (response.ok) {

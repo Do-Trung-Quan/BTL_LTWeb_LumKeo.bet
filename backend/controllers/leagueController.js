@@ -29,7 +29,8 @@ const createLeague = async (req, res) => {
 // 2. Get All Leagues
 const getAllLeagues = async (req, res) => {
   try {
-    const leagues = await leagueService.getAllLeagues();  
+    const keyword = req.query.keyword || '';
+    const leagues = await leagueService.getAllLeagues(keyword);
     res.status(200).json(leagues);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching leagues', error: error.message });

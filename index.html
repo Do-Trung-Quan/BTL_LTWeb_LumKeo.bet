@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="./Js/Swiper.js" defer></script>
     <script src="./Js/Search-header.js" defer></script>
+    <script src="./Js/home.js"></script>
+    <script src="./Js/notification.js"></script>
 </head>
   <body>
     <!-- Header and Search-Header Section -->
@@ -31,22 +33,38 @@
                 <li class="dropdown">
                     <a href="#" aria-label="Giải đấu menu">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="./Quang/giaidau/html/giaidau-EPL.html">Premier League</a></li>
-                        <li><a href="./Quang/giaidau/html/giaidau-LaLiga.html">La Liga</a></li>
-                        <li><a href="./Quang/giaidau/html/giaidau-seria.html">Serie A</a></li>
-                        <li><a href="./Quang/giaidau/html/giaidau-bundes.html">Bundesliga</a></li>
-                        <li><a href="./Quang/giaidau/html/giaidau-l1.html">Ligue 1</a></li>
-                        <li><a href="./Quang/giaidau/html/giaidau-vleague.html">V.League 1</a></li>
+                        <li><a href="./Quang/giaidau/html/giaidau-EPL.html?slug=premier-league">Premier League</a></li>
+                        <li><a href="./Quang/giaidau/html/giaidau-LaLiga.html?slug=la-liga">La Liga</a></li>
+                        <li><a href="./Quang/giaidau/html/giaidau-seria.html?slug=serie-a">Serie A</a></li>
+                        <li><a href="./Quang/giaidau/html/giaidau-bundes.html?slug=bundesliga">Bundesliga</a></li>
+                        <li><a href="./Quang/giaidau/html/giaidau-l1.html?slug=ligue-1">Ligue 1</a></li>
+                        <li><a href="./Quang/giaidau/html/giaidau-vleague.html?slug=v-league">V.League 1</a></li>
                     </ul>
                 </li>
-                <li><a href="Quang/giaidau/html/bongdaVN.html">Bóng đá Việt Nam</a></li>
-                <li><a href="Quang/giaidau/html/bongdaTG.html">Bóng đá thế giới</a></li>
+                <li><a href="Quang/giaidau/html/bongdaVN.html?slug=bong-da-viet-nam">Bóng đá Việt Nam</a></li>
+                <li><a href="Quang/giaidau/html/bongdaTG.html?slug=bong-da-the-gioi">Bóng đá thế giới</a></li>
             </ul>
         </nav>
         <div class="nav-icons">
             <a class="search-button" aria-label="Tìm kiếm">
                 <img src="./pics/header/Search.png" alt="Search Icon">
             </a>
+                       <!-- Notification Icon -->
+            <div class="notification-dropdown">
+                <a class="notification-button" aria-label="Thông báo">
+                    <img src="./pics/header/notification-bell.png" alt="Notification Icon">
+                    <span class="notification-count" id="notification-count">0</span>
+                </a>
+                <div class="notification-menu" id="notification-menu">
+                    <div class="notification-header">
+                        <span>Thông báo</span>
+                        <a href="#" id="mark-all-read">Đánh dấu tất cả đã đọc</a>
+                    </div>
+                    <ul class="notification-list" id="notification-list">
+                        <li>Không có thông báo mới</li>
+                    </ul>
+                </div>
+            </div>
             <a class="account-button" href="#" aria-label="Tài khoản người dùng">
                 <img src="./pics/header/User.png" alt="User Icon">
             </a>
@@ -295,6 +313,5 @@
         </div>
     </div>
   </footer>
-  <script src="./Js/home.js"></script>
   </body>
 </html>

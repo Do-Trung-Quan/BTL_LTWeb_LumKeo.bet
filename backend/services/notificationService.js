@@ -97,12 +97,14 @@ const NotificationService = {
     if (!article) {
       throw new Error('Article not found');
     }
+
     // Tìm tất cả user có role admin
     const admins = await User.find({ role: 'admin' }).lean();
     console.log('Found admins:', admins.length);
     if (!admins || admins.length === 0) {
       throw new Error('No admin users found');
     }
+
     const notifications = await Promise.all(
       admins.map(async (admin) => {
         const notification = new Notification({
@@ -121,30 +123,20 @@ const NotificationService = {
   },
 
   // Lấy danh sách thông báo theo UserID
-  async getNotificationsByReceiver(userId, page = 1, limit = 10) {
+  async getNotificationsByReceiver(userId) {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       throw new Error('Invalid UserID format');
     }
 
-    const skip = (page - 1) * limit;
-
     const notifications = await Notification.find({ UserID: userId })
       .sort({ created_at: -1 })
-      .skip(skip)
-      .limit(limit)
       .populate('UserID', 'username avatar')
       .lean();
-
-    const total = await Notification.countDocuments({ UserID: userId });
 
     return {
       success: true,
       data: {
         notifications,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
       },
       message: 'Notifications retrieved successfully',
     };

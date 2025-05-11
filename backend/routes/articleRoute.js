@@ -16,7 +16,7 @@ router.put('/articles/:id/publish/', authMiddleware(['admin']), articleControlle
 //Route yêu cầu đăng nhập
 router.get('/articles/author/:authorId/', authMiddleware(),  articleController.getArticleByAuthor);
 router.get('/articles/viewed/:userId/',  authMiddleware(), articleController.getAllViewedArticlesByUser);
-router.delete('/articles/viewed/:historyId', authMiddleware(), articleController.deleteViewHistory);
+router.delete('/articles/viewed/:historyId/', authMiddleware(), articleController.deleteViewHistory);
 router.post('/articles/:id/view/', authMiddleware(['user', 'author']), articleController.recordArticleView);
 
 // Route public (không cần phân quyền, người dùng có thể truy cập tự do)

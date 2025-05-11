@@ -1,4 +1,3 @@
-
 const NotificationService = require('../services/notificationService');
 
 const NotificationController = {
@@ -64,14 +63,12 @@ const NotificationController = {
       }
 
       const { receiver_id } = req.params;
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
 
       if (receiver_id !== req.user._id.toString()) {
         return res.status(403).json({ success: false, message: 'You can only view your own notifications' });
       }
 
-      const result = await NotificationService.getNotificationsByReceiver(receiver_id, page, limit);
+      const result = await NotificationService.getNotificationsByReceiver(receiver_id);
       res.status(200).json(result);
     } catch (error) {
       const status = error.message.includes('Invalid') ? 400 : 500;

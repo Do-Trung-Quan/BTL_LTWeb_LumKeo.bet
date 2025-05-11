@@ -2,12 +2,13 @@ const { CommentService } = require('../services/commentService');
 
 // Lấy danh sách bình luận theo bài viết
 exports.getCommentsByArticle = async (req, res) => {
-  try {
-    const comments = await CommentService.getCommentsByArticle(req.params.articleId);
-    res.status(200).json(comments);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
+    try {
+        const comments = await CommentService.getCommentsByArticle(req.params.id);
+        res.status(200).json(comments);
+    } catch (error) {
+        console.error('Error in getCommentsByArticle:', error.message);
+        res.status(500).json({ message: 'Lỗi khi tải bình luận.' });
+    }
 };
 
 // Tạo bình luận mới
@@ -46,7 +47,8 @@ exports.deleteComment = async (req, res) => {
       return res.status(401).json({ message: 'Người dùng chưa được xác thực' });
     }
     const userId = req.user._id;
-    await CommentService.deleteComment(req.params.commentId, userId);
+    const userRole = req.user.role;
+    await CommentService.deleteComment(req.params.commentId, userId, userRole);
     res.status(200).json({ message: 'Xóa bình luận thành công' });
   } catch (error) {
     res.status(400).json({ message: error.message });

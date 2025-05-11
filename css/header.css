@@ -213,3 +213,189 @@
   color: gray;
   margin-top: 5px;
 }
+
+/* Notification Dropdown */
+.notification-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.notification-dropdown .notification-button {
+    position: relative;
+    cursor: pointer;
+    display: block;
+    padding: 5px;
+}
+
+.notification-dropdown .notification-button img {
+    width: 32px;
+    height: 32px;
+}
+
+.notification-dropdown .notification-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 2px 6px;
+    display: none;
+    min-width: 18px;
+    text-align: center;
+}
+
+.notification-dropdown .notification-menu {
+    display: none;
+    position: absolute;
+    right: -10px;
+    top: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 320px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    margin-top: 10px;
+}
+
+.notification-dropdown .notification-menu.active {
+    display: block;
+}
+
+.notification-dropdown .notification-menu::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+}
+
+.notification-dropdown .notification-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-dropdown .notification-header span {
+    font-weight: bold;
+    color: #333;
+    font-size: 16px;
+}
+
+.notification-dropdown .notification-header a {
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.notification-dropdown .notification-list {
+    max-height: 300px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-dropdown .notification-list li {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.notification-dropdown .notification-list li.unread {
+    background-color: #f8f9fa;
+}
+
+.notification-dropdown .notification-list li.unread::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #007bff;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.notification-dropdown .notification-list li.read {
+    background-color: white;
+}
+
+.notification-dropdown .notification-list li:last-child {
+    border-bottom: none;
+}
+
+.notification-dropdown .notification-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    padding-right: 50px; /* Để dành không gian cho các nút */
+}
+
+.notification-dropdown .notification-message {
+    font-weight: 500;
+    color: #333;
+}
+
+.notification-dropdown .notification-time {
+    font-size: 12px;
+    color: #666;
+}
+
+.notification-dropdown .mark-read-btn,
+.notification-dropdown .delete-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.notification-dropdown .mark-read-btn:hover,
+.notification-dropdown .delete-btn:hover {
+    opacity: 1;
+}
+
+.notification-dropdown .mark-read-btn {
+    right: 30px;
+    color: #007bff;
+}
+
+.notification-dropdown .delete-btn {
+    right: 5px;
+    color: #dc3545;
+}
+
+.notification-dropdown .mark-read-btn i,
+.notification-dropdown .delete-btn i {
+    font-size: 14px;
+}
+
+.notification-dropdown #mark-all-read {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s ease;
+}
+
+.notification-dropdown #mark-all-read:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}

@@ -59,8 +59,9 @@ const getAllPostArticles = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = req.query.limit === '0' ? 0 : parseInt(req.query.limit) || 10;
+    const keyword = req.query.keyword || ''; // Lấy từ khóa từ query
 
-    const result = await articleService.getAllPostArticles(page, limit);
+    const result = await articleService.getAllPostArticles(page, limit, keyword);
 
     res.status(200).json({
       success: true,
@@ -75,9 +76,14 @@ const getAllPostArticles = async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching articles', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching articles',
+      error: error.message
+    });
   }
 };
+
 
 // 3. Get Article by ID (Lấy thông tin bài báo theo ID)
 const getArticleById = async (req, res) => {
@@ -154,9 +160,17 @@ const getArticleByCategory = async (req, res) => {
 const getArticleByAuthor = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
+    const limit = parseInt(req.query.limit) || 10;
+    const category = req.query.category || '';
+    const keyword = req.query.keyword || '';
 
-    const result = await articleService.getArticleByAuthor(req.params.authorId, page, limit);
+    const result = await articleService.getArticleByAuthor(
+      req.params.authorId,
+      page,
+      limit,
+      category,
+      keyword
+    );
 
     res.status(200).json({
       success: true,
@@ -171,7 +185,7 @@ const getArticleByAuthor = async (req, res) => {
       }
     });
   } catch (error) {
-    if (error.message === 'User not found' || error.message === 'User is not an author') {
+    if (error.message === 'User not found' || error.message === 'User is not an author' || error.message.startsWith('Category')) {
       return res.status(404).json({ success: false, message: error.message });
     }
     res.status(500).json({ success: false, message: 'Error fetching articles by author', error: error.message });
@@ -182,9 +196,17 @@ const getArticleByAuthor = async (req, res) => {
 const getArticleByPublishedState = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 6; // Default to 6 for admin panel
+    const limit = parseInt(req.query.limit) || 6;
+    const category = req.query.category || '';
+    const keyword = req.query.keyword || '';
 
-    const result = await articleService.getArticleByPublishedState(req.params.publishedState, page, limit);
+    const result = await articleService.getArticleByPublishedState(
+      req.params.publishedState,
+      page,
+      limit,
+      category,
+      keyword
+    );
 
     res.status(200).json({
       success: true,
@@ -199,9 +221,14 @@ const getArticleByPublishedState = async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching articles by published state', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching articles by published state',
+      error: error.message
+    });
   }
 };
+
 
 // 8. Get New Published Articles Statistics (Lấy số lượng bài báo mới trong 15 ngày)
 const getNewPublishedArticlesStats = async (req, res) => {
@@ -217,24 +244,29 @@ const getNewPublishedArticlesStats = async (req, res) => {
 const getAllViewedArticlesByUser = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
+      console.log('User not authenticated, req.user:', req.user);
       return res.status(401).json({ success: false, message: 'User not authenticated' });
     }
 
     const userId = req.params.userId;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
+    const limit = parseInt(req.query.limit) || 6;
+    const category = req.query.category || '';
+    const keyword = req.query.keyword || '';
 
-    // Kiểm tra xem user có quyền xem danh sách bookmark không
+    console.log('Request params:', { userId, page, limit, category, keyword });
+
     if (req.user._id.toString() !== userId.toString()) {
       return res.status(403).json({ success: false, message: 'You can only view your own histories' });
     }
 
-    const result = await articleService.getAllViewedArticlesByUser(userId, page, limit);
+    const result = await articleService.getAllViewedArticlesByUser(userId, page, limit, category, keyword);
+    console.log('Service result:', result);
 
     res.status(200).json({
       success: true,
       data: {
-        viewedArticles: result.data,
+        viewedArticles: result.viewedArticles,
         pagination: {
           total: result.total,
           page: result.page,
@@ -244,7 +276,12 @@ const getAllViewedArticlesByUser = async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching viewed articles', error: error.message });
+    console.error('Error in getAllViewedArticlesByUser:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching viewed articles',
+      error: error.message
+    });
   }
 };
 
@@ -252,14 +289,18 @@ const getAllViewedArticlesByUser = async (req, res) => {
 const deleteViewHistory = async (req, res) => {
   try {
     const { historyId } = req.params;
-    const userId = req.user.id; // Assuming authMiddleware adds the user to req.user
+    const userId = req.user._id;
+    
+    console.log('Deleting historyId:', historyId);
+    console.log('For userId:', userId);
+
     const result = await articleService.deleteViewHistory(historyId, userId);
     res.status(200).json(result);
   } catch (error) {
+    console.error('Delete error:', error.message);
     res.status(400).json({ success: false, message: error.message });
   }
 };
-
 
 // 11. Get All Post Articles Statistics (Lấy tổng số lượng bài báo đã đăng)
 const getAllPostArticlesStats = async (req, res) => {

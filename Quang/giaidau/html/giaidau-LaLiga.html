@@ -14,6 +14,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../../css/general.css">
     <script src="../../../Js/Search-header.js"></script>
+    <script src="../js/leagueDetail.js"></script>
+    <script src="../js/pagination.js"></script>
+    <script src="../../../Js/notification.js"></script>
+    <link rel="stylesheet" href="../css/pagination.css">
 </head>
 
 <body>
@@ -31,22 +35,38 @@
                 <li class="dropdown">
                     <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="../../giaidau/html/giaidau-EPL.html">Premier League</a></li>
-                        <li><a href="../../giaidau/html/giaidau-LaLiga.html">La Liga</a></li>
-                        <li><a href="../../giaidau/html/giaidau-seria.html">Serie A</a></li>
-                        <li><a href="../../giaidau/html/giaidau-bundes.html">Bundesliga</a></li>
-                        <li><a href="../../giaidau/html/giaidau-l1.html">Ligue 1</a></li>
-                        <li><a href="../../giaidau/html/giaidau-vleague.html">V.League 1</a></li>
+                        <li><a href="../../giaidau/html/giaidau-EPL.html?slug=premier-league">Premier League</a></li>
+                        <li><a href="../../giaidau/html/giaidau-LaLiga.html?slug=la-liga">La Liga</a></li>
+                        <li><a href="../../giaidau/html/giaidau-seria.html?slug=serie-a">Serie A</a></li>
+                        <li><a href="../../giaidau/html/giaidau-bundes.html?slug=bundesliga">Bundesliga</a></li>
+                        <li><a href="../../giaidau/html/giaidau-l1.html?slug=ligue-1">Ligue 1</a></li>
+                        <li><a href="../../giaidau/html/giaidau-vleague.html?slug=v-league">V.League 1</a></li>
                     </ul>
                 </li>
-                <li><a href="../../giaidau/html/bongdaVN.html">Bóng đá Việt Nam</a></li>
-                <li><a href="../../giaidau/html/bongdaTG.html">Bóng đá thế giới</a></li>
+                <li><a href="../../giaidau/html/bongdaVN.html?slug=bong-da-viet-nam">Bóng đá Việt Nam</a></li>
+                <li><a href="../../giaidau/html/bongdaTG.html?slug=bong-da-the-gioi">Bóng đá thế giới</a></li>
             </ul>
         </nav>
         <div class="nav-icons">
             <a class="search-button">
                 <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
             </a>
+             <!-- Notification Icon -->
+            <div class="notification-dropdown">
+                <a class="notification-button" aria-label="Thông báo">
+                    <img src="../../../pics/header/notification-bell.png" alt="Notification Icon">
+                    <span class="notification-count" id="notification-count">0</span>
+                </a>
+                <div class="notification-menu" id="notification-menu">
+                    <div class="notification-header">
+                        <span>Thông báo</span>
+                        <a href="#" id="mark-all-read">Đánh dấu tất cả đã đọc</a>
+                    </div>
+                    <ul class="notification-list" id="notification-list">
+                        <li>Không có thông báo mới</li>
+                    </ul>
+                </div>
+            </div>
             <a class="account-button" href="#">
                 <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
             </a>
@@ -94,175 +114,21 @@
                     <p class="hotnews-title">Tin nổi bật <i class="fa-solid fa-angle-right"></i></p>
                 </div>
                 <div class="news-container">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <div class="main-news">
-                            <img src="../image/content-img/Alvarez đưa Atletico lên đỉnh bảng La Liga.png"
-                                alt="Main News">
-                            <div class="main-overlay"></div>
-                            <div class="news-info">
-                                <span class="category">La Liga</span>
-                                <h3>Alvarez đưa Atletico lên đỉnh bảng La Liga</h3>
-                                <p>Tác giả - 9 giờ trước</p>
-                            </div>
+                        <div class="main-news" id="main-news">
+                            <!-- Nội dung sẽ được thêm động -->
                         </div>
                     </a>
-                    <div class="side-news">
-                        <div class="news-item-top">
-                            <a href="../../baichitiet/html/baichitiet.html">
-                                <img src="../image/content-img/Antony được xóa thẻ đỏ, sẵn sàng đấu Real.png" alt="">
-                                <div class="news-text">
-                                    <span class="category">La Liga</span>
-                                    <p>Antony được xóa thẻ đỏ, sẵn sàng đấu Real</p>
-                                    <small>Tác giả - 9 giờ trước</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="news-item-top">
-                            <a href="../../baichitiet/html/baichitiet.html">
-                                <img src="../image/content-img/Atletico vỡ mộng dẫn đầu La Liga.png" alt="">
-                                <div class="news-text">
-                                    <span class="category">La Liga</span>
-                                    <p>Atletico vỡ mộng dẫn đầu La Liga</p>
-                                    <small>Tác giả - 9 giờ trước</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="news-item-top">
-                            <a href="../../baichitiet/html/baichitiet.html">
-                                <img src="../image/content-img/Barca hoãn trận đấu vì bác sĩ đột tử.png" alt="">
-                                <div class="news-text">
-                                    <span class="category">La Liga</span>
-                                    <p>Barca hoãn trận đấu vì bác sĩ đột tử</p>
-                                    <small>Tác giả - 9 giờ trước</small>
-                                </div>
-                            </a>
-                        </div>
+                    <div class="side-news" id="side-news">
+                        <!-- Nội dung sẽ được thêm động -->
                     </div>
                 </div>
             </div>
-            <hr>
+            <div class="line"></div>
         </div>
-        <!-- seperate line-->
         <!-- tin duoi -->
         <div class="news-bottom">
-            <div class="news-list">
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Barca đòi lại đỉnh bảng La Liga với trận thắng đậm.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Barca đòi lại đỉnh bảng La Liga với trận thắng đậm</p>
-
-                            <small>Tác giả - 9 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Flick, Không ai tin Barca có thể đua tranh ba danh hiệu.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Flick: 'Không ai tin Barca có thể đua tranh ba danh hiệu'</p>
-
-                            <small>Tác giả - 8 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Real bám sát Barca trong ngày Modric lập siêu phẩm.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Real bám sát Barca trong ngày Modric lập siêu phẩm</p>
-
-                            <small>Tác giả - 7 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Real có thể phải trả giá vì thua Betis.png" alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Real có thể phải trả giá vì thua Betis</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Real rộng cửa vào chung kết Cup Nhà Vua.png" alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Real rộng cửa vào chung kết Cup Nhà Vua</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Real thua ngược đội bóng của Antony.png" alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Real thua ngược đội bóng của Antony</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Simeone-Trận hòa Barca 4-4 khiến tôi say mê.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Simeone:'Trận hòa Barca 4-4 khiến tôi say mê'</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Vì sao Antony tỏa sáng tại Real Betis.png" alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Vì sao Antony tỏa sáng tại Real Betis?</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Vinicius, Real yêu cầu tôi bỏ lễ trao Quả Bóng Vàng.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Vinicius: 'Real yêu cầu tôi bỏ lễ trao Quả Bóng Vàng'</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Yamal cười đùa với bàn chân nhuốm máu.png" alt="News Image">
-                        <div class="news-content">
-                            <h3>La Liga</h3>
-                            <p>Yamal cười đùa với bàn chân nhuốm máu</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
+            <div class="news-list1" id="news-list1">
+                <!-- Nội dung sẽ được thêm động -->
             </div>
             <!-- Bảng xếp hạng -->
             <div class="ranking">
@@ -436,13 +302,9 @@
                 </table>
             </div>
         </div>
-
+        <br>
         <!-- số trang -->
-        <div class="pagination">
-            <button id="prev"><i class="fa-solid fa-angle-left"></i></button>
-            <span id="page-number">01</span>
-            <button id="next"><i class="fa-solid fa-angle-right"></i></button>
-        </div>
+        <div class="pagination"></div>
         <!--tăng độ dài trang xem nút thôi không cần xóa đi 2 thẻ <br>-->
         <br>
         <br>
@@ -497,140 +359,6 @@
             </div>
         </footer>
     </div>
-    <script>
-        // Helper: Get cookie
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        }
-        
-        // Helper: Decode JWT
-        function decodeJwt(token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            } catch (error) {
-                console.error('Error decoding JWT:', error);
-                return null;
-            }
-        }
-        
-        // Fetch current user data
-        async function getCurrentUser() {
-            try {
-                const token = getCookie("token");
-                console.log('Token:', token);
-                if (!token) {
-                    throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
-                }
-        
-                const payload = decodeJwt(token);
-                if (!payload) {
-                    throw new Error("Token không hợp lệ!");
-                }
-        
-                const { id, username, role, avatar } = payload;
-                console.log('User ID:', id);
-                console.log('User Name:', username);
-                console.log('User Role:', role);
-                console.log('Full Payload:', payload);
-        
-                if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-                    throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
-                }
-        
-                let userData = { id, username, role, avatar };
-                try {
-                    const res = await fetch(`http://localhost:3000/api/users/${id}?_t=${Date.now()}`, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': `Bearer ${token.trim()}`
-                        }
-                    });
-        
-                    if (!res.ok) {
-                        const errorText = await res.text();
-                        console.warn('API Error:', errorText);
-                        if (res.status === 403) {
-                            console.warn('Permission denied for /api/users/:id, using token data');
-                            return userData;
-                        } else {
-                            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
-                        }
-                    }
-        
-                    const contentType = res.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error('Response is not JSON');
-                    }
-        
-                    const data = await res.json();
-                    const user = data.user || data;
-                    userData = {
-                        id,
-                        username: user.username !== undefined ? user.username : username,
-                        role: user.role !== undefined ? user.role : role,
-                        avatar: user.avatar !== undefined ? user.avatar : avatar
-                    };
-                } catch (apiError) {
-                    console.warn('Falling back to token data due to API error:', apiError);
-                    return userData;
-                }
-        
-                return userData;
-            } catch (error) {
-                console.error('getCurrentUser Error:', error);
-                throw error;
-            }
-        }
-        
-        // Update account buttons in both main navbar and search-header
-        document.addEventListener('DOMContentLoaded', async () => {
-            const accountButtons = document.querySelectorAll('.account-button');
-        
-            try {
-                const user = await getCurrentUser();
-                console.log('Logged-in user:', user);
-        
-                // Determine redirect URL based on role using correct relative paths from Quang/baichitiet/
-                let redirectUrl;
-                switch (user.role) {
-                    case 'admin':
-                        redirectUrl = '../../../Thuy + DucMinh/ADMIN_QLBB.html';
-                        break;
-                    case 'author':
-                        redirectUrl = '../../../Thuy + DucMinh/AUTHOR_QLBV.html';
-                        break;
-                    case 'user':
-                        redirectUrl = '../../../Thuy + DucMinh/USER_BBDL.html';
-                        break;
-                    default:
-                        alert('Không xác định được quyền truy cập: ' + user.role);
-                        redirectUrl = '../../../Hi-Tech/Login.html'; // Fallback to login with relative path
-                }
-        
-                // Update all account buttons to redirect to the appropriate page
-                accountButtons.forEach(button => {
-                    button.href = redirectUrl;
-                    button.addEventListener('click', () => {
-                        localStorage.setItem('userInfo', JSON.stringify(user));
-                    });
-                });
-            } catch (error) {
-                console.error('User not logged in or error:', error.message);
-                // User is not logged in or an error occurred, redirect to login page
-                accountButtons.forEach(button => {
-                    button.href = '../../../Hi-Tech/Login.html';
-                });
-            }
-        });
-        </script>
 </body>
 
 </html>

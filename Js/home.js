@@ -324,6 +324,20 @@ function setUserIconBehavior(user) {
     }
 }
 
+// Helper: Truncate text to 3 lines
+function truncateTextToThreeLines(element) {
+    const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+    const maxHeight = lineHeight * 4; // Giới hạn chiều cao cho 3 dòng
+
+    if (element.scrollHeight > maxHeight) {
+        let text = element.textContent;
+        while (element.scrollHeight > maxHeight && text.length > 0) {
+            text = text.slice(0, -1); // Xóa ký tự cuối cùng
+            element.textContent = text + '...'; // Thêm "..." vào cuối
+        }
+    }
+}
+
 // Initialize dynamic content loading
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -344,6 +358,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         await populateSection('.League-Bundes .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6804be9c510d143012ff5363&limit=8', 'league', '6804be9c510d143012ff5363');
         await populateSection('.League-L1 .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6819a4813332d1810bdeac0e&limit=8', 'league', '6819a4813332d1810bdeac0e');
         await populateSection('.League-VL .League', 'http://localhost:3000/api/leagues/most-viewed-articles?id=6804becf510d143012ff5368&limit=8', 'league', '6804becf510d143012ff5368');
+        
+        // Apply truncateTextToThreeLines to all news titles
+        document.querySelectorAll('.news-text p, .news-info h3').forEach(titleElement => {
+            truncateTextToThreeLines(titleElement);
+        });
     } catch (error) {
         console.error('Initialization error:', error.message);
     }

@@ -27,13 +27,13 @@
 
 .tincanh-vanban h3 {
     margin: 0;
-    font-size: 26px;
+    font-size: 22px;
     color: #007bff;
 }
 
 .tincanh-vanban p {
     margin: 5px 0;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
 }
 
@@ -43,8 +43,10 @@
 }
 
 .tincanh-content img {
-    width: 200px;
-    height: auto;
+    width: 100%; /* Chiều rộng linh hoạt theo container */
+    max-width: 260px; /* Giới hạn chiều rộng tối đa */
+    height: 170px; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+    object-fit: cover; /* Đảm bảo ảnh được cắt gọn mà không bị méo */
     margin-right: 10px;
     transition: filter 0.3s ease;
 }

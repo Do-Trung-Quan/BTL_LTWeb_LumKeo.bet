@@ -526,6 +526,20 @@ function handlePageChange(page) {
     fetchNewsBottom(page);
 }
 
+// Helper: Truncate text to 3 lines
+function truncateTextToThreeLines(element) {
+    const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+    const maxHeight = lineHeight * 3; // Giới hạn chiều cao cho 3 dòng
+
+    if (element.scrollHeight > maxHeight) {
+        let text = element.textContent;
+        while (element.scrollHeight > maxHeight && text.length > 0) {
+            text = text.slice(0, -1); // Xóa ký tự cuối cùng
+            element.textContent = text + '...'; // Thêm "..." vào cuối
+        }
+    }
+}
+
 // Hàm khởi tạo
 async function init() {
     categoryId = getCategoryIdFromUrl();
@@ -544,6 +558,10 @@ async function init() {
     if (paginationContainer) {
         pagination = new Pagination('.pagination', totalArticles, 10, handlePageChange);
     }
+
+    document.querySelectorAll('.news-text p, .news-info h3, .news-content p, .tincanh-vanban p').forEach(titleElement => {
+        truncateTextToThreeLines(titleElement);
+    });
 }
 
 // Khởi chạy khi DOM loaded

@@ -52,10 +52,12 @@ body {
 
 /* chỉnh phần dưới*/
 .news-bottom {
+    /* width: 100%; */
     display: flex;
     justify-content: space-evenly;
     padding: 100px;
     padding-top: 0;
+    gap: 50px;
 }
 
 .news-list {
@@ -116,7 +118,8 @@ body {
 
 /* chỉnh table*/
 .ranking {
-    width: 35%;
+    width: 50%;
+    min-width: 400px;
     background: white;
 }
 

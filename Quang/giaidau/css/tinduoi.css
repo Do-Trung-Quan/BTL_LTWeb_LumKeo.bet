@@ -119,7 +119,8 @@ body {
 /* chỉnh table*/
 .ranking {
     width: 50%;
-    min-width: 400px;
+    min-width: 450px;
+    max-width: 450px;
     background: white;
 }
 

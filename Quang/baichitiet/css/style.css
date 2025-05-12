@@ -383,8 +383,8 @@ h3 {
   border-radius: 18px;
   resize: none;
   font-size: 14px;
-  background-color: #242526; /* Match the comment container background */
-  color: #e7f3ff; /* Bright text color for better readability */
+  background-color: #F0F2F5; /* Match the comment container background */
+  color: #000000; /* Bright text color for better readability */
 }
 
 .reply-form .btn-submit-reply,

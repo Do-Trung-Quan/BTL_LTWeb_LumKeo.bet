@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giải đấu Seria A</title>
+    <title>Giải đấu V.league 1</title>
     <link rel="stylesheet" href="../../../css/header.css">
     <link rel="stylesheet" href="../css/hotnew.css">
     <link rel="stylesheet" href="../css/tinduoi.css">
@@ -14,6 +14,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../../css/general.css">
     <script src="../../../Js/Search-header.js"></script>
+    <script src="../js/leagueDetail.js"></script>
+    <script src="../js/pagination.js"></script>
+    <script src="../../../Js/notification.js"></script>
+    <link rel="stylesheet" href="../css/pagination.css">
 </head>
 
 <body>
@@ -31,22 +35,38 @@
                 <li class="dropdown">
                     <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="../../giaidau/html/giaidau-EPL.html">Premier League</a></li>
-                        <li><a href="../../giaidau/html/giaidau-LaLiga.html">La Liga</a></li>
-                        <li><a href="../../giaidau/html/giaidau-seria.html">Serie A</a></li>
-                        <li><a href="../../giaidau/html/giaidau-bundes.html">Bundesliga</a></li>
-                        <li><a href="../../giaidau/html/giaidau-l1.html">Ligue 1</a></li>
-                        <li><a href="../../giaidau/html/giaidau-vleague.html">V.League 1</a></li>
+                        <li><a href="../../giaidau/html/giaidau-EPL.html?slug=premier-league">Premier League</a></li>
+                        <li><a href="../../giaidau/html/giaidau-LaLiga.html?slug=la-liga">La Liga</a></li>
+                        <li><a href="../../giaidau/html/giaidau-seria.html?slug=serie-a">Serie A</a></li>
+                        <li><a href="../../giaidau/html/giaidau-bundes.html?slug=bundesliga">Bundesliga</a></li>
+                        <li><a href="../../giaidau/html/giaidau-l1.html?slug=ligue-1">Ligue 1</a></li>
+                        <li><a href="../../giaidau/html/giaidau-vleague.html?slug=v-league">V.League 1</a></li>
                     </ul>
                 </li>
-                <li><a href="../../giaidau/html/bongdaVN.html">Bóng đá Việt Nam</a></li>
-                <li><a href="../../giaidau/html/bongdaTG.html">Bóng đá thế giới</a></li>
+                <li><a href="../../giaidau/html/bongdaVN.html?slug=bong-da-viet-nam">Bóng đá Việt Nam</a></li>
+                <li><a href="../../giaidau/html/bongdaTG.html?slug=bong-da-the-gioi">Bóng đá thế giới</a></li>
             </ul>
         </nav>
         <div class="nav-icons">
             <a class="search-button">
                 <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
             </a>
+             <!-- Notification Icon -->
+            <div class="notification-dropdown">
+                <a class="notification-button" aria-label="Thông báo">
+                    <img src="../../../pics/header/notification-bell.png" alt="Notification Icon">
+                    <span class="notification-count" id="notification-count">0</span>
+                </a>
+                <div class="notification-menu" id="notification-menu">
+                    <div class="notification-header">
+                        <span>Thông báo</span>
+                        <a href="#" id="mark-all-read">Đánh dấu tất cả đã đọc</a>
+                    </div>
+                    <ul class="notification-list" id="notification-list">
+                        <li>Không có thông báo mới</li>
+                    </ul>
+                </div>
+            </div>
             <a class="account-button" href="#">
                 <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
             </a>
@@ -94,159 +114,24 @@
                     <p class="hotnews-title">Tin nổi bật <i class="fa-solid fa-angle-right"></i></p>
                 </div>
                 <div class="news-container">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <div class="main-news">
-                            <img src="../image/content-img/Các cầu thủ Como mừng bàn trong trận thắng Napoli 2-1 .png"
-                                alt="Main News">
-                            <div class="main-overlay"></div>
-                            <div class="news-info">
-                                <span class="category">Serie A</span>
-                                <h3>Các cầu thủ Como mừng bàn trong trận thắng Napoli 2-1</h3>
-                                <p>Tác giả - 9 giờ trước</p>
-                            </div>
+                        <div class="main-news" id="main-news">
+                            <!-- Nội dung sẽ được thêm động -->
                         </div>
                     </a>
-                    <div class="side-news">
-                        <div class="news-item-top">
-                            <a href="../../baichitiet/html/baichitiet.html">
-                                <img src="../image/content-img/Claudio Ranieri tái xuất tại Roma.png" alt="">
-                                <div class="news-text">
-                                    <span class="category">Serie A</span>
-                                    <p>Claudio Ranieri tái xuất tại Roma</p>
-                                    <small>Tác giả - 9 giờ trước</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="news-item-top">
-                            <a href="../../baichitiet/html/baichitiet.html">
-                                <img src="../image/content-img/De Gea cứu thua ngoạn mục ở Serie A.png" alt="">
-                                <div class="news-text">
-                                    <span class="category">Serie A</span>
-                                    <p>De Gea cứu thua ngoạn mục ở Serie A</p>
-                                    <small>Tác giả - 9 giờ trước</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="news-item-top">
-                            <a href="../../baichitiet/html/baichitiet.html">
-                                <img src="../image/content-img/Fabregas - người thổi làn gió mới vào Serie A.png"
-                                    alt="">
-                                <div class="news-text">
-                                    <span class="category">Serie A</span>
-                                    <p>Fabregas - người thổi làn gió mới vào Serie A</p>
-                                    <small>Tác giả - 9 giờ trước</small>
-                                </div>
-                            </a>
-                        </div>
+                    <div class="side-news" id="side-news">
+                        <!-- Nội dung sẽ được thêm động -->
                     </div>
                 </div>
             </div>
-            <hr>
+            <div class="line"></div>
         </div>
-        <!-- seperate line-->
         <!-- tin duoi -->
         <div class="news-bottom">
-            <div class="news-list">
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/HLV và đội trưởng Milan suýt ẩu đả trên sân.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>Serie A</h3>
-                            <p>HLV và đội trưởng Milan suýt ẩu đả trên sân</p>
-
-                            <small>Tác giả - 9 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Inter 'đốt nóng' cuộc đua vô địch Serie A.png" alt="News Image">
-                        <div class="news-content">
-                            <h3>Serie A</h3>
-                            <p>Inter 'đốt nóng' cuộc đua vô địch Serie A</p>
-
-                            <small>Tác giả - 8 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Inter lập hai kỷ lục khi thắng 6-0 tại Serie A.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>Serie A</h3>
-                            <p>Inter lập hai kỷ lục khi thắng 6-0 tại Serie A</p>
-
-                            <small>Tác giả - 7 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Inter Milan chiếm đỉnh bảng của Napoli ở Serie A.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>Serie A</h3>
-                            <p>Inter Milan chiếm đỉnh bảng của Napoli ở Serie A</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Lukaku giúp Napoli bay cao trên đỉnh bảng Serie A.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>Serie A</h3>
-                            <p>Lukaku giúp Napoli bay cao trên đỉnh bảng Serie A</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/McTominay giúp Napoli giữ đỉnh bảng Serie A.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>Serie A</h3>
-                            <p>McTominay giúp Napoli giữ đỉnh bảng Serie A</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Milan bổ nhiệm HLV Sergio Conceicao.png" alt="News Image">
-                        <div class="news-content">
-                            <h3>Serie A</h3>
-                            <p>Milan bổ nhiệm HLV Sergio Conceicao</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Trận Fiorentina - Inter Milan bị hoãn vì cầu thủ đột quỵ.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>Serie A</h3>
-                            <p>Trận Fiorentina - Inter Milan bị hoãn vì cầu thủ đột quỵ</p>
-
-                            <sm>Tác giả - 6 giờ trước</sm>
-                        </div>
-                    </a>
-                </div>
+            <div class="news-list1" id="news-list1">
+                <!-- Nội dung sẽ được thêm động -->
             </div>
             <!-- Bảng xếp hạng -->
             <div class="ranking">
-                <!-- <img src="image/image (9).png" alt=""> -->
                 <table>
                     <thead>
                         <tr>
@@ -266,155 +151,115 @@
                     </tr>
                     <tr class="boc">
                         <td>01</td>
-                        <td class="team-logo"><img src="../image/team-logo/inter.png" alt="">Inter Milan</td>
-                        <td>27</td>
-                        <td>+18</td>
-                        <td>58</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>02</td>
-                        <td class="team-logo"><img src="../image/team-logo/Napoli.png" alt="">Napoli</td>
-                        <td>27</td>
+                        <td class="team-logo"><img src="../image/team-logo/nam_dinh.png" alt="">Nam Định</td>
+                        <td>16</td>
                         <td>+15</td>
-                        <td>54</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>03</td>
-                        <td class="team-logo"><img src="../image/team-logo/Atalanta.png" alt="">Atalanta</td>
-                        <td>27</td>
-                        <td>+20</td>
-                        <td>52</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>04</td>
-                        <td class="team-logo"><img src="../image/team-logo/Juventus.png" alt="">Juventus</td>
-                        <td>27</td>
-                        <td>+16</td>
-                        <td>50</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>05</td>
-                        <td class="team-logo"><img src="../image/team-logo/Fiorentina.png" alt="">Fiorentina</td>
-                        <td>27</td>
-                        <td>+12</td>
-                        <td>48</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>06</td>
-                        <td class="team-logo"><img src="../image/team-logo/Lazio.png" alt="">Lazio</td>
-                        <td>27</td>
-                        <td>+10</td>
-                        <td>46</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>07</td>
-                        <td class="team-logo"><img src="../image/team-logo/AC Milan.png" alt="">AC Milan</td>
-                        <td>27</td>
-                        <td>+8</td>
-                        <td>42</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>08</td>
-                        <td class="team-logo"><img src="../image/team-logo/Bologna.png" alt="">Bologna</td>
-                        <td>27</td>
-                        <td>+5</td>
-                        <td>40</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>09</td>
-                        <td class="team-logo"><img src="../image/team-logo/Udinese.png" alt="">Udinese</td>
-                        <td>27</td>
-                        <td>-2</td>
-                        <td>36</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>10</td>
-                        <td class="team-logo"><img src="../image/team-logo/Roma.png" alt="">AS Roma</td>
-                        <td>27</td>
-                        <td>+3</td>
-                        <td>35</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>11</td>
-                        <td class="team-logo"><img src="../image/team-logo/Torino.png" alt="">Torino</td>
-                        <td>27</td>
-                        <td>-1</td>
-                        <td>34</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>12</td>
-                        <td class="team-logo"><img src="../image/team-logo/Empoli.png" alt="">Empoli</td>
-                        <td>27</td>
-                        <td>-4</td>
                         <td>33</td>
                     </tr>
                     <tr class="boc">
-                        <td>13</td>
-                        <td class="team-logo"><img src="../image/team-logo/Parma.png" alt="">Parma</td>
-                        <td>27</td>
-                        <td>-5</td>
-                        <td>31</td>
-                    </tr>
-                    <tr class="boc">
-                        <td>14</td>
-                        <td class="team-logo"><img src="../image/team-logo/Genoa.png" alt="">Genoa</td>
-                        <td>27</td>
-                        <td>-7</td>
+                        <td>02</td>
+                        <td class="team-logo"><img src="../image/team-logo/thanh_hoa.png" alt="">Đông Á Thanh Hóa</td>
+                        <td>16</td>
+                        <td>+12</td>
                         <td>30</td>
                     </tr>
                     <tr class="boc">
-                        <td>15</td>
-                        <td class="team-logo"><img src="../image/team-logo/Verona.png" alt="">Hellas Verona</td>
-                        <td>27</td>
-                        <td>-12</td>
+                        <td>03</td>
+                        <td class="team-logo"><img src="../image/team-logo/ha_noi.png" alt="">Hà Nội FC</td>
+                        <td>16</td>
+                        <td>+10</td>
                         <td>28</td>
                     </tr>
                     <tr class="boc">
+                        <td>04</td>
+                        <td class="team-logo"><img src="../image/team-logo/becamex_binh_duong.png" alt="">Becamex Bình
+                            Dương</td>
                         <td>16</td>
-                        <td class="team-logo"><img src="../image/team-logo/Como.png" alt="">Como</td>
-                        <td>27</td>
-                        <td>-10</td>
+                        <td>+8</td>
                         <td>27</td>
                     </tr>
                     <tr class="boc">
-                        <td>17</td>
-                        <td class="team-logo"><img src="../image/team-logo/Lecce.png" alt="">Lecce</td>
-                        <td>27</td>
-                        <td>-15</td>
+                        <td>05</td>
+                        <td class="team-logo"><img src="../image/team-logo/viettel.png" alt="">Viettel FC</td>
+                        <td>16</td>
+                        <td>+6</td>
                         <td>25</td>
                     </tr>
                     <tr class="boc">
-                        <td>18</td>
-                        <td class="team-logo"><img src="../image/team-logo/Cagliari.png" alt="">Cagliari</td>
-                        <td>27</td>
-                        <td>-18</td>
-                        <td>23</td>
+                        <td>06</td>
+                        <td class="team-logo"><img src="../image/team-logo/cong_an_ha_noi.png" alt="">Công An Hà Nội
+                        </td>
+                        <td>16</td>
+                        <td>+5</td>
+                        <td>24</td>
                     </tr>
                     <tr class="boc">
+                        <td>07</td>
+                        <td class="team-logo"><img src="../image/team-logo/hoang_anh_gia_lai.png" alt="">Hoàng Anh Gia
+                            Lai</td>
+                        <td>16</td>
+                        <td>+3</td>
+                        <td>22</td>
+                    </tr>
+                    <tr class="boc">
+                        <td>08</td>
+                        <td class="team-logo"><img src="../image/team-logo/hai_phong.png" alt="">Hải Phòng</td>
+                        <td>16</td>
+                        <td>+1</td>
+                        <td>21</td>
+                    </tr>
+                    <tr class="boc">
+                        <td>09</td>
+                        <td class="team-logo"><img src="../image/team-logo/quang_nam.png" alt="">Quảng Nam</td>
+                        <td>16</td>
+                        <td>-2</td>
+                        <td>20</td>
+                    </tr>
+                    <tr class="boc">
+                        <td>10</td>
+                        <td class="team-logo"><img src="../image/team-logo/tp_ho_chi_minh.png" alt="">TP Hồ Chí Minh
+                        </td>
+                        <td>16</td>
+                        <td>-4</td>
                         <td>19</td>
-                        <td class="team-logo"><img src="../image/team-logo/Venezia.png" alt="">Venezia</td>
-                        <td>27</td>
-                        <td>-22</td>
-                        <td>20</td>
                     </tr>
                     <tr class="boc">
-                        <td>20</td>
-                        <td class="team-logo"><img src="../image/team-logo/Monza.png" alt="">Monza</td>
-                        <td>27</td>
-                        <td>-25</td>
-                        <td>18</td>
+                        <td>11</td>
+                        <td class="team-logo"><img src="../image/team-logo/song_lam_nghe_an.png" alt="">Sông Lam Nghệ An
+                        </td>
+                        <td>16</td>
+                        <td>-6</td>
+                        <td>17</td>
+                    </tr>
+                    <tr class="boc">
+                        <td>12</td>
+                        <td class="team-logo"><img src="../image/team-logo/binh_dinh.png" alt="">Bình Định</td>
+                        <td>16</td>
+                        <td>-8</td>
+                        <td>16</td>
+                    </tr>
+                    <tr class="boc">
+                        <td>13</td>
+                        <td class="team-logo"><img src="../image/team-logo/da_nang.png" alt="">SHB Đà Nẵng</td>
+                        <td>16</td>
+                        <td>-10</td>
+                        <td>14</td>
+                    </tr>
+                    <tr class="boc">
+                        <td>14</td>
+                        <td class="team-logo"><img src="../image/team-logo/hong_linh_ha_tinh.png" alt="">Hồng Lĩnh Hà
+                            Tĩnh</td>
+                        <td>16</td>
+                        <td>-12</td>
+                        <td>12</td>
                     </tr>
                 </table>
             </div>
         </div>
-
+        <br>
         <!-- số trang -->
-        <div class="pagination">
-            <button id="prev"><i class="fa-solid fa-angle-left"></i></button>
-            <span id="page-number">01</span>
-            <button id="next"><i class="fa-solid fa-angle-right"></i></button>
-        </div>
-        <!--tăng độ dài trang xem nút thôi không cần xóa đi 2 thẻ -->
+        <div class="pagination"></div>
+        <!--tăng độ dài trang xem nút thôi không cần xóa đi 2 thẻ <br>-->
         <br>
         <br>
 
@@ -468,140 +313,5 @@
             </div>
         </footer>
     </div>
-    <script>
-        // Helper: Get cookie
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        }
-        
-        // Helper: Decode JWT
-        function decodeJwt(token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            } catch (error) {
-                console.error('Error decoding JWT:', error);
-                return null;
-            }
-        }
-        
-        // Fetch current user data
-        async function getCurrentUser() {
-            try {
-                const token = getCookie("token");
-                console.log('Token:', token);
-                if (!token) {
-                    throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
-                }
-        
-                const payload = decodeJwt(token);
-                if (!payload) {
-                    throw new Error("Token không hợp lệ!");
-                }
-        
-                const { id, username, role, avatar } = payload;
-                console.log('User ID:', id);
-                console.log('User Name:', username);
-                console.log('User Role:', role);
-                console.log('Full Payload:', payload);
-        
-                if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-                    throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
-                }
-        
-                let userData = { id, username, role, avatar };
-                try {
-                    const res = await fetch(`http://localhost:3000/api/users/${id}?_t=${Date.now()}`, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': `Bearer ${token.trim()}`
-                        }
-                    });
-        
-                    if (!res.ok) {
-                        const errorText = await res.text();
-                        console.warn('API Error:', errorText);
-                        if (res.status === 403) {
-                            console.warn('Permission denied for /api/users/:id, using token data');
-                            return userData;
-                        } else {
-                            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
-                        }
-                    }
-        
-                    const contentType = res.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error('Response is not JSON');
-                    }
-        
-                    const data = await res.json();
-                    const user = data.user || data;
-                    userData = {
-                        id,
-                        username: user.username !== undefined ? user.username : username,
-                        role: user.role !== undefined ? user.role : role,
-                        avatar: user.avatar !== undefined ? user.avatar : avatar
-                    };
-                } catch (apiError) {
-                    console.warn('Falling back to token data due to API error:', apiError);
-                    return userData;
-                }
-        
-                return userData;
-            } catch (error) {
-                console.error('getCurrentUser Error:', error);
-                throw error;
-            }
-        }
-        
-        // Update account buttons in both main navbar and search-header
-        document.addEventListener('DOMContentLoaded', async () => {
-            const accountButtons = document.querySelectorAll('.account-button');
-        
-            try {
-                const user = await getCurrentUser();
-                console.log('Logged-in user:', user);
-        
-                // Determine redirect URL based on role using correct relative paths from Quang/baichitiet/
-                let redirectUrl;
-                switch (user.role) {
-                    case 'admin':
-                        redirectUrl = '../../../Thuy + DucMinh/ADMIN_QLBB.html';
-                        break;
-                    case 'author':
-                        redirectUrl = '../../../Thuy + DucMinh/AUTHOR_QLBV.html';
-                        break;
-                    case 'user':
-                        redirectUrl = '../../../Thuy + DucMinh/USER_BBDL.html';
-                        break;
-                    default:
-                        alert('Không xác định được quyền truy cập: ' + user.role);
-                        redirectUrl = '../../../Hi-Tech/Login.html'; // Fallback to login with relative path
-                }
-        
-                // Update all account buttons to redirect to the appropriate page
-                accountButtons.forEach(button => {
-                    button.href = redirectUrl;
-                    button.addEventListener('click', () => {
-                        localStorage.setItem('userInfo', JSON.stringify(user));
-                    });
-                });
-            } catch (error) {
-                console.error('User not logged in or error:', error.message);
-                // User is not logged in or an error occurred, redirect to login page
-                accountButtons.forEach(button => {
-                    button.href = '../../../Hi-Tech/Login.html';
-                });
-            }
-        });
-        </script>
 </body>
-
 </html>

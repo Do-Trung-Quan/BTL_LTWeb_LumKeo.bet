@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../../css/general.css">
+    <script src="../js/leagueDetail.js"></script>
+    <script src="../js/pagination.js"></script>
+    <script src="../../../Js/notification.js"></script>
     <script src="../../../Js/Search-header.js"></script>
 </head>
 
@@ -31,22 +34,38 @@
                 <li class="dropdown">
                     <a href="#">Giải đấu <i class="fas fa-chevron-down dropdown-icon"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="../../giaidau/html/giaidau-EPL.html">Premier League</a></li>
-                        <li><a href="../../giaidau/html/giaidau-LaLiga.html">La Liga</a></li>
-                        <li><a href="../../giaidau/html/giaidau-seria.html">Serie A</a></li>
-                        <li><a href="../../giaidau/html/giaidau-bundes.html">Bundesliga</a></li>
-                        <li><a href="../../giaidau/html/giaidau-l1.html">Ligue 1</a></li>
-                        <li><a href="../../giaidau/html/giaidau-vleague.html">V.League 1</a></li>
+                        <li><a href="../../giaidau/html/giaidau-EPL.html?slug=premier-league">Premier League</a></li>
+                        <li><a href="../../giaidau/html/giaidau-LaLiga.html?slug=la-liga">La Liga</a></li>
+                        <li><a href="../../giaidau/html/giaidau-seria.html?slug=serie-a">Serie A</a></li>
+                        <li><a href="../../giaidau/html/giaidau-bundes.html?slug=bundesliga">Bundesliga</a></li>
+                        <li><a href="../../giaidau/html/giaidau-l1.html?slug=ligue-1">Ligue 1</a></li>
+                        <li><a href="../../giaidau/html/giaidau-vleague.html?slug=v-league">V.League 1</a></li>
                     </ul>
                 </li>
-                <li><a href="../../giaidau/html/bongdaVN.html">Bóng đá Việt Nam</a></li>
-                <li><a href="../../giaidau/html/bongdaTG.html">Bóng đá thế giới</a></li>
+                <li><a href="../../giaidau/html/bongdaVN.html?slug=bong-da-viet-nam">Bóng đá Việt Nam</a></li>
+                <li><a href="../../giaidau/html/bongdaTG.html?slug=bong-da-the-gioi">Bóng đá thế giới</a></li>
             </ul>
         </nav>
         <div class="nav-icons">
             <a class="search-button">
                 <img src="../image/header-footer-logo/logo-search.png" alt="Search Icon">
             </a>
+             <!-- Notification Icon -->
+            <div class="notification-dropdown">
+                <a class="notification-button" aria-label="Thông báo">
+                    <img src="../../../pics/header/notification-bell.png" alt="Notification Icon">
+                    <span class="notification-count" id="notification-count">0</span>
+                </a>
+                <div class="notification-menu" id="notification-menu">
+                    <div class="notification-header">
+                        <span>Thông báo</span>
+                        <a href="#" id="mark-all-read">Đánh dấu tất cả đã đọc</a>
+                    </div>
+                    <ul class="notification-list" id="notification-list">
+                        <li>Không có thông báo mới</li>
+                    </ul>
+                </div>
+            </div>
             <a class="account-button" href="#">
                 <img src="../image/header-footer-logo/avatar.png" alt="User Icon">
             </a>
@@ -94,157 +113,21 @@
                     <p class="hotnews-title">Tin nổi bật <i class="fa-solid fa-angle-right"></i></p>
                 </div>
                 <div class="news-container">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <div class="main-news">
-                            <img src="../image/content-img/Tuyển Việt Nam lần đầu tái ngộ sau khi vô địch ASEAN Cup.png"
-                                alt="Main News">
-                            <div class="main-overlay"></div>
-                            <div class="news-info">
-                                <span class="category">V League</span>
-                                <h3>Tuyển Việt Nam lần đầu tái ngộ sau khi vô địch ASEAN Cup</h3>
-                                <p>Tác giả - 9 giờ trước</p>
-                            </div>
+                        <div class="main-news" id="main-news">
+                            <!-- Nội dung sẽ được thêm động -->
                         </div>
                     </a>
-                    <div class="side-news">
-                        <div class="news-item-top">
-                            <a href="../../baichitiet/html/baichitiet.html">
-                                <img src="../image/content-img/Đội của Hoàng Đức, Văn Lâm lập kỷ lục toàn thắng lượt đi hạng Nhất.png"
-                                    alt="">
-                                <div class="news-text">
-                                    <span class="category">V League</span>
-                                    <p>Đội của Hoàng Đức, Văn Lâm lập kỷ lục toàn thắng lượt đi hạng Nhất</p>
-                                    <small>Tác giả - 9 giờ trước</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="news-item-top">
-                            <a href="../../baichitiet/html/baichitiet.html">
-                                <img src="../image/content-img/HLV Nguyễn Anh Đức khóc khi chia tay CLB Bình Phước.png"
-                                    alt="">
-                                <div class="news-text">
-                                    <span class="category">V League</span>
-                                    <p>HLV Nguyễn Anh Đức khóc khi chia tay CLB Bình Phước</p>
-                                    <small>Tác giả - 9 giờ trước</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="news-item-top">
-                            <a href="../../baichitiet/html/baichitiet.html">
-                                <img src="../image/content-img/Hoàng Đức, Tiến Linh tranh Quả Bóng Vàng Việt Nam 2024.png"
-                                    alt="">
-                                <div class="news-text">
-                                    <span class="category">V League</span>
-                                    <p>Hoàng Đức, Tiến Linh tranh Quả Bóng Vàng Việt Nam 2024</p>
-                                    <small>Tác giả - 9 giờ trước</small>
-                                </div>
-                            </a>
-                        </div>
+                    <div class="side-news" id="side-news">
+                        <!-- Nội dung sẽ được thêm động -->
                     </div>
                 </div>
             </div>
-            <hr>
+            <div class="line"></div>
         </div>
-        <!-- seperate line-->
         <!-- tin duoi -->
         <div class="news-bottom">
-            <div class="news-list">
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Jason Quang Vinh Pendant tiếp tục lỡ hẹn đội tuyển Việt Nam.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>V League</h3>
-                            <p>Jason Quang Vinh Pendant tiếp tục lỡ hẹn đội tuyển Việt Nam</p>
-
-                            <small>Tác giả - 9 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Nguyễn Filip lỡ hẹn tuyển Việt Nam.png" alt="News Image">
-                        <div class="news-content">
-                            <h3>V League</h3>
-                            <p>Nguyễn Filip lỡ hẹn tuyển Việt Nam</p>
-
-                            <small>Tác giả - 8 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Quả Bóng Vàng nữ Thùy Trang mơ dự World Cup lần hai.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>V League</h3>
-                            <p>Quả Bóng Vàng nữ Thùy Trang mơ dự World Cup lần hai</p>
-
-                            <small>Tác giả - 7 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Quả Bóng Vàng Thùy Trang 'Tôi chưa hết thời'.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>V League</h3>
-                            <p>Quả Bóng Vàng Thùy Trang: 'Tôi chưa hết thời'</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Tiến Linh chưa muốn dừng lại sau Quả Bóng Vàng.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>V League</h3>
-                            <p>Tiến Linh chưa muốn dừng lại sau Quả Bóng Vàng</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Tuyển Việt Nam sắp có thêm trợ lý HLV từng dự World Cup.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>V League</h3>
-                            <p>Tuyển Việt Nam sắp có thêm trợ lý HLV từng dự World Cup</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/U22 Việt Nam gọi hai cầu thủ Việt kiều.png" alt="News Image">
-                        <div class="news-content">
-                            <h3>V League</h3>
-                            <p>U22 Việt Nam gọi hai cầu thủ Việt kiều</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
-                <div class="news-item">
-                    <a href="../../baichitiet/html/baichitiet.html">
-                        <img src="../image/content-img/Việt Nam bắt đầu kế hoạch tranh vé U17 World Cup.png"
-                            alt="News Image">
-                        <div class="news-content">
-                            <h3>V League</h3>
-                            <p>Việt Nam bắt đầu kế hoạch tranh vé U17 World Cup</p>
-
-                            <small>Tác giả - 6 giờ trước</small>
-                        </div>
-                    </a>
-                </div>
+            <div class="news-list1" id="news-list1">
+                <!-- Nội dung sẽ được thêm động -->
             </div>
             <!-- Bảng xếp hạng -->
             <div class="ranking">
@@ -374,11 +257,7 @@
         </div>
         <br>
         <!-- số trang -->
-        <div class="pagination">
-            <button id="prev"><i class="fa-solid fa-angle-left"></i></button>
-            <span id="page-number">01</span>
-            <button id="next"><i class="fa-solid fa-angle-right"></i></button>
-        </div>
+        <div class="pagination"></div>
         <!--tăng độ dài trang xem nút thôi không cần xóa đi 2 thẻ <br>-->
         <br>
         <br>
@@ -433,150 +312,5 @@
             </div>
         </footer>
     </div>
-    <script>
-        // Helper: Get cookie
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        }
-        
-        // Helper: Decode JWT
-        function decodeJwt(token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            } catch (error) {
-                console.error('Error decoding JWT:', error);
-                return null;
-            }
-        }
-        
-        // Fetch current user data
-        async function getCurrentUser() {
-            try {
-                const token = getCookie("token");
-                console.log('Token:', token);
-                if (!token) {
-                    throw new Error("Không tìm thấy token, vui lòng đăng nhập!");
-                }
-
-                const payload = decodeJwt(token);
-                if (!payload) {
-                    throw new Error("Token không hợp lệ!");
-                }
-
-                const { id, username, role, avatar } = payload;
-                console.log('User ID:', id);
-                console.log('User Name:', username);
-                console.log('User Role:', role);
-                console.log('Full Payload:', payload);
-
-                if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-                    throw new Error("ID không hợp lệ, phải là ObjectId MongoDB!");
-                }
-
-                let userData = { id, username, role, avatar };
-                try {
-                    const res = await fetch(`http://localhost:3000/api/users/${id}?_t=${Date.now()}`, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': `Bearer ${token.trim()}`
-                        }
-                    });
-
-                    if (!res.ok) {
-                        const errorText = await res.text();
-                        console.warn('API Error:', errorText);
-                        if (res.status === 401) {
-                            const errorData = JSON.parse(errorText);
-                            if (errorData.error === "jwt expired") {
-                                // Token expired, log out and redirect to login
-                                deleteCookie("token");
-                                window.location.href = '../../Hi-Tech/Login.html';
-                                return null; // Exit function to prevent further execution
-                            }
-                        } else if (res.status === 403) {
-                            console.warn('Permission denied, using token data');
-                            return userData;
-                        } else {
-                            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
-                        }
-                    }
-
-                    const contentType = res.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error('Response is not JSON');
-                    }
-
-                    const data = await res.json();
-                    const user = data.user || data;
-                    userData = {
-                        id,
-                        username: user.username !== undefined ? user.username : username,
-                        role: user.role !== undefined ? user.role : role,
-                        avatar: user.avatar !== undefined ? user.avatar : avatar
-                    };
-                } catch (apiError) {
-                    console.warn('API request failed, falling back to token data:', apiError);
-                    return userData;
-                }
-
-                return userData;
-            } catch (error) {
-                console.error('getCurrentUser Error:', error);
-                throw error;
-            }
-        }
-        
-        // Update account buttons in both main navbar and search-header
-        document.addEventListener('DOMContentLoaded', async () => {
-            const accountButtons = document.querySelectorAll('.account-button');
-        
-            try {
-                const user = await getCurrentUser();
-                if (!user) return; // Exit if user is null (due to logout redirect)
-
-                console.log('Logged-in user:', user);
-        
-                // Determine redirect URL based on role using correct relative paths from Quang/baichitiet/
-                let redirectUrl;
-                switch (user.role) {
-                    case 'admin':
-                        redirectUrl = '../../../Thuy + DucMinh/ADMIN_QLBB.html';
-                        break;
-                    case 'author':
-                        redirectUrl = '../../../Thuy + DucMinh/AUTHOR_QLBV.html';
-                        break;
-                    case 'user':
-                        redirectUrl = '../../../Thuy + DucMinh/USER_BBDL.html';
-                        break;
-                    default:
-                        alert('Không xác định được quyền truy cập: ' + user.role);
-                        redirectUrl = '../../../Hi-Tech/Login.html'; // Fallback to login with relative path
-                }
-        
-                // Update all account buttons to redirect to the appropriate page
-                accountButtons.forEach(button => {
-                    button.href = redirectUrl;
-                    button.addEventListener('click', () => {
-                        localStorage.setItem('userInfo', JSON.stringify(user));
-                    });
-                });
-            } catch (error) {
-                console.error('User not logged in or error:', error.message);
-                // User is not logged in or an error occurred, redirect to login page
-                accountButtons.forEach(button => {
-                    button.href = '../../../Hi-Tech/Login.html';
-                });
-            }
-        });
-        </script>
 </body>
-
 </html>

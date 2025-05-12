@@ -210,10 +210,11 @@ h3 {
 
 .bookmark-btn {
   margin-left: 10px;
+  margin-bottom: 10px;
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 30px;
   color: #555; /* Neutral gray color for the icon */
   transition: color 0.3s ease, transform 0.1s ease; /* Smooth transitions for hover effects */
   padding: 5px; /* Add some padding for better click area */

@@ -87,8 +87,8 @@ async function getCurrentUser() {
             if (validationRes.status === 401 || validationRes.status === 403) {
                 console.log('Token blacklisted or invalid, treating as unauthenticated');
                 if (errorText.message === 'jwt expired') {
+                    console.log('Token expired, clearing cookie but not redirecting');
                     setCookie("token", "", -1);
-                    window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
                 }
                 return null;
             }
@@ -115,6 +115,10 @@ async function getCurrentUser() {
                 console.warn('API Error:', errorText);
                 if (res.status === 403 || res.status === 401) {
                     console.warn('Permission or token issue, treating as unauthenticated');
+                    if (errorText.includes('jwt expired')) {
+                        console.log('Token expired, clearing cookie but not redirecting');
+                        setCookie("token", "", -1);
+                    }
                     return null;
                 }
                 throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
@@ -184,9 +188,9 @@ function formatTimeAgo(timestamp) {
 
 // Set user icon behavior based on authentication
 async function setUserIconBehavior() {
-    const userIcon = document.querySelector('.account-button');
-    if (!userIcon) {
-        console.error('User icon (account-button) not found');
+    const userIcons = document.querySelectorAll('.account-button');
+    if (userIcons.length === 0) {
+        console.error('No user icons (account-button) found');
         return;
     }
 
@@ -197,32 +201,49 @@ async function setUserIconBehavior() {
         console.error('Error fetching current user:', error.message);
     }
 
-    if (!user) {
-        userIcon.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-        userIcon.addEventListener('click', (e) => {
-            console.log('Redirecting to login page');
-        });
-    } else {
-        let redirectPage;
-        switch (user.role.toLowerCase()) {
-            case 'admin':
-                redirectPage = '../../../Thuy + DucMinh/ADMIN_QLBB.html';
-                break;
-            case 'author':
-                redirectPage = '../../../Thuy + DucMinh/AUTHOR_QLBV.html';
-                break;
-            case 'user':
-                redirectPage = '../../../Thuy + DucMinh/USER_BBDL.html';
-                break;
-            default:
-                redirectPage = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-                console.warn('Unknown role:', user.role);
+    userIcons.forEach((userIcon, index) => {
+        // Kiểm tra xem userIcon có phải là DOM Node hợp lệ
+        if (!(userIcon instanceof HTMLElement)) {
+            console.error(`Invalid DOM element for account-button at index ${index}:`, userIcon);
+            return;
         }
-        userIcon.href = redirectPage;
-        userIcon.addEventListener('click', (e) => {
-            console.log(`Redirecting to ${redirectPage} for role: ${user.role}`);
-        });
-    }
+
+        // Xóa sự kiện click cũ (nếu có) để tránh gán lặp
+        userIcon.replaceWith(userIcon.cloneNode(true));
+        const newUserIcon = document.querySelectorAll('.account-button')[index];
+
+        if (!user) {
+            newUserIcon.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+            newUserIcon.addEventListener('click', (e) => {
+                e.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
+                console.log('Redirecting to login page');
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+            });
+        } else {
+            let redirectPage;
+            switch (user.role?.toLowerCase()) {
+                case 'admin':
+                    redirectPage = '../../../Thuy + DucMinh/ADMIN_QLBB.html';
+                    break;
+                case 'author':
+                    redirectPage = '../../../Thuy + DucMinh/AUTHOR_QLBV.html';
+                    break;
+                case 'user':
+                    redirectPage = '../../../Thuy + DucMinh/USER_BBDL.html';
+                    break;
+                default:
+                    redirectPage = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                    console.warn('Unknown role:', user.role);
+            }
+            newUserIcon.href = redirectPage;
+            newUserIcon.addEventListener('click', (e) => {
+                e.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
+                console.log(`Redirecting to ${redirectPage} for role: ${user.role}`);
+                window.location.href = redirectPage;
+            });
+        }
+        console.log(`Click event listener added to account-button at index ${index}:`, newUserIcon);
+    });
 }
 
 // Hàm tiện ích: Fetch articles (allow unauthenticated access for public endpoints)
@@ -238,13 +259,17 @@ async function fetchArticles(endpoint) {
 
         if (!res.ok) {
             const errorText = await res.text();
-            console.warn('API Error for', endpoint, ':', errorText);
-            if (res.status === 401) {
-                const errorData = JSON.parse(errorText);
-                if (errorData.error === "jwt expired") {
-                    console.log('Token expired, will handle logout if needed');
-                    return [];
-                }
+            let errorData;
+            try {
+                errorData = JSON.parse(errorText || '{}');
+            } catch (e) {
+                errorData = { error: errorText };
+            }
+            console.warn('API Error for', endpoint, ':', errorData);
+            if (res.status === 401 && errorData.error === "jwt expired") {
+                console.log('Token expired, clearing cookie but not redirecting');
+                setCookie("token", "", -1);
+                return [];
             }
             throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
         }
@@ -356,7 +381,7 @@ async function fetchHotnews() {
 // Gọi API và hiển thị News Bottom (phân trang, 6 bài/trang)
 async function fetchNewsBottom(page = 1) {
     try {
-        if (!leagueId) throw new Error(";eagueId không hợp lệ");
+        if (!leagueId) throw new Error("leagueId không hợp lệ");
         const res = await fetch(`${API_BASE_URL}/api/articles/category/${leagueId}?page=${page}&limit=10`);
         if (!res.ok) throw new Error("Không thể lấy bài viết theo danh mục");
         const data = await res.json();

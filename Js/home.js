@@ -65,6 +65,10 @@ async function getCurrentUser() {
             console.warn('Token validation failed:', errorText);
             if (validationRes.status === 401 || validationRes.status === 403) {
                 console.log('Token blacklisted or invalid, treating as unauthenticated');
+                if (errorText.message === 'jwt expired') {
+                    console.log('Token expired, clearing cookie but not redirecting');
+                    setCookie("token", "", -1); // Xóa cookie nhưng không chuyển hướng
+                }
                 return null;
             }
             throw new Error(`Token validation error: ${JSON.stringify(errorText)}`);
@@ -147,9 +151,10 @@ async function fetchArticles(endpoint) {
             const errorText = await res.text();
             console.warn('API Error for', endpoint, ':', errorText);
             if (res.status === 401) {
-                const errorData = JSON.parse(errorText);
+                const errorData = JSON.parse(errorText || '{}');
                 if (errorData.error === "jwt expired") {
-                    console.log('Token expired, will handle logout if needed');
+                    console.log('Token expired, clearing cookie but not redirecting');
+                    setCookie("token", "", -1); // Xóa cookie nhưng không chuyển hướng
                     return []; // Return empty array for public content
                 }
             }
@@ -288,40 +293,52 @@ async function populateSection(containerSelector, apiEndpoint, sectionType, expe
     }
 }
 
-// Set user icon behavior based on authentication
 function setUserIconBehavior(user) {
-    const userIcon = document.querySelector('.account-button');
-    if (!userIcon) {
-        console.error('User icon (account-button) not found');
+    const userIcons = document.querySelectorAll('.account-button');
+    if (userIcons.length === 0) {
+        console.error('No user icons (account-button) found');
         return;
     }
 
-    if (!user) {
-        userIcon.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-        userIcon.addEventListener('click', (e) => {
-            console.log('Redirecting to login page');
-        });
-    } else {
-        let redirectPage;
-        switch (user.role.toLowerCase()) {
-            case 'admin':
-                redirectPage = '../Thuy + DucMinh/ADMIN_QLBB.html';
-                break;
-            case 'author':
-                redirectPage = '../Thuy + DucMinh/AUTHOR_QLBV.html';
-                break;
-            case 'user':
-                redirectPage = '../Thuy + DucMinh/USER_BBDL.html';
-                break;
-            default:
-                redirectPage = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-                console.warn('Unknown role:', user.role);
+    userIcons.forEach((userIcon, index) => {
+        // Kiểm tra xem userIcon có phải là DOM Node hợp lệ
+        if (!(userIcon instanceof HTMLElement)) {
+            console.error(`Invalid DOM element for account-button at index ${index}:`, userIcon);
+            return;
         }
-        userIcon.href = redirectPage;
-        userIcon.addEventListener('click', (e) => {
-            console.log(`Redirecting to ${redirectPage} for role: ${user.role}`);
-        });
-    }
+
+        if (!user) {
+            userIcon.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+            userIcon.addEventListener('click', (e) => {
+                e.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
+                console.log('Redirecting to login page');
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+            });
+        } else {
+            let redirectPage;
+            switch (user.role?.toLowerCase()) {
+                case 'admin':
+                    redirectPage = '../Thuy + DucMinh/ADMIN_QLBB.html';
+                    break;
+                case 'author':
+                    redirectPage = '../Thuy + DucMinh/AUTHOR_QLBV.html';
+                    break;
+                case 'user':
+                    redirectPage = '../Thuy + DucMinh/USER_BBDL.html';
+                    break;
+                default:
+                    redirectPage = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                    console.warn('Unknown role:', user?.role);
+            }
+            userIcon.href = redirectPage;
+            userIcon.addEventListener('click', (e) => {
+                e.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
+                console.log(`Redirecting to ${redirectPage} for role: ${user.role}`);
+                window.location.href = redirectPage;
+            });
+        }
+        console.log(`Click event listener added to account-button at index ${index}:`, userIcon);
+    });
 }
 
 // Helper: Truncate text to 3 lines

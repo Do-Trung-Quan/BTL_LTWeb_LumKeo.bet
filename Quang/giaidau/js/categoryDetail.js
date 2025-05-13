@@ -87,8 +87,8 @@ async function getCurrentUser() {
             if (validationRes.status === 401 || validationRes.status === 403) {
                 console.log('Token blacklisted or invalid, treating as unauthenticated');
                 if (errorText.message === 'jwt expired') {
+                    console.log('Token expired, clearing cookie but not redirecting');
                     setCookie("token", "", -1);
-                    window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
                 }
                 return null;
             }
@@ -115,6 +115,10 @@ async function getCurrentUser() {
                 console.warn('API Error:', errorText);
                 if (res.status === 403 || res.status === 401) {
                     console.warn('Permission or token issue, treating as unauthenticated');
+                    if (errorText.includes('jwt expired')) {
+                        console.log('Token expired, clearing cookie but not redirecting');
+                        setCookie("token", "", -1);
+                    }
                     return null;
                 }
                 throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
@@ -178,11 +182,10 @@ function formatTimeAgo(timestamp) {
     return `${diffInDays} ngày trước`;
 }
 
-// Set user icon behavior based on authentication
 async function setUserIconBehavior() {
-    const userIcon = document.querySelector('.account-button');
-    if (!userIcon) {
-        console.error('User icon (account-button) not found');
+    const userIcons = document.querySelectorAll('.account-button');
+    if (userIcons.length === 0) {
+        console.error('No user icons (account-button) found');
         return;
     }
 
@@ -193,32 +196,49 @@ async function setUserIconBehavior() {
         console.error('Error fetching current user:', error.message);
     }
 
-    if (!user) {
-        userIcon.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-        userIcon.addEventListener('click', (e) => {
-            console.log('Redirecting to login page');
-        });
-    } else {
-        let redirectPage;
-        switch (user.role.toLowerCase()) {
-            case 'admin':
-                redirectPage = '../../../Thuy + DucMinh/ADMIN_QLBB.html';
-                break;
-            case 'author':
-                redirectPage = '../../../Thuy + DucMinh/AUTHOR_QLBV.html';
-                break;
-            case 'user':
-                redirectPage = '../../../Thuy + DucMinh/USER_BBDL.html';
-                break;
-            default:
-                redirectPage = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
-                console.warn('Unknown role:', user.role);
+    userIcons.forEach((userIcon, index) => {
+        // Kiểm tra xem userIcon có phải là DOM Node hợp lệ
+        if (!(userIcon instanceof HTMLElement)) {
+            console.error(`Invalid DOM element for account-button at index ${index}:`, userIcon);
+            return;
         }
-        userIcon.href = redirectPage;
-        userIcon.addEventListener('click', (e) => {
-            console.log(`Redirecting to ${redirectPage} for role: ${user.role}`);
-        });
-    }
+
+        // Xóa sự kiện click cũ (nếu có) để tránh gán lặp
+        userIcon.replaceWith(userIcon.cloneNode(true));
+        const newUserIcon = document.querySelectorAll('.account-button')[index];
+
+        if (!user) {
+            newUserIcon.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+            newUserIcon.addEventListener('click', (e) => {
+                e.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
+                console.log('Redirecting to login page');
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+            });
+        } else {
+            let redirectPage;
+            switch (user.role?.toLowerCase()) {
+                case 'admin':
+                    redirectPage = '../../../Thuy + DucMinh/ADMIN_QLBB.html';
+                    break;
+                case 'author':
+                    redirectPage = '../../../Thuy + DucMinh/AUTHOR_QLBV.html';
+                    break;
+                case 'user':
+                    redirectPage = '../../../Thuy + DucMinh/USER_BBDL.html';
+                    break;
+                default:
+                    redirectPage = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                    console.warn('Unknown role:', user.role);
+            }
+            newUserIcon.href = redirectPage;
+            newUserIcon.addEventListener('click', (e) => {
+                e.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
+                console.log(`Redirecting to ${redirectPage} for role: ${user.role}`);
+                window.location.href = redirectPage;
+            });
+        }
+        console.log(`Click event listener added to account-button at index ${index}:`, newUserIcon);
+    });
 }
 
 // Hàm tiện ích: Fetch articles (allow unauthenticated access for public endpoints)
@@ -234,15 +254,19 @@ async function fetchArticles(endpoint) {
 
         if (!res.ok) {
             const errorText = await res.text();
-            console.warn('API Error for', endpoint, ':', errorText);
-            if (res.status === 401) {
-                const errorData = JSON.parse(errorText);
-                if (errorData.error === "jwt expired") {
-                    console.log('Token expired, will handle logout if needed');
-                    return [];
-                }
+            let errorData;
+            try {
+                errorData = JSON.parse(errorText || '{}');
+            } catch (e) {
+                errorData = { message: errorText };
             }
-            throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
+            console.warn('API Error for', endpoint, ':', errorData);
+            if (res.status === 401 && errorData.error === "jwt expired") {
+                console.log('Token expired, clearing cookie but not redirecting');
+                setCookie("token", "", -1);
+                return [];
+            }
+            throw new Error(`HTTP error! Status: ${res.status} - ${errorData.message || errorText}`);
         }
 
         const contentType = res.headers.get('content-type');
@@ -283,14 +307,12 @@ function createNewsItem(article, isMain = false) {
         `;
     } else {
         element.innerHTML = `
-            <a href="../../baichitiet/html/baichitiet.html?slug=${article.slug}">
-                <img src="${thumbnail}" alt="${title}">
-                <div class="news-text">
-                    <span class="category">${category}</span>
-                    <p>${title}</p>
-                    <small>${author} - ${formatTimeAgo(updatedAt)}</small>
-                </div>
-            </a>
+            <img src="${thumbnail}" alt="${title}">
+            <div class="news-text">
+                <span class="category">${category}</span>
+                <p>${title}</p>
+                <small>${author} - ${formatTimeAgo(updatedAt)}</small>
+            </div>
         `;
     }
 
@@ -349,12 +371,32 @@ async function fetchHotnews() {
     }
 }
 
-// Gọi API và hiển thị News Bottom (phân trang, 6 bài/trang)
+// Gọi API và hiển thị News Bottom (phân trang, 10 bài/trang)
 async function fetchNewsBottom(page = 1) {
     try {
         if (!categoryId) throw new Error("categoryId không hợp lệ");
-        const res = await fetch(`${API_BASE_URL}/api/articles/category/${categoryId}?page=${page}&limit=10`);
-        if (!res.ok) throw new Error("Không thể lấy bài viết theo danh mục");
+        const res = await fetch(`${API_BASE_URL}/api/articles/category/${categoryId}?page=${page}&limit=10`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': getCookie("token") ? `Bearer ${getCookie("token").trim()}` : ''
+            },
+            credentials: 'include'
+        });
+        if (!res.ok) {
+            const errorText = await res.text();
+            let errorData;
+            try {
+                errorData = JSON.parse(errorText || '{}');
+            } catch (e) {
+                errorData = { message: errorText };
+            }
+            console.warn('API Error for News Bottom:', errorData);
+            if (res.status === 401 && errorData.error === "jwt expired") {
+                console.log('Token expired, clearing cookie but not redirecting');
+                setCookie("token", "", -1);
+            }
+            throw new Error(`HTTP error! Status: ${res.status} - ${errorData.message || errorText}`);
+        }
         const data = await res.json();
         console.log('News Bottom response:', data);
         const articles = data.data.articles || [];
@@ -419,8 +461,28 @@ async function fetchTinKhac() {
 
         otherArticlesContainer.innerHTML = "";
 
-        const res = await fetch(`${API_BASE_URL}/api/articles?limit=0`);
-        if (!res.ok) throw new Error("Không thể lấy bài viết Tin Khác");
+        const res = await fetch(`${API_BASE_URL}/api/articles?limit=0`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': getCookie("token") ? `Bearer ${getCookie("token").trim()}` : ''
+            },
+            credentials: 'include'
+        });
+        if (!res.ok) {
+            const errorText = await res.text();
+            let errorData;
+            try {
+                errorData = JSON.parse(errorText || '{}');
+            } catch (e) {
+                errorData = { message: errorText };
+            }
+            console.warn('API Error for Tin Khác:', errorData);
+            if (res.status === 401 && errorData.error === "jwt expired") {
+                console.log('Token expired, clearing cookie but not redirecting');
+                setCookie("token", "", -1);
+            }
+            throw new Error(`HTTP error! Status: ${res.status} - ${errorData.message || errorText}`);
+        }
         const data = await res.json();
         console.log('Tin Khác - API response:', data);
 
@@ -481,8 +543,28 @@ async function fetchCoTheBanQuanTam() {
 
         relatedArticlesContainer.innerHTML = "";
 
-        const res = await fetch(`${API_BASE_URL}/api/articles/category/${categoryId}?limit=3`);
-        if (!res.ok) throw new Error("Không thể lấy bài viết Có Thể Bạn Quan Tâm");
+        const res = await fetch(`${API_BASE_URL}/api/articles/category/${categoryId}?limit=3`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': getCookie("token") ? `Bearer ${getCookie("token").trim()}` : ''
+            },
+            credentials: 'include'
+        });
+        if (!res.ok) {
+            const errorText = await res.text();
+            let errorData;
+            try {
+                errorData = JSON.parse(errorText || '{}');
+            } catch (e) {
+                errorData = { message: errorText };
+            }
+            console.warn('API Error for Có Thể Bạn Quan Tâm:', errorData);
+            if (res.status === 401 && errorData.error === "jwt expired") {
+                console.log('Token expired, clearing cookie but not redirecting');
+                setCookie("token", "", -1);
+            }
+            throw new Error(`HTTP error! Status: ${res.status} - ${errorData.message || errorText}`);
+        }
         const data = await res.json();
         console.log('Có Thể Bạn Quan Tâm - API response:', data);
 
@@ -529,13 +611,13 @@ function handlePageChange(page) {
 // Helper: Truncate text to 3 lines
 function truncateTextToThreeLines(element) {
     const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
-    const maxHeight = lineHeight * 3; // Giới hạn chiều cao cho 3 dòng
+    const maxHeight = lineHeight * 3;
 
     if (element.scrollHeight > maxHeight) {
         let text = element.textContent;
         while (element.scrollHeight > maxHeight && text.length > 0) {
-            text = text.slice(0, -1); // Xóa ký tự cuối cùng
-            element.textContent = text + '...'; // Thêm "..." vào cuối
+            text = text.slice(0, -1);
+            element.textContent = text + '...';
         }
     }
 }

@@ -7,6 +7,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     return null;
   }
 
+  // Helper: Set cookie
+  function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  }
+
   // Helper: Format time ago
   function timeAgo(date) {
     const now = new Date();
@@ -40,106 +51,113 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function getCurrentUser() {
     try {
-        const token = getCookie("token");
-        console.log('getCurrentUser - Token from cookie:', token);
+      const token = getCookie("token");
+      console.log('getCurrentUser - Token from cookie:', token);
 
-        if (!token) {
-            console.log('No token found, user is unauthenticated');
-            return null;
+      if (!token) {
+        console.log('No token found, user is unauthenticated');
+        return null;
+      }
+
+      const payload = decodeJwt(token);
+      console.log('getCurrentUser - Decoded payload:', payload);
+
+      if (!payload) {
+        console.log('Invalid token, treating as unauthenticated');
+        return null;
+      }
+
+      const { id, username, role, avatar } = payload;
+      console.log('Token payload:', { id, username, role, avatar });
+
+      if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+        console.warn('Invalid ID format, treating as unauthenticated');
+        return null;
+      }
+
+      const validationRes = await fetch('http://localhost:3000/api/validate-token', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token.trim()}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token })
+      });
+
+      console.log('getCurrentUser - Validation response status:', validationRes.status);
+
+      if (!validationRes.ok) {
+        const errorText = await validationRes.json();
+        console.warn('Token validation failed:', errorText);
+        if (validationRes.status === 401 || validationRes.status === 403) {
+          console.log('Token blacklisted or invalid, treating as unauthenticated');
+          if (errorText.message === 'jwt expired') {
+            console.log('Token expired, clearing cookie but not redirecting');
+            setCookie("token", "", -1); // Xóa cookie nhưng không chuyển hướng
+          }
+          return null;
         }
+        throw new Error(`Token validation error: ${JSON.stringify(errorText)}`);
+      }
 
-        const payload = decodeJwt(token);
-        console.log('getCurrentUser - Decoded payload:', payload);
+      const validationData = await validationRes.json();
+      if (!validationData.success) {
+        console.log('Server rejected token, treating as unauthenticated');
+        return null;
+      }
 
-        if (!payload) {
-            console.log('Invalid token, treating as unauthenticated');
-            return null;
-        }
-
-        const { id, username, role, avatar } = payload;
-        console.log('Token payload:', { id, username, role, avatar });
-
-        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-            console.warn('Invalid ID format, treating as unauthenticated');
-            return null;
-        }
-
-        const validationRes = await fetch('http://localhost:3000/api/validate-token', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${token.trim()}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token })
+      let userData = { id, username, role, avatar };
+      try {
+        const res = await fetch(`http://localhost:3000/api/users/${id}?_t=${Date.now()}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token.trim()}`
+          }
         });
 
-        console.log('getCurrentUser - Validation response status:', validationRes.status);
-
-        if (!validationRes.ok) {
-            const errorText = await validationRes.json();
-            console.warn('Token validation failed:', errorText);
-            if (validationRes.status === 401 || validationRes.status === 403) {
-                console.log('Token blacklisted or invalid, treating as unauthenticated');
-                return null;
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.warn('API Error:', errorText);
+          if (res.status === 403 || res.status === 401) {
+            console.warn('Permission or token issue, treating as unauthenticated');
+            if (errorText.includes('jwt expired')) {
+              console.log('Token expired, clearing cookie but not redirecting');
+              setCookie("token", "", -1);
             }
-            throw new Error(`Token validation error: ${JSON.stringify(errorText)}`);
-        }
-
-        const validationData = await validationRes.json();
-        if (!validationData.success) {
-            console.log('Server rejected token, treating as unauthenticated');
             return null;
+          }
+          throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
         }
 
-        let userData = { id, username, role, avatar };
-        try {
-            const res = await fetch(`http://localhost:3000/api/users/${id}?_t=${Date.now()}`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token.trim()}`
-                }
-            });
-
-            if (!res.ok) {
-                const errorText = await res.text();
-                console.warn('API Error:', errorText);
-                if (res.status === 403 || res.status === 401) {
-                    console.warn('Permission or token issue, treating as unauthenticated');
-                    return null;
-                }
-                throw new Error(`HTTP error! Status: ${res.status} - ${errorText}`);
-            }
-
-            const contentType = res.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new Error('Response is not JSON');
-            }
-
-            const data = await res.json();
-            console.log('User API Response:', data);
-            const user = data.user || data;
-            userData = {
-                id,
-                username: user.username !== undefined ? user.username : username,
-                role: user.role !== undefined ? user.role : role,
-                avatar: user.avatar !== undefined ? user.avatar : avatar
-            };
-        } catch (apiError) {
-            console.warn('Falling back to token data due to API error:', apiError);
-            return userData.id ? userData : null;
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON');
         }
 
-        return userData;
+        const data = await res.json();
+        console.log('User API Response:', data);
+        const user = data.user || data;
+        userData = {
+          id,
+          username: user.username !== undefined ? user.username : username,
+          role: user.role !== undefined ? user.role : role,
+          avatar: user.avatar !== undefined ? user.avatar : avatar
+        };
+      } catch (apiError) {
+        console.warn('Falling back to token data due to API error:', apiError);
+        return userData.id ? userData : null;
+      }
+
+      return userData;
     } catch (error) {
-        console.error('getCurrentUser Error:', error);
-        return null;
+      console.error('getCurrentUser Error:', error);
+      return null;
     }
-}
+  }
 
-  // Set user icon behavior based on authentication
-  function setUserIconBehavior(user) {
-    const userIcons = document.querySelectorAll('.account-button'); // Target all account buttons
+ function setUserIconBehavior(user) {
+    const userIcons = document.querySelectorAll('.account-button');
     if (userIcons.length === 0) {
       console.error('User icon (account-button) not found');
       return;
@@ -149,7 +167,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!user) {
         userIcon.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
         userIcon.addEventListener('click', (e) => {
+          e.preventDefault();
           console.log('Redirecting to login page');
+          window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
         });
       } else {
         let redirectPage;
@@ -169,11 +189,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         userIcon.href = redirectPage;
         userIcon.addEventListener('click', (e) => {
+          e.preventDefault();
           console.log(`Redirecting to ${redirectPage} for role: ${user.role}`);
+          window.location.href = redirectPage;
         });
       }
     });
-  }
+}
 
   // Mapping of league slugs to actual page filenames
   const leaguePageMap = {
@@ -197,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Hash:', window.location.hash);
 
   // Get slug or articleId from URL
-  let slugOrId ;
+  let slugOrId;
   const urlParams = new URLSearchParams(window.location.search);
   slugOrId = urlParams.get('slug');
 
@@ -212,7 +234,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const token = getCookie('token');
   const headers = {
     'Accept': 'application/json',
-    'Authorization': `Bearer ${token}`,
+    'Authorization': token ? `Bearer ${token.trim()}` : '',
     'Content-Type': 'application/json'
   };
 
@@ -235,12 +257,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       if (!slugToIdResponse.ok) {
         const errorText = await slugToIdResponse.text();
-        console.error('Error fetching article ID by slug:', errorText);
-        throw new Error('Lỗi khi ánh xạ slug: ' + slugToIdResponse.statusText);
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText || '{}');
+        } catch (e) {
+          errorData = { message: errorText };
+        }
+        console.error('Error fetching article ID by slug:', errorData);
+        if (slugToIdResponse.status === 401 && errorData.message === 'jwt expired') {
+          console.log('Token expired, clearing cookie but not redirecting');
+          setCookie("token", "", -1);
+        }
+        throw new Error('Lỗi khi ánh xạ slug: ' + (errorData.message || slugToIdResponse.statusText));
       }
       const slugData = await slugToIdResponse.json();
-      console.log('Slug to ID response:', slugData); // Debug the response
-      articleId = slugData.data?.articleId; // Extract from nested data
+      console.log('Slug to ID response:', slugData);
+      articleId = slugData.data?.articleId;
       if (!articleId) {
         throw new Error('Không tìm thấy ID bài viết với slug: ' + slugOrId);
       }
@@ -252,12 +284,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       if (!articleResponse.ok) {
         const errorText = await articleResponse.text();
-        console.error('Error fetching article by ID:', errorText);
-        throw new Error('Lỗi khi tải bài viết: ' + articleResponse.statusText);
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText || '{}');
+        } catch (e) {
+          errorData = { message: errorText };
+        }
+        console.error('Error fetching article by ID:', errorData);
+        if (articleResponse.status === 401 && errorData.message === 'jwt expired') {
+          console.log('Token expired, clearing cookie but not redirecting');
+          setCookie("token", "", -1);
+        }
+        throw new Error('Lỗi khi tải bài viết: ' + (errorData.message || articleResponse.statusText));
       }
       const articleData = await articleResponse.json();
-      console.log('Article data response:', articleData); // Debug the article response
-      article = articleData; // Extract from nested data
+      console.log('Article data response:', articleData);
+      article = articleData;
       if (!article) {
         throw new Error('Không tìm thấy bài viết với ID: ' + articleId);
       }
@@ -270,8 +312,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       if (!articleResponse.ok) {
         const errorText = await articleResponse.text();
-        console.error('Error fetching article by ID:', errorText);
-        throw new Error('Lỗi khi tải bài viết: ' + articleResponse.statusText);
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText || '{}');
+        } catch (e) {
+          errorData = { message: errorText };
+        }
+        console.error('Error fetching article by ID:', errorData);
+        if (articleResponse.status === 401 && errorData.message === 'jwt expired') {
+          console.log('Token expired, clearing cookie but not redirecting');
+          setCookie("token", "", -1);
+        }
+        throw new Error('Lỗi khi tải bài viết: ' + (errorData.message || articleResponse.statusText));
       }
       const articleData = await articleResponse.json();
       article = articleData.data;
@@ -331,12 +383,19 @@ document.addEventListener('DOMContentLoaded', async () => {
           credentials: 'include',
           body: JSON.stringify({ articleId })
         });
-        if (response.ok) {
-          alert('Đã thêm bookmark thành công!');
-        } else {
+        if (!response.ok) {
           const errorData = await response.json();
+          if (response.status === 401 && errorData.message === 'jwt expired') {
+            console.log('Token expired, clearing cookie and prompting login');
+            setCookie("token", "", -1);
+            alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+            return;
+          }
           alert('Lỗi khi thêm bookmark: ' + (errorData.message || 'Không xác định'));
+          return;
         }
+        alert('Đã thêm bookmark thành công!');
       } catch (error) {
         console.error('Lỗi khi gọi API bookmark:', error);
         alert('Lỗi khi thêm bookmark. Vui lòng thử lại.');
@@ -348,164 +407,173 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('article-meta').innerHTML = `<strong>${article.UserID?.username || 'Tác giả'}</strong> - ${timeAgo(article.updated_at)}`;
     document.getElementById('article-highlight').textContent = article.summary || 'Không có nội dung nổi bật';
 
-  // Record view history
-  if (articleId && token) {
-    try {
-      const user = await getCurrentUser(); // Fetch fresh user data
-      console.log('Current user from token:', user); // Debug current user
-      if (!user || !user.id) {
-        console.warn('User ID not found in token, skipping view history.');
-      } else {
-        await fetch(`http://localhost:3000/api/articles/${articleId}/view/`, {
-          method: 'POST',
-          headers: {
-            ...headers,
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify({ articleId, userId: user.id })
-        });
-        console.log('View history recorded successfully for user:', user.id);
-      }
-    } catch (error) {
-      console.error('Lỗi khi ghi lịch sử xem:', error);
-    }
-  } else if (!token) {
-    console.log('No token found, view history not recorded.');
-  }
-
-  // Split content into sections using both \r\n\r\n and \n\n
-  const sections = article.content?.split(/(\r\n\r\n|\n\n)/).filter(section => section.trim().length > 0);
-  const contentContainer = document.getElementById('article-content');
-  contentContainer.innerHTML = '';
-
-  if (sections.length > 2) {
-    // First two sections
-    for (let index = 0; index < 2; index++) {
-      const section = sections[index];
-      const sectionElement = document.createElement('div');
-      sectionElement.className = 'dynamic-section';
-
-      const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
-      if (lines.length > 1 && lines[0].length < 100) {
-        const heading = document.createElement('h3');
-        heading.textContent = lines[0];
-        sectionElement.appendChild(heading);
-
-        lines.slice(1).forEach(line => {
-          if (line.trim()) {
-            const para = document.createElement('p');
-            para.textContent = line;
-            sectionElement.appendChild(para);
+    // Record view history
+    if (articleId && token) {
+      try {
+        const user = await getCurrentUser();
+        console.log('Current user from token:', user);
+        if (!user || !user.id) {
+          console.warn('User ID not found in token, skipping view history.');
+        } else {
+          const response = await fetch(`http://localhost:3000/api/articles/${articleId}/view/`, {
+            method: 'POST',
+            headers: {
+              ...headers,
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ articleId, userId: user.id })
+          });
+          if (!response.ok) {
+            const errorData = await response.json();
+            if (response.status === 401 && errorData.message === 'jwt expired') {
+              console.log('Token expired, clearing cookie but not redirecting');
+              setCookie("token", "", -1);
+            }
+            console.warn('Failed to record view history:', errorData);
+          } else {
+            console.log('View history recorded successfully for user:', user.id);
           }
-        });
-      } else {
-        lines.forEach(line => {
-          if (line.trim()) {
-            const para = document.createElement('p');
-            para.textContent = line;
-            sectionElement.appendChild(para);
-          }
-        });
+        }
+      } catch (error) {
+        console.error('Lỗi khi ghi lịch sử xem:', error);
       }
-
-      contentContainer.appendChild(sectionElement);
+    } else if (!token) {
+      console.log('No token found, view history not recorded.');
     }
 
-    // Insert thumbnail after the second section (single instance)
-    const thumbnailContainer = document.createElement('div');
-    thumbnailContainer.className = 'article-thumbnail';
-    const thumbnailImg = document.createElement('img');
-    thumbnailImg.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
-    thumbnailImg.alt = 'Article Thumbnail';
-    thumbnailImg.style.maxWidth = '100%';
-    thumbnailContainer.appendChild(thumbnailImg);
-    contentContainer.appendChild(thumbnailContainer);
+    // Split content into sections using both \r\n\r\n and \n\n
+    const sections = article.content?.split(/(\r\n\r\n|\n\n)/).filter(section => section.trim().length > 0);
+    const contentContainer = document.getElementById('article-content');
+    contentContainer.innerHTML = '';
 
-    // Hide default image container to avoid duplication
-    const imgContainer = document.querySelector('.img-container');
-    if (imgContainer) imgContainer.style.display = 'none';
+    if (sections.length > 2) {
+      // First two sections
+      for (let index = 0; index < 2; index++) {
+        const section = sections[index];
+        const sectionElement = document.createElement('div');
+        sectionElement.className = 'dynamic-section';
 
-    // Remaining sections
-    for (let index = 2; index < sections.length; index++) {
-      const section = sections[index];
-      const sectionElement = document.createElement('div');
-      sectionElement.className = 'dynamic-section';
+        const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+        if (lines.length > 1 && lines[0].length < 100) {
+          const heading = document.createElement('h3');
+          heading.textContent = lines[0];
+          sectionElement.appendChild(heading);
 
-      const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
-      if (lines.length > 1 && lines[0].length < 100) {
-        const heading = document.createElement('h3');
-        heading.textContent = lines[0];
-        sectionElement.appendChild(heading);
+          lines.slice(1).forEach(line => {
+            if (line.trim()) {
+              const para = document.createElement('p');
+              para.textContent = line;
+              sectionElement.appendChild(para);
+            }
+          });
+        } else {
+          lines.forEach(line => {
+            if (line.trim()) {
+              const para = document.createElement('p');
+              para.textContent = line;
+              sectionElement.appendChild(para);
+            }
+          });
+        }
 
-        lines.slice(1).forEach(line => {
-          if (line.trim()) {
-            const para = document.createElement('p');
-            para.textContent = line;
-            sectionElement.appendChild(para);
-          }
-        });
-      } else {
-        lines.forEach(line => {
-          if (line.trim()) {
-            const para = document.createElement('p');
-            para.textContent = line;
-            sectionElement.appendChild(para);
-          }
-        });
+        contentContainer.appendChild(sectionElement);
       }
 
-      contentContainer.appendChild(sectionElement);
+      // Insert thumbnail after the second section (single instance)
+      const thumbnailContainer = document.createElement('div');
+      thumbnailContainer.className = 'article-thumbnail';
+      const thumbnailImg = document.createElement('img');
+      thumbnailImg.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
+      thumbnailImg.alt = 'Article Thumbnail';
+      thumbnailImg.style.maxWidth = '100%';
+      thumbnailContainer.appendChild(thumbnailImg);
+      contentContainer.appendChild(thumbnailContainer);
+
+      // Hide default image container to avoid duplication
+      const imgContainer = document.querySelector('.img-container');
+      if (imgContainer) imgContainer.style.display = 'none';
+
+      // Remaining sections
+      for (let index = 2; index < sections.length; index++) {
+        const section = sections[index];
+        const sectionElement = document.createElement('div');
+        sectionElement.className = 'dynamic-section';
+
+        const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+        if (lines.length > 1 && lines[0].length < 100) {
+          const heading = document.createElement('h3');
+          heading.textContent = lines[0];
+          sectionElement.appendChild(heading);
+
+          lines.slice(1).forEach(line => {
+            if (line.trim()) {
+              const para = document.createElement('p');
+              para.textContent = line;
+              sectionElement.appendChild(para);
+            }
+          });
+        } else {
+          lines.forEach(line => {
+            if (line.trim()) {
+              const para = document.createElement('p');
+              para.textContent = line;
+              sectionElement.appendChild(para);
+            }
+          });
+        }
+
+        contentContainer.appendChild(sectionElement);
+      }
+    } else {
+      // Original logic for 2 or fewer sections
+      sections.forEach((section, index) => {
+        const sectionElement = document.createElement('div');
+        sectionElement.className = 'dynamic-section';
+
+        const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
+        if (lines.length > 1 && lines[0].length < 100) {
+          const heading = document.createElement('h3');
+          heading.textContent = lines[0];
+          sectionElement.appendChild(heading);
+
+          lines.slice(1).forEach(line => {
+            if (line.trim()) {
+              const para = document.createElement('p');
+              para.textContent = line;
+              sectionElement.appendChild(para);
+            }
+          });
+        } else {
+          lines.forEach(line => {
+            if (line.trim()) {
+              const para = document.createElement('p');
+              para.textContent = line;
+              sectionElement.appendChild(para);
+            }
+          });
+        }
+
+        contentContainer.appendChild(sectionElement);
+        if (index === 0) {
+          const imgContainer = document.querySelector('.img-container');
+          if (imgContainer) imgContainer.style.display = 'block';
+        }
+      });
+
+      // Update main image for 2 or fewer sections
+      const mainImage = document.getElementById('main-image');
+      if (mainImage) {
+        mainImage.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
+        mainImage.alt = article.title || 'Hình ảnh bài viết';
+      }
     }
-  } else {
-    // Original logic for 2 or fewer sections
-    sections.forEach((section, index) => {
-      const sectionElement = document.createElement('div');
-      sectionElement.className = 'dynamic-section';
 
-      const lines = section.split(/(\r\n|\n)/).filter(line => line.trim().length > 0);
-      if (lines.length > 1 && lines[0].length < 100) {
-        const heading = document.createElement('h3');
-        heading.textContent = lines[0];
-        sectionElement.appendChild(heading);
-
-        lines.slice(1).forEach(line => {
-          if (line.trim()) {
-            const para = document.createElement('p');
-            para.textContent = line;
-            sectionElement.appendChild(para);
-          }
-        });
-      } else {
-        lines.forEach(line => {
-          if (line.trim()) {
-            const para = document.createElement('p');
-            para.textContent = line;
-            sectionElement.appendChild(para);
-          }
-        });
-      }
-
-      contentContainer.appendChild(sectionElement);
-      if (index === 0) {
-        const imgContainer = document.querySelector('.img-container');
-        if (imgContainer) imgContainer.style.display = 'block';
-      }
-    });
-
-    // Update main image for 2 or fewer sections
-    const mainImage = document.getElementById('main-image');
-    if (mainImage) {
-      mainImage.src = article.thumbnail || '../image/img-sidebar/main-pic.png';
-      mainImage.alt = article.title || 'Hình ảnh bài viết';
-    }
-  }
-
-  // Update caption and author (no image update here to avoid duplication)
-  const imageCaption = document.getElementById('image-caption');
-  if (imageCaption) imageCaption.textContent = 'Ảnh minh họa';
-  const authorName = document.getElementById('author-name');
-  if (authorName) authorName.textContent = article.UserID?.username || 'Tác giả';
+    // Update caption and author (no image update here to avoid duplication)
+    const imageCaption = document.getElementById('image-caption');
+    if (imageCaption) imageCaption.textContent = 'Ảnh minh họa';
+    const authorName = document.getElementById('author-name');
+    if (authorName) authorName.textContent = article.UserID?.username || 'Tác giả';
 
     // 2. Fetch related articles (same category)
     const relatedArticlesContainer = document.getElementById('related-articles');
@@ -519,8 +587,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (relatedResponse.ok) {
       const relatedArticles = await relatedResponse.json();
       const articles = relatedArticles.data?.articles || [];
-      console.log('Related articles response:', relatedArticles); // Debug related articles
-      
+      console.log('Related articles response:', relatedArticles);
+
       if (Array.isArray(articles)) {
         articles.forEach(item => {
           const articleElement = document.createElement('a');
@@ -540,33 +608,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         relatedArticlesContainer.innerHTML = '<p>Không có bài viết liên quan</p>';
       }
     } else {
+      const errorText = await relatedResponse.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText || '{}');
+      } catch (e) {
+        errorData = { message: errorText };
+      }
+      console.error('Error fetching related articles:', errorData);
+      if (relatedResponse.status === 401 && errorData.message === 'jwt expired') {
+        console.log('Token expired, clearing cookie but not redirecting');
+        setCookie("token", "", -1);
+      }
       relatedArticlesContainer.innerHTML = '<p>Không tải được tin liên quan</p>';
     }
 
     // 3. Fetch other articles (all approved posts, different category)
     const otherArticlesContainer = document.getElementById('other-articles');
     otherArticlesContainer.innerHTML = '';
-    
+
     const currentCategoryId = article.CategoryID?._id;
-    
-    // Không giới hạn số lượng khi fetch
+
     const otherResponse = await fetch(`http://localhost:3000/api/articles?limit=0`, {
       headers,
       credentials: 'include'
     });
-    
+
     if (otherResponse.ok) {
       const otherArticles = await otherResponse.json();
       const articles = otherArticles.data?.articles || [];
-      console.log('Other articles response:', otherArticles); // Debug
-    
-      // Lọc các bài viết khác category hiện tại
+      console.log('Other articles response:', otherArticles);
+
       const filteredArticles = articles.filter(item => item.CategoryID?._id !== currentCategoryId);
-      console.log('Filtered articles:', filteredArticles); // Debug
-    
-      // Lấy tối đa 4 bài
+      console.log('Filtered articles:', filteredArticles);
+
       const selectedArticles = filteredArticles.slice(0, 4);
-    
+
       if (selectedArticles.length > 0) {
         selectedArticles.forEach(item => {
           const articleElement = document.createElement('a');
@@ -586,8 +663,326 @@ document.addEventListener('DOMContentLoaded', async () => {
         otherArticlesContainer.innerHTML = '<p>Không có bài viết khác thuộc danh mục khác</p>';
       }
     } else {
+      const errorText = await otherResponse.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText || '{}');
+      } catch (e) {
+        errorData = { message: errorText };
+      }
+      console.error('Error fetching other articles:', errorData);
+      if (otherResponse.status === 401 && errorData.message === 'jwt expired') {
+        console.log('Token expired, clearing cookie but not redirecting');
+        setCookie("token", "", -1);
+      }
       otherArticlesContainer.innerHTML = '<p>Không tải được tin khác</p>';
     }
+
+    // Helper: Truncate text to fit within 3 lines
+    function truncateTextToThreeLines(element, maxLines = 4) {
+      const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+      const maxHeight = lineHeight * maxLines;
+
+      if (element.scrollHeight > maxHeight) {
+        let originalText = element.textContent;
+        while (element.scrollHeight > maxHeight && originalText.length > 0) {
+          originalText = originalText.slice(0, -1);
+          element.textContent = originalText + '...';
+        }
+      }
+    }
+
+    // Áp dụng truncate cho các tiêu đề trong sidebar
+    document.querySelectorAll('.news-text p').forEach(titleElement => {
+      truncateTextToThreeLines(titleElement);
+    });
+
+    async function fetchComments(articleId, sort = 'most-relevant') {
+      try {
+        const response = await fetch(`http://localhost:3000/api/comments/article/${articleId}?sort=${sort}`, {
+          headers,
+          credentials: 'include'
+        });
+        if (!response.ok) {
+          const errorText = await response.text();
+          let errorData;
+          try {
+            errorData = JSON.parse(errorText || '{}');
+          } catch (e) {
+            errorData = { message: errorText };
+          }
+          console.error('Error fetching comments:', errorData);
+          if (response.status === 401 && errorData.message === 'jwt expired') {
+            console.log('Token expired, clearing cookie but not redirecting');
+            setCookie("token", "", -1);
+          }
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const comments = await response.json();
+        const commentsList = document.getElementById('comments-list');
+        const commentCount = document.getElementById('comment-count');
+        commentCount.textContent = comments.length;
+        commentsList.innerHTML = '';
+
+        const user = await getCurrentUser();
+
+        function renderComments(comments, parentElement) {
+          comments.forEach(comment => {
+            const commentItem = document.createElement('div');
+            commentItem.className = 'comment-item';
+            commentItem.innerHTML = `
+              <img src="${comment.UserID?.avatar || 'default-avatar.png'}" alt="Avatar">
+              <div class="comment-content">
+                <div class="comment-author">${comment.UserID?.username || 'Ẩn danh'}</div>
+                <div class="comment-text">${comment.content}</div>
+                <div class="comment-actions">
+                  ${user ? `
+                    <span class="reply-btn" data-id="${comment._id}">Trả lời</span>
+                    ${user.id === comment.UserID?._id ? `
+                      <span class="edit-btn" data-id="${comment._id}">Sửa</span>
+                      <span class="delete-btn" data-id="${comment._id}">Xóa</span>
+                    ` : ''}
+                  ` : ''}
+                  <span>${timeAgo(comment.created_at)}</span>
+                </div>
+              </div>
+            `;
+
+            parentElement.appendChild(commentItem);
+
+            if (comment.replies && comment.replies.length > 0) {
+              const repliesContainer = document.createElement('div');
+              repliesContainer.className = 'comment-replies';
+              commentItem.appendChild(repliesContainer);
+              renderComments(comment.replies, repliesContainer);
+            }
+          });
+        }
+
+        renderComments(comments, commentsList);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+        document.getElementById('comments-list').innerHTML = '<p>Lỗi khi tải bình luận.</p>';
+      }
+    }
+
+    document.getElementById('comment-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const content = document.getElementById('comment-content').value.trim();
+      if (!content) {
+        alert('Nội dung bình luận không được để trống.');
+        return;
+      }
+      try {
+        const token = getCookie('token');
+        if (!token) {
+          alert('Bạn cần đăng nhập để bình luận.');
+          return;
+        }
+        const response = await fetch('http://localhost:3000/api/comments/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ content, ArticleID: articleId })
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          if (response.status === 401 && errorData.message === 'jwt expired') {
+            console.log('Token expired, clearing cookie and prompting login');
+            setCookie("token", "", -1);
+            alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+            return;
+          }
+          throw new Error('Failed to submit comment');
+        }
+
+        const successMessage = document.createElement('p');
+        successMessage.textContent = 'Bình luận của bạn đã được đăng!';
+        successMessage.style.color = 'green';
+        successMessage.style.marginTop = '10px';
+        document.getElementById('comment-form').appendChild(successMessage);
+
+        setTimeout(() => successMessage.remove(), 3000);
+
+        fetchComments(articleId);
+      } catch (error) {
+        console.error('Error submitting comment:', error);
+        alert('Lỗi khi gửi bình luận.');
+      }
+      document.getElementById('comment-content').value = '';
+    });
+
+    document.getElementById('comments-list').addEventListener('click', async (e) => {
+      const target = e.target;
+      const commentId = target.dataset.id;
+
+      if (target.classList.contains('reply-btn')) {
+        const existingReplyForm = document.querySelector(`#reply-form-${commentId}`);
+        if (existingReplyForm) {
+          existingReplyForm.remove();
+          return;
+        }
+
+        const replyForm = document.createElement('form');
+        replyForm.id = `reply-form-${commentId}`;
+        replyForm.className = 'reply-form';
+        replyForm.innerHTML = `
+          <textarea placeholder="Viết phản hồi của bạn..." required></textarea>
+          <div>
+            <button type="submit" class="btn-submit-reply">Gửi</button>
+            <button type="button" class="btn-cancel-reply">Hủy</button>
+          </div>
+        `;
+
+        const commentActions = target.closest('.comment-actions');
+        commentActions.insertAdjacentElement('afterend', replyForm);
+
+        replyForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const content = replyForm.querySelector('textarea').value.trim();
+          if (!content) {
+            alert('Nội dung phản hồi không được để trống.');
+            return;
+          }
+          try {
+            const token = getCookie('token');
+            if (!token) {
+              alert('Bạn cần đăng nhập để phản hồi.');
+              return;
+            }
+            const response = await fetch('http://localhost:3000/api/comments/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ content, ArticleID: articleId, CommentID: commentId })
+            });
+            if (!response.ok) {
+              const errorData = await response.json();
+              if (response.status === 401 && errorData.message === 'jwt expired') {
+                console.log('Token expired, clearing cookie and prompting login');
+                setCookie("token", "", -1);
+                alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                return;
+              }
+              throw new Error('Failed to submit reply');
+            }
+            fetchComments(articleId);
+          } catch (error) {
+            console.error('Error submitting reply:', error);
+            alert('Lỗi khi gửi phản hồi.');
+          }
+        });
+
+        replyForm.querySelector('.btn-cancel-reply').addEventListener('click', () => {
+          replyForm.remove();
+        });
+      } else if (target.classList.contains('edit-btn')) {
+        const existingEditForm = document.querySelector(`#edit-form-${commentId}`);
+        if (existingEditForm) {
+          existingEditForm.remove();
+          return;
+        }
+
+        const editForm = document.createElement('form');
+        editForm.id = `edit-form-${commentId}`;
+        editForm.className = 'edit-form';
+        const currentText = target.closest('.comment-content').querySelector('.comment-text').textContent.trim();
+        editForm.innerHTML = `
+          <textarea required>${currentText}</textarea>
+          <div>
+            <button type="submit" class="btn-submit-edit">Lưu</button>
+            <button type="button" class="btn-cancel-edit">Hủy</button>
+          </div>
+        `;
+
+        const commentActions = target.closest('.comment-actions');
+        commentActions.insertAdjacentElement('afterend', editForm);
+
+        editForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const newContent = editForm.querySelector('textarea').value.trim();
+          if (!newContent) {
+            alert('Nội dung sửa không được để trống.');
+            return;
+          }
+          try {
+            const token = getCookie('token');
+            if (!token) {
+              alert('Bạn cần đăng nhập để sửa bình luận.');
+              window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+              return;
+            }
+            const response = await fetch(`http://localhost:3000/api/comments/${commentId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ content: newContent })
+            });
+            if (!response.ok) {
+              const errorData = await response.json();
+              if (response.status === 401 && errorData.message === 'jwt expired') {
+                console.log('Token expired, clearing cookie and prompting login');
+                setCookie("token", "", -1);
+                alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                return;
+              }
+              throw new Error('Failed to edit comment');
+            }
+            fetchComments(articleId);
+          } catch (error) {
+            console.error('Error editing comment:', error);
+            alert('Lỗi khi sửa bình luận.');
+          }
+        });
+
+        editForm.querySelector('.btn-cancel-edit').addEventListener('click', () => {
+          editForm.remove();
+        });
+      } else if (target.classList.contains('delete-btn')) {
+        if (confirm('Bạn có chắc chắn muốn xóa bình luận này?')) {
+          try {
+            const token = getCookie('token');
+            if (!token) {
+              alert('Bạn cần đăng nhập để xóa bình luận.');
+              window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+              return;
+            }
+            const response = await fetch(`http://localhost:3000/api/comments/${commentId}/`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            if (!response.ok) {
+              const errorData = await response.json();
+              if (response.status === 401 && errorData.message === 'jwt expired') {
+                console.log('Token expired, clearing cookie and prompting login');
+                setCookie("token", "", -1);
+                alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                window.location.href = 'http://127.0.0.1:5500/Hi-Tech/Login.html';
+                return;
+              }
+              console.error('Error deleting comment:', errorData);
+              throw new Error(errorData.message || 'Failed to delete comment');
+            }
+            alert('Xóa bình luận thành công!');
+            fetchComments(articleId);
+          } catch (error) {
+            console.error('Error deleting comment:', error);
+            alert('Lỗi khi xóa bình luận.');
+          }
+        }
+      }
+    });
 
     // Fetch comments when the page loads
     fetchComments(articleId);
@@ -597,274 +992,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('related-articles').innerHTML = '<p>Lỗi khi tải tin liên quan</p>';
     document.getElementById('other-articles').innerHTML = '<p>Lỗi khi tải tin khác</p>';
   }
-
-  // Helper: Truncate text to fit within 3 lines
-  function truncateTextToThreeLines(element, maxLines = 4) {
-    const lineHeight = parseFloat(getComputedStyle(element).lineHeight); // Lấy chiều cao dòng
-    const maxHeight = lineHeight * maxLines; // Tính chiều cao tối đa cho 3 dòng
-
-    if (element.scrollHeight > maxHeight) {
-      let originalText = element.textContent;
-      while (element.scrollHeight > maxHeight && originalText.length > 0) {
-        originalText = originalText.slice(0, -1); // Cắt bớt ký tự cuối
-        element.textContent = originalText + '...'; // Thêm "..." vào cuối
-      }
-    }
-  }
-
-  // Áp dụng truncate cho các tiêu đề trong sidebar
-  document.querySelectorAll('.news-text p').forEach(titleElement => {
-    truncateTextToThreeLines(titleElement);
-  });
-
-  async function fetchComments(articleId, sort = 'most-relevant') {
-    try {
-        const response = await fetch(`http://localhost:3000/api/comments/article/${articleId}?sort=${sort}`);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const comments = await response.json();
-        const commentsList = document.getElementById('comments-list');
-        const commentCount = document.getElementById('comment-count');
-        commentCount.textContent = comments.length;
-        commentsList.innerHTML = '';
-
-        const user = await getCurrentUser(); // Check if the user is logged in
-
-        // Helper function to render comments recursively
-        function renderComments(comments, parentElement) {
-            comments.forEach(comment => {
-                const commentItem = document.createElement('div');
-                commentItem.className = 'comment-item';
-                commentItem.innerHTML = `
-                    <img src="${comment.UserID?.avatar || 'default-avatar.png'}" alt="Avatar">
-                    <div class="comment-content">
-                        <div class="comment-author">${comment.UserID?.username || 'Ẩn danh'}</div>
-                        <div class="comment-text">${comment.content}</div>
-                        <div class="comment-actions">
-                            ${user ? `
-                                <span class="reply-btn" data-id="${comment._id}">Trả lời</span>
-                                ${user.id === comment.UserID?._id ? `
-                                    <span class="edit-btn" data-id="${comment._id}">Sửa</span>
-                                    <span class="delete-btn" data-id="${comment._id}">Xóa</span>
-                                ` : ''}
-                            ` : ''}
-                            <span>${timeAgo(comment.created_at)}</span>
-                        </div>
-                    </div>
-                `;
-
-                parentElement.appendChild(commentItem);
-
-                // Create a container for replies
-                if (comment.replies && comment.replies.length > 0) {
-                    const repliesContainer = document.createElement('div');
-                    repliesContainer.className = 'comment-replies';
-                    commentItem.appendChild(repliesContainer);
-                    renderComments(comment.replies, repliesContainer); // Recursive call
-                }
-            });
-        }
-
-        renderComments(comments, commentsList);
-    } catch (error) {
-        console.error('Error fetching comments:', error);
-        document.getElementById('comments-list').innerHTML = '<p>Lỗi khi tải bình luận.</p>';
-    }
-  }
-
-  document.getElementById('comment-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const content = document.getElementById('comment-content').value.trim();
-    if (!content) {
-        alert('Nội dung bình luận không được để trống.');
-        return;
-    }
-    try {
-        const token = getCookie('token');
-        if (!token) {
-            alert('Bạn cần đăng nhập để bình luận.');
-            return;
-        }
-        const response = await fetch('http://localhost:3000/api/comments/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ content, ArticleID: articleId })
-        });
-        if (!response.ok) throw new Error('Failed to submit comment');
-
-        // Display success message in the UI
-        const successMessage = document.createElement('p');
-        successMessage.textContent = 'Bình luận của bạn đã được đăng!';
-        successMessage.style.color = 'green';
-        successMessage.style.marginTop = '10px';
-        document.getElementById('comment-form').appendChild(successMessage);
-
-        // Remove the success message after 3 seconds
-        setTimeout(() => successMessage.remove(), 3000);
-
-        fetchComments(articleId); // Refresh comments
-    } catch (error) {
-        console.error('Error submitting comment:', error);
-        alert('Lỗi khi gửi bình luận.');
-    }
-    document.getElementById('comment-content').value = '';
-  });
-
-  document.getElementById('comments-list').addEventListener('click', async (e) => {
-    const target = e.target;
-    const commentId = target.dataset.id;
-
-    if (target.classList.contains('reply-btn')) {
-        // Check if a reply form already exists
-        const existingReplyForm = document.querySelector(`#reply-form-${commentId}`);
-        if (existingReplyForm) {
-            existingReplyForm.remove(); // Remove the existing reply form
-            return;
-        }
-
-        // Create a reply form
-        const replyForm = document.createElement('form');
-        replyForm.id = `reply-form-${commentId}`;
-        replyForm.className = 'reply-form';
-        replyForm.innerHTML = `
-            <textarea placeholder="Viết phản hồi của bạn..." required></textarea>
-            <div>
-                <button type="submit" class="btn-submit-reply">Gửi</button>
-                <button type="button" class="btn-cancel-reply">Hủy</button>
-            </div>
-        `;
-
-        // Append the reply form directly below the comment actions
-        const commentActions = target.closest('.comment-actions');
-        commentActions.insertAdjacentElement('afterend', replyForm);
-
-        // Handle reply form submission
-        replyForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const content = replyForm.querySelector('textarea').value.trim();
-            if (!content) {
-                alert('Nội dung phản hồi không được để trống.');
-                return;
-            }
-            try {
-                const token = getCookie('token');
-                if (!token) {
-                    alert('Bạn cần đăng nhập để phản hồi.');
-                    return;
-                }
-                const response = await fetch('http://localhost:3000/api/comments/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ content, ArticleID: articleId, CommentID: commentId })
-                });
-                if (!response.ok) throw new Error('Failed to submit reply');
-                fetchComments(articleId);
-            } catch (error) {
-                console.error('Error submitting reply:', error);
-                alert('Lỗi khi gửi phản hồi.');
-            }
-        });
-
-        // Handle cancel button
-        replyForm.querySelector('.btn-cancel-reply').addEventListener('click', () => {
-            replyForm.remove();
-        });
-    } else if (target.classList.contains('edit-btn')) {
-        // Check if an edit form already exists
-        const existingEditForm = document.querySelector(`#edit-form-${commentId}`);
-        if (existingEditForm) {
-            existingEditForm.remove(); // Remove the existing edit form
-            return;
-        }
-
-        // Create an edit form
-        const editForm = document.createElement('form');
-        editForm.id = `edit-form-${commentId}`;
-        editForm.className = 'edit-form';
-        const currentText = target.closest('.comment-content').querySelector('.comment-text').textContent.trim();
-        editForm.innerHTML = `
-            <textarea required>${currentText}</textarea>
-            <div>
-                <button type="submit" class="btn-submit-edit">Lưu</button>
-                <button type="button" class="btn-cancel-edit">Hủy</button>
-            </div>
-        `;
-
-        // Append the edit form directly below the comment actions
-        const commentActions = target.closest('.comment-actions');
-        commentActions.insertAdjacentElement('afterend', editForm);
-
-        // Handle edit form submission
-        editForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const newContent = editForm.querySelector('textarea').value.trim();
-            if (!newContent) {
-                alert('Nội dung sửa không được để trống.');
-                return;
-            }
-            try {
-                const token = getCookie('token');
-                if (!token) {
-                    alert('Bạn cần đăng nhập để sửa bình luận.');
-                    return;
-                }
-                const response = await fetch(`http://localhost:3000/api/comments/${commentId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ content: newContent })
-                });
-                if (!response.ok) throw new Error('Failed to edit comment');
-                fetchComments(articleId);
-            } catch (error) {
-                console.error('Error editing comment:', error);
-                alert('Lỗi khi sửa bình luận.');
-            }
-        });
-
-        // Handle cancel button
-        editForm.querySelector('.btn-cancel-edit').addEventListener('click', () => {
-            editForm.remove();
-        });
-    } else if (target.classList.contains('delete-btn')) {
-      if (confirm('Bạn có chắc chắn muốn xóa bình luận này?')) {
-        try {
-          const token = getCookie('token');
-          if (!token) {
-            alert('Bạn cần đăng nhập để xóa bình luận.');
-            return;
-          }
-
-          const response = await fetch(`http://localhost:3000/api/comments/${commentId}/`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Error deleting comment:', errorData);
-            throw new Error(errorData.message || 'Failed to delete comment');
-          }
-
-          alert('Xóa bình luận thành công!');
-          fetchComments(articleId); // Refresh comments
-        } catch (error) {
-          console.error('Error deleting comment:', error);
-          alert('Lỗi khi xóa bình luận.');
-        }
-      }
-    }
-  });
-
-  // Fetch comments when the page loads
-  fetchComments(articleId);
 });

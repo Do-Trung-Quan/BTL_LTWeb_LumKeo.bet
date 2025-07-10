@@ -4,7 +4,7 @@ const register = async (req, res) => {
   try {
     const { username, password, role, email, avatar } = req.body;
     if (!email) {
-      return res.status(400).json({ success: false, message: 'Email is required' });
+      return res.status(400).json({ success: false, message: 'Email là bắt buộc' });
     }
     const result = await UserService.createUser({ username, password, role, email, avatar });
     res.status(201).json(result);
@@ -20,7 +20,7 @@ const login = async (req, res) => {
     const result = await UserService.loginUser({ username, password });
     
     if (!result.token) {
-      throw new Error('Token not generated');
+      throw new Error('Token không được tạo');
     }
 
     res.cookie('token', result.token, {
@@ -29,7 +29,7 @@ const login = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({ message: 'Login successful', user: result.user, token: result.token });
+    res.status(200).json({ message: 'Đăng nhập thành công', user: result.user, token: result.token });
   } catch (error) {
     console.error(error);
     res.status(400).json({ success: false, message: error.message });
@@ -112,28 +112,12 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Update username
 const updateUsername = async (req, res) => {
   try {
     const { username } = req.body;
     const result = await UserService.updateUsername(req.params.userId, username);
     res.status(200).json({
-      message: 'Username updated successfully',
-      user: result.user,
-      token: result.token // Include the new token in the response
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
-  }
-};
-
-// Update email
-const updateEmail = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const result = await UserService.updateEmail(req.params.userId, email);
-    res.status(200).json({
-      message: 'Email updated successfully',
+      message: 'Cập nhật tên người dùng thành công',
       user: result.user,
       token: result.token
     });
@@ -142,47 +126,57 @@ const updateEmail = async (req, res) => {
   }
 };
 
-// Update password
-const updatePassword = async (req, res) => {
+const updateEmail = async (req, res) => {
   try {
-    const { newPassword } = req.body;
-    const result = await UserService.updatePassword(req.params.userId, newPassword);
+    const { email } = req.body;
+    const result = await UserService.updateEmail(req.params.userId, email);
     res.status(200).json({
-      message: 'Password updated successfully',
+      message: 'Cập nhật email thành công',
       user: result.user,
-      token: result.token // Include the new token in the response
+      token: result.token
     });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
 };
 
-// Update avatar for user
-const updateAvatar = async (req, res) => {
+const updatePassword = async (req, res) => {
   try {
-    // Lấy file avatar từ multer
-    const file = req.files && req.files.avatar ? req.files.avatar[0] : null;
-
-    // Kiểm tra nếu không có file avatar
-    if (!file) {
-      return res.status(400).json({ success: false, message: 'No avatar uploaded' });
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Mật khẩu cũ và mật khẩu mới là bắt buộc' });
     }
 
-    // Log file nhận được từ multer để debug
+    const result = await UserService.updatePassword(req.params.userId, oldPassword, newPassword);
+    res.status(200).json({
+      message: 'Cập nhật mật khẩu thành công',
+      user: result.user,
+      token: result.token
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+const updateAvatar = async (req, res) => {
+  try {
+    const file = req.files && req.files.avatar ? req.files.avatar[0] : null;
+
+    if (!file) {
+      return res.status(400).json({ success: false, message: 'Chưa tải lên avatar' });
+    }
+
     console.log("Uploaded file:", file);
 
-    // Gọi service để cập nhật avatar người dùng
     const result = await UserService.updateAvatar(req.params.userId, file);
 
-    // Trả về phản hồi thành công
     res.status(200).json({
-      message: 'Avatar updated successfully',
+      message: 'Cập nhật avatar thành công',
       user: result.user,
-      token: result.token // Include the new token in the response
+      token: result.token
     });
   } catch (error) {
     console.error("Error updating avatar:", error);
-    // Xử lý lỗi
     res.status(400).json({ success: false, message: error.message });
   }
 };
@@ -230,18 +224,16 @@ const logOut = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Không tìm thấy token' });
     }
 
-    // Call the service to handle logout (e.g., blacklist token)
     const serviceResponse = await UserService.logOut(token);
     if (!serviceResponse.success) {
       return res.status(500).json({ success: false, message: serviceResponse.message });
     }
 
-    // Clear the token cookie on the client side
     res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      path: '/' // Ensure cookie is cleared for the entire domain
+      path: '/'
     });
 
     res.status(200).json({ success: true, message: 'Đăng xuất thành công' });
@@ -263,7 +255,7 @@ const validateToken = async (req, res) => {
     console.log('ValidateTokenController - Token received:', token ? 'Yes' : 'No', 'Value:', token);
 
     if (!token) {
-      return res.status(400).json({ success: false, message: 'No token provided' });
+      return res.status(400).json({ success: false, message: 'Không có token được cung cấp' });
     }
 
     const result = await UserService.validateToken(token);
@@ -283,7 +275,7 @@ const validateToken = async (req, res) => {
     }
   } catch (error) {
     console.error('ValidateTokenController - Unexpected error:', error.message, 'Stack:', error.stack);
-    res.status(500).json({ success: false, message: 'Server error during token validation', error: error.message });
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xác thực token', error: error.message });
   }
 };
 

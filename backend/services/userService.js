@@ -10,7 +10,32 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();  
 
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Hàm kiểm tra mật khẩu
+const validatePassword = (password) => {
+  const minLength = 8;
+  const hasNumber = /\d/;
+  const hasLetter = /[a-zA-Z]/;
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
+
+  if (!password) {
+    throw new Error('Mật khẩu là bắt buộc');
+  }
+  if (password.length < minLength) {
+    throw new Error(`Mật khẩu phải có ít nhất ${minLength} ký tự`);
+  }
+  if (!hasNumber.test(password)) {
+    throw new Error('Mật khẩu phải chứa ít nhất một số');
+  }
+  if (!hasLetter.test(password)) {
+    throw new Error('Mật khẩu phải chứa ít nhất một chữ cái');
+  }
+  if (!hasSpecialChar.test(password)) {
+    throw new Error('Mật khẩu phải chứa ít nhất một ký tự đặc biệt');
+  }
+  return true;
+};
 
 // Generate a new JWT token
 const generateToken = (user) => {
@@ -20,20 +45,23 @@ const generateToken = (user) => {
     role: user.role,
     avatar: user.avatar
   };
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' }); // Adjust expiration as needed
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 };
 
 // Hàm kiểm tra username có tồn tại hay không
 const checkUsernameExists = async (username) => {
   const existingUser = await User.findOne({ username });
   if (existingUser) {
-    throw new Error('Username already exists');
+    throw new Error('Tên người dùng đã tồn tại');
   }
 };
 
 // Hàm tạo mới một user
 const createUser = async ({ username, password, role, email, avatar }) => {
-  await checkUsernameExists(username); // Kiểm tra trước khi tạo user mới
+  await checkUsernameExists(username);
+
+  // Kiểm tra mật khẩu
+  validatePassword(password);
 
   const user = new User({
     username,
@@ -51,7 +79,7 @@ const createUser = async ({ username, password, role, email, avatar }) => {
 const checkPasswordMatch = async (user, password) => {
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    throw new Error('Invalid credentials');
+    throw new Error('Thông tin đăng nhập không hợp lệ');
   }
 };
 
@@ -59,10 +87,9 @@ const checkPasswordMatch = async (user, password) => {
 const loginUser = async ({ username, password }) => {
   const user = await User.findOne({ username });
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('Người dùng không tồn tại');
   }
 
-  // Kiểm tra mật khẩu (có thể cần thêm hàm kiểm tra mật khẩu đúng)
   await checkPasswordMatch(user, password);
 
   user.last_login = new Date();
@@ -72,24 +99,23 @@ const loginUser = async ({ username, password }) => {
     { id: user._id.toString(), username: user.username, role: user.role, avatar: user.avatar },
     process.env.JWT_SECRET,
     { expiresIn: '1h' }
-);
+  );
 
-  // Trả về đối tượng gồm user và token
   return { user, token };
 };
 
 const sendOtp = async (email) => {
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Error('Email không hợp lệ hoặc không tìm thấy tài khoản.');
+    throw new Error('Email không hợp lệ hoặc không tìm thấy tài khoản');
   }
 
-  const otp = crypto.randomInt(100000, 999999).toString(); // Generate 6-digit OTP
+  const otp = crypto.randomInt(100000, 999999).toString();
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'Lumkeo.bet@gmail.com',
-      pass: 'gbju rmpd pxbd xpod' // Use an App Password for Gmail with 2FA enabled
+      pass: 'gbju rmpd pxbd xpod'
     }
   });
 
@@ -101,40 +127,37 @@ const sendOtp = async (email) => {
   };
 
   await transporter.sendMail(mailOptions);
-  return { otp }; // Return OTP to store in session (in production, use a secure store)
+  return { otp };
 };
 
 // Hàm reset mật khẩu
 const resetPassword = async ({ username, newPassword }) => {
   // Input validation
   if (!username || !newPassword) {
-    throw new Error('Username và mật khẩu mới là bắt buộc.');
+    throw new Error('Username và mật khẩu mới là bắt buộc');
   }
 
-  if (newPassword.length < 6) {
-    throw new Error('Mật khẩu mới phải có ít nhất 6 ký tự.');
-  }
+  // Kiểm tra mật khẩu mới
+  validatePassword(newPassword);
 
   // Find the user
   const user = await User.findOne({ username });
   if (!user) {
-    throw new Error('Người dùng không tồn tại.');
+    throw new Error('Người dùng không tồn tại');
   }
 
   user.password = newPassword;
   await user.save();
   // Return a success result
-  return { success: true, message: 'Đặt lại mật khẩu thành công!' };
+  return { success: true, message: 'Đặt lại mật khẩu thành công' };
 };
 
-// Hàm lấy tất cả users
 const getUsers = async (page = 1, limit = 10, keyword = '') => {
   const skip = (page - 1) * limit;
 
-  // Build query with role and keyword filter
   const query = { role: 'user' };
   if (keyword && keyword.trim() !== '') {
-    query.username = { $regex: keyword.trim(), $options: 'i' }; // Case-insensitive search
+    query.username = { $regex: keyword.trim(), $options: 'i' };
   }
 
   const users = await User.find(query)
@@ -155,14 +178,12 @@ const getUsers = async (page = 1, limit = 10, keyword = '') => {
   };
 };
 
-// Hàm lấy tất cả authors
 const getAuthors = async (page = 1, limit = 10, keyword = '') => {
   const skip = (page - 1) * limit;
 
-  // Build query with role and keyword filter
   const query = { role: 'author' };
   if (keyword && keyword.trim() !== '') {
-    query.username = { $regex: keyword.trim(), $options: 'i' }; // Case-insensitive search
+    query.username = { $regex: keyword.trim(), $options: 'i' };
   }
 
   const authors = await User.find(query)
@@ -186,16 +207,14 @@ const getAuthors = async (page = 1, limit = 10, keyword = '') => {
 const getUserById = async (userId) => {
   const user = await User.findById(userId).select('-password');
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('Người dùng không tồn tại');
   }
   return user;
 };
 
-
-// Hàm xóa user
 const deleteUser = async (userId) => {
   const user = await User.findById(userId);
-  if (!user) throw new Error('User not found');
+  if (!user) throw new Error('Người dùng không tồn tại');
 
   await Promise.all([
     Article.deleteMany({ UserID: userId }),
@@ -213,20 +232,17 @@ const deleteUser = async (userId) => {
   await User.findByIdAndDelete(userId);
 };
 
-
-// Update username
 const updateUsername = async (userId, username) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('Người dùng không tồn tại');
   }
 
-  await checkUsernameExists(username); // Kiểm tra username trước khi cập nhật
+  await checkUsernameExists(username);
 
   user.username = username;
   const updatedUser = await user.save();
 
-  // Generate a new token with the updated username
   const newToken = generateToken(updatedUser);
 
   return {
@@ -235,29 +251,25 @@ const updateUsername = async (userId, username) => {
   };
 };
 
-// Update email
 const updateEmail = async (userId, email) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('Người dùng không tồn tại');
   }
 
-  // Optional: Add validation for email format if needed
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    throw new Error('Invalid email format');
+    throw new Error('Định dạng email không hợp lệ');
   }
 
-  // Check if the email is already in use by another user
   const existingUser = await User.findOne({ email, _id: { $ne: userId } });
   if (existingUser) {
-    throw new Error('Email is already in use');
+    throw new Error('Email đã được sử dụng');
   }
 
   user.email = email;
   const updatedUser = await user.save();
 
-  // Generate a new token with the updated email
   const newToken = generateToken(updatedUser);
 
   return {
@@ -266,17 +278,22 @@ const updateEmail = async (userId, email) => {
   };
 };
 
-// Update password
-const updatePassword = async (userId, newPassword) => {
+const updatePassword = async (userId, oldPassword, newPassword) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('Người dùng không tồn tại');
   }
+  const isMatch = await user.comparePassword(oldPassword);
+  if (!isMatch) {
+    throw new Error('Mật khẩu cũ không chính xác');
+  }
+
+  // Kiểm tra mật khẩu mới
+  validatePassword(newPassword);
 
   user.password = newPassword;
   const updatedUser = await user.save();
 
-  // Generate a new token (optional, since password updates don't affect the token payload)
   const newToken = generateToken(updatedUser);
 
   return {
@@ -285,19 +302,18 @@ const updatePassword = async (userId, newPassword) => {
   };
 };
 
-// Update avatar for user
+
 const updateAvatar = async (userId, file) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('Người dùng không tồn tại');
   }
 
-  // Nếu có file avatar mới, upload lên Cloudinary và lấy URL
-  let avatarUrl = user.avatar; // Dùng avatar cũ nếu không có file mới
+  let avatarUrl = user.avatar;
   if (file) {
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'avatars' }, // Lưu vào thư mục 'avatars'
+        { folder: 'avatars' },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
@@ -305,7 +321,7 @@ const updateAvatar = async (userId, file) => {
       );
       uploadStream.end(file.buffer);
     });
-    avatarUrl = result.secure_url; // Lấy URL avatar từ Cloudinary
+    avatarUrl = result.secure_url;
   }
 
   const updatedUser = await User.findByIdAndUpdate(
@@ -314,7 +330,6 @@ const updateAvatar = async (userId, file) => {
     { new: true, runValidators: true }
   );
 
-  // Generate a new token with the updated avatar
   const newToken = generateToken(updatedUser);
 
   return {
@@ -323,12 +338,10 @@ const updateAvatar = async (userId, file) => {
   };
 };
 
-// Hàm thống kê số lượng người dùng mới theo ngày trong 15 ngày qua
 const getNewUsersStatistics = async () => {
   const now = new Date();
   const fifteenDaysAgo = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
 
-  // Aggregate to group users by day
   const stats = await User.aggregate([
     {
       $match: {
@@ -345,15 +358,14 @@ const getNewUsersStatistics = async () => {
       }
     },
     {
-      $sort: { _id: 1 } // Sort by date ascending
+      $sort: { _id: 1 }
     }
   ]);
 
-  // Create an array of the last 15 days with 0 counts for days with no data
   const result = [];
   for (let i = 0; i < 15; i++) {
     const date = new Date(now.getTime() - (14 - i) * 24 * 60 * 60 * 1000);
-    const dateStr = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const dateStr = date.toISOString().split('T')[0];
     const found = stats.find(stat => stat._id === dateStr);
     result.push({
       date: dateStr,
@@ -364,12 +376,10 @@ const getNewUsersStatistics = async () => {
   return { dailyStats: result, total: result.reduce((sum, day) => sum + day.count, 0) };
 };
 
-// Hàm thống kê số lượng tác giả mới theo ngày trong 15 ngày qua
 const getNewAuthorsStatistics = async () => {
   const now = new Date();
   const fifteenDaysAgo = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
 
-  // Aggregate to group authors by day
   const stats = await User.aggregate([
     {
       $match: {
@@ -386,15 +396,14 @@ const getNewAuthorsStatistics = async () => {
       }
     },
     {
-      $sort: { _id: 1 } // Sort by date ascending
+      $sort: { _id: 1 }
     }
   ]);
 
-  // Create an array of the last 15 days with 0 counts for days with no data
   const result = [];
   for (let i = 0; i < 15; i++) {
     const date = new Date(now.getTime() - (14 - i) * 24 * 60 * 60 * 1000);
-    const dateStr = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const dateStr = date.toISOString().split('T')[0];
     const found = stats.find(stat => stat._id === dateStr);
     result.push({
       date: dateStr,
@@ -405,13 +414,11 @@ const getNewAuthorsStatistics = async () => {
   return { dailyStats: result, total: result.reduce((sum, day) => sum + day.count, 0) };
 };
 
-// Hàm thống kê tất cả người dùng
 const getAllUsersStatistics = async () => {
   const count = await User.countDocuments({ role: 'user' });
   return { count };
 };
 
-// Hàm thống kê tất cả tác giả
 const getAllAuthorsStatistics = async () => {
   const count = await User.countDocuments({ role: 'author' });
   return { count };
@@ -419,28 +426,10 @@ const getAllAuthorsStatistics = async () => {
 
 const logOut = (token) => {
   try {
-    // Optional: Decode token without verifying expiration for logging
-    let payload = null;
-    try {
-      payload = jwt.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
-      console.log('Token payload (decoded):', payload);
-    } catch (verifyError) {
-      console.warn('Token verification failed (possibly expired):', verifyError.message);
-      // Proceed with logout even if token is invalid or expired
-    }
-
-    // Simulate adding token to a blacklist (in-memory for this example)
     if (!global.blacklist) {
       global.blacklist = new Set();
     }
     global.blacklist.add(token);
-
-    // Invalidate token by adding expiration check (optional enhancement)
-    const decoded = jwt.decode(token, { complete: true });
-    if (decoded && decoded.payload.exp) {
-      const expiry = new Date(decoded.payload.exp * 1000);
-      console.log('Token will expire on:', expiry);
-    }
 
     return { success: true, message: 'Đăng xuất thành công' };
   } catch (error) {
@@ -452,30 +441,27 @@ const logOut = (token) => {
 const validateToken = (token) => {
   try {
     if (!token) {
-      throw new Error('No token provided');
+      throw new Error('Không có token được cung cấp');
     }
 
-    // Check if token is in blacklist
     if (global.blacklist && global.blacklist.has(token)) {
-      throw new Error('Token has been blacklisted');
+      throw new Error('Token đã bị đưa vào danh sách đen');
     }
 
-    // Verify JWT signature (without ignoring expiration)
     const decoded = jwt.verify(token, JWT_SECRET);
     return {
       success: true,
-      message: 'Token is valid',
+      message: 'Token hợp lệ',
       payload: decoded
     };
   } catch (error) {
     return {
       success: false,
-      message: error.message || 'Invalid token'
+      message: error.message || 'Token không hợp lệ'
     };
   }
 };
 
-// Xuất các hàm
 module.exports = {
   createUser,
   loginUser,
